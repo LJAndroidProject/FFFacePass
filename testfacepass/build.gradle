@@ -41,10 +41,10 @@ android {
         daoPackage //生成代码到具体包下
     }
 
-    compileOptions {
+    /*compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
+    }*/
 }
 
 

@@ -21,16 +21,16 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        UserMessageDao.createTable(db, ifNotExists);
-        DustbinBeanDao.createTable(db, ifNotExists);
         DeliveryRecordDao.createTable(db, ifNotExists);
+        DustbinBeanDao.createTable(db, ifNotExists);
+        UserMessageDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        UserMessageDao.dropTable(db, ifExists);
-        DustbinBeanDao.dropTable(db, ifExists);
         DeliveryRecordDao.dropTable(db, ifExists);
+        DustbinBeanDao.dropTable(db, ifExists);
+        UserMessageDao.dropTable(db, ifExists);
     }
 
     /**
@@ -49,9 +49,9 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(UserMessageDao.class);
-        registerDaoClass(DustbinBeanDao.class);
         registerDaoClass(DeliveryRecordDao.class);
+        registerDaoClass(DustbinBeanDao.class);
+        registerDaoClass(UserMessageDao.class);
     }
 
     public DaoSession newSession() {

@@ -303,6 +303,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         mFeedFrameQueue = new ArrayBlockingQueue<CameraPreviewData>(1);
         initAndroidHandler();
 
+        Toast.makeText(this,"测试2",Toast.LENGTH_LONG).show();
+
         //  开启友盟推送
         PushAgent.getInstance(this).onAppStart();
 

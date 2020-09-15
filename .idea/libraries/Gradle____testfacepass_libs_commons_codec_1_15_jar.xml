@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: ./testfacepass/libs/commons-codec-1.15.jar">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/testfacepass/libs/commons-codec-1.15.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

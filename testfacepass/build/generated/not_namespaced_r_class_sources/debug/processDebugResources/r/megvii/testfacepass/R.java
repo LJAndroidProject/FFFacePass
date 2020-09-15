@@ -500,6 +500,7 @@ public final class R {
      */
     public static final int checkedTextViewStyle=0x7f02003f;
     /**
+     * 一屏显示多个左右间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -508,6 +509,7 @@ public final class R {
      */
     public static final int clipChildrenLeftRightMargin=0x7f020040;
     /**
+     * 一屏显示多个上下间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -898,11 +900,13 @@ public final class R {
      */
     public static final int isAutoPlay=0x7f020077;
     /**
+     * 是否开启一屏显示多个模式 默认不开启
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
     public static final int isClipChildrenMode=0x7f020078;
     /**
+     * 少于三张是否支持一屏多显模式
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
@@ -918,16 +922,19 @@ public final class R {
      */
     public static final int isLightTheme=0x7f02007b;
     /**
+     * 当只有一页数据时是否显示指示器，默认值为false
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
     public static final int isShowIndicatorOnlyOne=0x7f02007c;
     /**
+     * 是否是数字指示器
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
     public static final int isShowNumberIndicator=0x7f02007d;
     /**
+     * 是否展示提示文案
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
@@ -1508,6 +1515,7 @@ public final class R {
      */
     public static final int navigationMode=0x7f0200bf;
     /**
+     * 数字指示器背景
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
      * attribute in the form
@@ -1552,6 +1560,7 @@ public final class R {
      */
     public static final int paddingTopNoTitle=0x7f0200c5;
     /**
+     * 图片切换速度
      * <p>May be an integer value, such as "<code>100</code>".
      */
     public static final int pageChangeDuration=0x7f0200c6;
@@ -1578,6 +1587,7 @@ public final class R {
      */
     public static final int panelMenuListWidth=0x7f0200c9;
     /**
+     * 图片轮播框架展占位图
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
      * attribute in the form
@@ -1585,6 +1595,7 @@ public final class R {
      */
     public static final int placeholderDrawable=0x7f0200ca;
     /**
+     * 指示点容器左右内间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -1605,6 +1616,7 @@ public final class R {
      */
     public static final int pointContainerPosition=0x7f0200cc;
     /**
+     * 指示点左右内间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -1627,6 +1639,7 @@ public final class R {
      */
     public static final int pointSelect=0x7f0200cf;
     /**
+     * 指示点上下内间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -2096,6 +2109,7 @@ public final class R {
      */
     public static final int tickMarkTintMode=0x7f02010d;
     /**
+     * 提示文案的文字颜色
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
      * attribute in the form
@@ -2106,6 +2120,7 @@ public final class R {
      */
     public static final int tipTextColor=0x7f02010e;
     /**
+     * 提示文案的文字大小
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -2230,6 +2245,7 @@ public final class R {
      */
     public static final int trackTintMode=0x7f02011e;
     /**
+     * 设置viewpager间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -10618,32 +10634,32 @@ public final class R {
      * <colgroup align="left" />
      * <tr><th>Attribute</th><th>Description</th></tr>
      * <tr><td><code>{@link #XBanner_AutoPlayTime megvii.testfacepass:AutoPlayTime}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_clipChildrenLeftRightMargin megvii.testfacepass:clipChildrenLeftRightMargin}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_clipChildrenTopBottomMargin megvii.testfacepass:clipChildrenTopBottomMargin}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_clipChildrenLeftRightMargin megvii.testfacepass:clipChildrenLeftRightMargin}</code></td><td>一屏显示多个左右间距</td></tr>
+     * <tr><td><code>{@link #XBanner_clipChildrenTopBottomMargin megvii.testfacepass:clipChildrenTopBottomMargin}</code></td><td>一屏显示多个上下间距</td></tr>
      * <tr><td><code>{@link #XBanner_indicatorDrawable megvii.testfacepass:indicatorDrawable}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_isAutoPlay megvii.testfacepass:isAutoPlay}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_isClipChildrenMode megvii.testfacepass:isClipChildrenMode}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_isClipChildrenModeLessThree megvii.testfacepass:isClipChildrenModeLessThree}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_isClipChildrenMode megvii.testfacepass:isClipChildrenMode}</code></td><td>是否开启一屏显示多个模式 默认不开启</td></tr>
+     * <tr><td><code>{@link #XBanner_isClipChildrenModeLessThree megvii.testfacepass:isClipChildrenModeLessThree}</code></td><td>少于三张是否支持一屏多显模式</td></tr>
      * <tr><td><code>{@link #XBanner_isHandLoop megvii.testfacepass:isHandLoop}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_isShowIndicatorOnlyOne megvii.testfacepass:isShowIndicatorOnlyOne}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_isShowNumberIndicator megvii.testfacepass:isShowNumberIndicator}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_isShowTips megvii.testfacepass:isShowTips}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_isShowIndicatorOnlyOne megvii.testfacepass:isShowIndicatorOnlyOne}</code></td><td>当只有一页数据时是否显示指示器，默认值为false</td></tr>
+     * <tr><td><code>{@link #XBanner_isShowNumberIndicator megvii.testfacepass:isShowNumberIndicator}</code></td><td>是否是数字指示器</td></tr>
+     * <tr><td><code>{@link #XBanner_isShowTips megvii.testfacepass:isShowTips}</code></td><td>是否展示提示文案</td></tr>
      * <tr><td><code>{@link #XBanner_isTipsMarquee megvii.testfacepass:isTipsMarquee}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_numberIndicatorBacgroud megvii.testfacepass:numberIndicatorBacgroud}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_pageChangeDuration megvii.testfacepass:pageChangeDuration}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_placeholderDrawable megvii.testfacepass:placeholderDrawable}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_pointContainerLeftRightPadding megvii.testfacepass:pointContainerLeftRightPadding}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_numberIndicatorBacgroud megvii.testfacepass:numberIndicatorBacgroud}</code></td><td>数字指示器背景</td></tr>
+     * <tr><td><code>{@link #XBanner_pageChangeDuration megvii.testfacepass:pageChangeDuration}</code></td><td>图片切换速度</td></tr>
+     * <tr><td><code>{@link #XBanner_placeholderDrawable megvii.testfacepass:placeholderDrawable}</code></td><td>图片轮播框架展占位图</td></tr>
+     * <tr><td><code>{@link #XBanner_pointContainerLeftRightPadding megvii.testfacepass:pointContainerLeftRightPadding}</code></td><td>指示点容器左右内间距</td></tr>
      * <tr><td><code>{@link #XBanner_pointContainerPosition megvii.testfacepass:pointContainerPosition}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_pointLeftRightPadding megvii.testfacepass:pointLeftRightPadding}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_pointLeftRightPadding megvii.testfacepass:pointLeftRightPadding}</code></td><td>指示点左右内间距</td></tr>
      * <tr><td><code>{@link #XBanner_pointNormal megvii.testfacepass:pointNormal}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointSelect megvii.testfacepass:pointSelect}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_pointTopBottomPadding megvii.testfacepass:pointTopBottomPadding}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_pointTopBottomPadding megvii.testfacepass:pointTopBottomPadding}</code></td><td>指示点上下内间距</td></tr>
      * <tr><td><code>{@link #XBanner_pointsContainerBackground megvii.testfacepass:pointsContainerBackground}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointsPosition megvii.testfacepass:pointsPosition}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointsVisibility megvii.testfacepass:pointsVisibility}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_tipTextColor megvii.testfacepass:tipTextColor}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_tipTextSize megvii.testfacepass:tipTextSize}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_viewpagerMargin megvii.testfacepass:viewpagerMargin}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_tipTextColor megvii.testfacepass:tipTextColor}</code></td><td>提示文案的文字颜色</td></tr>
+     * <tr><td><code>{@link #XBanner_tipTextSize megvii.testfacepass:tipTextSize}</code></td><td>提示文案的文字大小</td></tr>
+     * <tr><td><code>{@link #XBanner_viewpagerMargin megvii.testfacepass:viewpagerMargin}</code></td><td>设置viewpager间距</td></tr>
      * </table>
      * @see #XBanner_AutoPlayTime
      * @see #XBanner_clipChildrenLeftRightMargin
@@ -10696,8 +10712,9 @@ public final class R {
      */
     public static final int XBanner_AutoPlayTime=0;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#clipChildrenLeftRightMargin}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 一屏显示多个左右间距
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -10709,8 +10726,9 @@ public final class R {
      */
     public static final int XBanner_clipChildrenLeftRightMargin=1;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#clipChildrenTopBottomMargin}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 一屏显示多个上下间距
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -10744,8 +10762,9 @@ public final class R {
      */
     public static final int XBanner_isAutoPlay=4;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isClipChildrenMode}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 是否开启一屏显示多个模式 默认不开启
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -10754,8 +10773,9 @@ public final class R {
      */
     public static final int XBanner_isClipChildrenMode=5;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isClipChildrenModeLessThree}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 少于三张是否支持一屏多显模式
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -10774,8 +10794,9 @@ public final class R {
      */
     public static final int XBanner_isHandLoop=7;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isShowIndicatorOnlyOne}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 当只有一页数据时是否显示指示器，默认值为false
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -10784,8 +10805,9 @@ public final class R {
      */
     public static final int XBanner_isShowIndicatorOnlyOne=8;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isShowNumberIndicator}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 是否是数字指示器
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -10794,8 +10816,9 @@ public final class R {
      */
     public static final int XBanner_isShowNumberIndicator=9;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isShowTips}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 是否展示提示文案
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -10814,8 +10837,9 @@ public final class R {
      */
     public static final int XBanner_isTipsMarquee=11;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#numberIndicatorBacgroud}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 数字指示器背景
      *
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
@@ -10826,8 +10850,9 @@ public final class R {
      */
     public static final int XBanner_numberIndicatorBacgroud=12;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pageChangeDuration}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 图片切换速度
      *
      * <p>May be an integer value, such as "<code>100</code>".
      *
@@ -10835,8 +10860,9 @@ public final class R {
      */
     public static final int XBanner_pageChangeDuration=13;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#placeholderDrawable}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 图片轮播框架展占位图
      *
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
@@ -10847,8 +10873,9 @@ public final class R {
      */
     public static final int XBanner_placeholderDrawable=14;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pointContainerLeftRightPadding}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 指示点容器左右内间距
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -10877,8 +10904,9 @@ public final class R {
      */
     public static final int XBanner_pointContainerPosition=16;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pointLeftRightPadding}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 指示点左右内间距
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -10914,8 +10942,9 @@ public final class R {
      */
     public static final int XBanner_pointSelect=19;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pointTopBottomPadding}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 指示点上下内间距
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -10970,8 +10999,9 @@ public final class R {
      */
     public static final int XBanner_pointsVisibility=23;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#tipTextColor}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 提示文案的文字颜色
      *
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
@@ -10985,8 +11015,9 @@ public final class R {
      */
     public static final int XBanner_tipTextColor=24;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#tipTextSize}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 提示文案的文字大小
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -10998,8 +11029,9 @@ public final class R {
      */
     public static final int XBanner_tipTextSize=25;
     /**
-     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#viewpagerMargin}
-     * attribute's value can be found in the {@link #XBanner} array.
+     * <p>
+     * @attr description
+     * 设置viewpager间距
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
