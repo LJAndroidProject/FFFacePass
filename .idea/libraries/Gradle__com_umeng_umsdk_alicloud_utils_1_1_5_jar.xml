@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.umeng.umsdk:alicloud-utils:1.1.5@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/alicloud-utils/1.1.5/a9afca2de7820da004003340f184ba644be2f174/alicloud-utils-1.1.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/alicloud-utils/1.1.5/6cc157677aea6d39eb77b8b750e44ef06ba62342/alicloud-utils-1.1.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

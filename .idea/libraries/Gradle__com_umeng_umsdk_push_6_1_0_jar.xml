@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.umeng.umsdk:push:6.1.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/push/6.1.0/afd6452d2b695e8b5a3593b3e35293e0194d78e2/push-6.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/push/6.1.0/82cae9b13ed292413f1a36bcf661fe835c4e024a/push-6.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

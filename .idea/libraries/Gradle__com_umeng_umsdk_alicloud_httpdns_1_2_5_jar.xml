@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.umeng.umsdk:alicloud-httpdns:1.2.5@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/alicloud-httpdns/1.2.5/1c57319f0f9e9af83e7a2271a6cbf3089612d61c/alicloud-httpdns-1.2.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/alicloud-httpdns/1.2.5/5a4764e0c6927697738d604f40a05c1abc3e2623/alicloud-httpdns-1.2.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

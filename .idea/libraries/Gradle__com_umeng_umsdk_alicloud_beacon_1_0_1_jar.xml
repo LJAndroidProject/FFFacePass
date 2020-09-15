@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.umeng.umsdk:alicloud_beacon:1.0.1@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/alicloud_beacon/1.0.1/685d68c2dc7de48430eb80d1a470773cc9cde6b1/alicloud_beacon-1.0.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/alicloud_beacon/1.0.1/a953ae3b29a64399b68d56e008825a8c9cb04555/alicloud_beacon-1.0.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

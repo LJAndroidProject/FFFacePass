@@ -1,0 +1,13 @@
+#Tue Sep 15 17:12:53 CST 2020
+path.3=classes2.dex
+path.2=classes.dex
+path.1=classes.dex
+path.0=classes.dex
+renamed.3=classes4.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+base.3=D\:\\Documents\\WeChat Files\\wxid_s7n1bbn5zqm122\\FileStorage\\File\\2020-08\\face_pass\\20200331_V3.7.3\\Meg-A-FacePass-06-99-V3.7.3\\Demo\\TestFacePass\\testfacepass\\build\\intermediates\\transforms\\dexMerger\\debug\\1
+base.2=D\:\\Documents\\WeChat Files\\wxid_s7n1bbn5zqm122\\FileStorage\\File\\2020-08\\face_pass\\20200331_V3.7.3\\Meg-A-FacePass-06-99-V3.7.3\\Demo\\TestFacePass\\testfacepass\\build\\intermediates\\transforms\\dexMerger\\debug\\2
+base.1=D\:\\Documents\\WeChat Files\\wxid_s7n1bbn5zqm122\\FileStorage\\File\\2020-08\\face_pass\\20200331_V3.7.3\\Meg-A-FacePass-06-99-V3.7.3\\Demo\\TestFacePass\\testfacepass\\build\\intermediates\\transforms\\dexMerger\\debug\\1
+base.0=D\:\\Documents\\WeChat Files\\wxid_s7n1bbn5zqm122\\FileStorage\\File\\2020-08\\face_pass\\20200331_V3.7.3\\Meg-A-FacePass-06-99-V3.7.3\\Demo\\TestFacePass\\testfacepass\\build\\intermediates\\transforms\\dexMerger\\debug\\0

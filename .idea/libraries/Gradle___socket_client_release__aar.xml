@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: :socket-client-release:@aar">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a3bb31c949f2e15f58c482afd3c31772/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a3bb31c949f2e15f58c482afd3c31772/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a3bb31c949f2e15f58c482afd3c31772/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a3bb31c949f2e15f58c482afd3c31772/jars/libs/log4j-over-slf4j-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a3bb31c949f2e15f58c482afd3c31772/jars/libs/netty-all-4.1.41.Final.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a3bb31c949f2e15f58c482afd3c31772/jars/libs/slf4j-api-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a3bb31c949f2e15f58c482afd3c31772/jars/libs/slf4j-nop-1.7.28.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

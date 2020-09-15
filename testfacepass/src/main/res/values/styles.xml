@@ -1,0 +1,29 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:typeface">serif</item>
+
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+
+    <!--控制台按钮样式-->
+    <style name="controlActivityButtonStyle" >
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_height">180dp</item>
+        <item name="android:layout_width">156dp</item>
+    </style>
+
+
+    <!--圆形涟漪的点击效果-->
+    <style name="RippleWhite">
+        <item name="android:colorControlHighlight">#F6F6F6</item>
+        <item name="android:radius">25dp</item>
+    </style>
+
+</resources>
