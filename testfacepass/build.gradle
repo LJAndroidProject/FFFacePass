@@ -106,4 +106,9 @@ dependencies {
     compile 'com.umeng.umsdk:agoo_networksdk:3.5.5'
     compile 'com.umeng.umsdk:agoo_tlog:3.0.0.17'
     compile 'com.umeng.umsdk:agoo_tnet4android:3.1.14.9'
+
+
+
+    compile 'com.android.support:recyclerview-v7:25.4.0'
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
 }

@@ -14,9 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-
-    <!-- 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 start -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" /> <!-- 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 start -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -25,9 +23,7 @@
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_INSTALL" />
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!-- 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 end -->
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 end -->
     <permission
         android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
         android:protectionLevel="signature" />
@@ -46,41 +42,32 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/AppTheme" >
-
-        <!-- 垃圾箱控制台 -->
-        <activity
-            android:name="megvii.testfacepass.ControlActivity"
-            android:launchMode="singleTask" />
-
-        <!-- 广告界面 -->
-        <activity
-            android:name="megvii.testfacepass.AdvertisingActivity"
-            android:exported="true"
-            android:launchMode="singleTask" />
-
-        <!-- 启动页 -->
-        <activity
-            android:name="megvii.testfacepass.SplashActivity"
-            android:label="facepass" />
-
-        <!-- 扫脸界面 -->
-        <activity
-            android:name="megvii.testfacepass.MainActivity"
-            android:launchMode="singleTask" >
+        <activity android:name="megvii.testfacepass.ReplenishmentDetailsActivity" />
+        <!-- 补货界面 -->
+        <activity android:name="megvii.testfacepass.ReplenishmentActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- 设置界面 -->
+        </activity> <!-- 垃圾箱控制台 -->
+        <activity
+            android:name="megvii.testfacepass.ControlActivity"
+            android:launchMode="singleTask" /> <!-- 广告界面 -->
+        <activity
+            android:name="megvii.testfacepass.AdvertisingActivity"
+            android:exported="true"
+            android:launchMode="singleTask" /> <!-- 启动页 -->
+        <activity
+            android:name="megvii.testfacepass.SplashActivity"
+            android:label="facepass" /> <!-- 扫脸界面 -->
+        <activity
+            android:name="megvii.testfacepass.MainActivity"
+            android:launchMode="singleTask" /> <!-- 设置界面 -->
         <activity
             android:name="megvii.testfacepass.SettingActivity"
             android:launchMode="singleTask"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
-
-        <!-- 端口调试界面 -->
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" /> <!-- 端口调试界面 -->
         <activity
             android:name="megvii.testfacepass.serialport.SerialPortActivity"
             android:exported="true"
@@ -94,9 +81,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
-
-        <!-- 以下为基本配置信息，需要自行添加至您的AndroidManifest文件中 start -->
+        </provider> <!-- 以下为基本配置信息，需要自行添加至您的AndroidManifest文件中 start -->
         <service
             android:name="com.taobao.accs.ChannelService"
             android:exported="true"
@@ -234,7 +219,10 @@
             android:exported="false" >
             <grant-uri-permission android:pathPattern=".*" />
         </provider>
-        <!-- 以下为基本配置信息，需要自行添加至您的AndroidManifest文件中 end -->
+
+        <meta-data
+            android:name="android.support.VERSION"
+            android:value="25.4.0" />
     </application>
 
 </manifest>

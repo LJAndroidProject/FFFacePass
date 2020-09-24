@@ -1566,7 +1566,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
                             //  上传人脸图片,特征值，以及用户id
-                            //  uploadFace(file,facePassExtractFeatureResult.featureData,app.getUserId());
+                            uploadFace(file,facePassExtractFeatureResult.featureData,app.getUserId());
                         }else{
                             mFacePassHandler.deleteFace(faceToken.getBytes());
                             Log.i(TAG,"绑定失败");
@@ -1728,7 +1728,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  获取安卓设备唯一标识符
         String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         //  添加时间戳
-        loginToken = System.currentTimeMillis() + androidID;
+        loginToken =  "dustbinScanLogin," + System.currentTimeMillis() + "," +androidID;
         //  生成token 二维码
 
 
@@ -1811,7 +1811,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("userId", String.valueOf(userId))
                 .addFormDataPart("feature", Base64.encodeToString(feature,Base64.DEFAULT))
-                .addFormDataPart("faceImage", file.getName(), requestBody)
+                .addFormDataPart("faceImageFile", file.getName(), requestBody)
                 .build();
 
         okhttp3.Request request = new okhttp3.Request.Builder()
@@ -1830,6 +1830,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
             @Override
             public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                Log.i(PUSH,response.body().string());
                 file.delete();
             }
         });

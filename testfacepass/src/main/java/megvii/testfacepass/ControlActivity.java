@@ -24,8 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 import megvii.testfacepass.independent.ServerAddress;
+import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
+import megvii.testfacepass.independent.bean.CommodityBean;
+import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
 import megvii.testfacepass.independent.bean.DustbinBean;
+import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
@@ -43,13 +47,24 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     //  关门失败次数，5次失败上报错误到服务器
     private int closeDoorFailNumber = 0;
 
-    private TextView control_welcome_textView;
+    private TextView control_welcome_textView,replenishment_tv;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
 
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
+        replenishment_tv = (TextView)findViewById(R.id.replenishment_tv);
+        replenishment_tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         intent = getIntent();
         userId = intent.getLongExtra("userId",0);

@@ -6,12 +6,12 @@ package megvii.testfacepass.independent;
  * */
 public class ServerAddress {
     //  ip 地址
-    public final static String IP = "http://47.106.33.158:8080";
+    public final static String IP = "https://ffadmin.fenfeneco.com/";
     //  微信扫码登陆
     public final static String LOGIN = IP + "/vxLogin?token=";
 
     //  人脸图片上传到云服务器
-    public final static String FACE_AND_USER_ID_UPLOAD = IP + "";
+    public final static String FACE_AND_USER_ID_UPLOAD = IP + "api/Other/userUpload";
 
     //  信息上报
     public final static String MESSAGE_UPLOAD = IP + "";

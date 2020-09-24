@@ -139,6 +139,7 @@ attr isShowTips
 attr isTipsMarquee
 attr itemPadding
 attr layout
+attr layoutManager
 attr layout_constraintBaseline_creator
 attr layout_constraintBaseline_toBaselineOf
 attr layout_constraintBottom_creator
@@ -233,6 +234,7 @@ attr radioButtonStyle
 attr ratingBarStyle
 attr ratingBarStyleIndicator
 attr ratingBarStyleSmall
+attr reverseLayout
 attr searchHintIcon
 attr searchIcon
 attr searchViewStyle
@@ -244,11 +246,13 @@ attr showDividers
 attr showText
 attr showTitle
 attr singleChoiceItemLayout
+attr spanCount
 attr spinBars
 attr spinnerDropDownItemStyle
 attr spinnerStyle
 attr splitTrack
 attr srcCompat
+attr stackFromEnd
 attr state_above_anchor
 attr subMenuArrow
 attr submitBackground
@@ -472,8 +476,13 @@ dimen abc_text_size_subhead_material
 dimen abc_text_size_subtitle_material_toolbar
 dimen abc_text_size_title_material
 dimen abc_text_size_title_material_toolbar
+dimen def_height
 dimen disabled_alpha_material_dark
 dimen disabled_alpha_material_light
+dimen dp_10
+dimen dp_4
+dimen dp_40
+dimen dp_72
 dimen highlight_alpha_material_colored
 dimen highlight_alpha_material_dark
 dimen highlight_alpha_material_light
@@ -481,6 +490,9 @@ dimen hint_alpha_material_dark
 dimen hint_alpha_material_light
 dimen hint_pressed_alpha_material_dark
 dimen hint_pressed_alpha_material_light
+dimen item_touch_helper_max_drag_scroll_per_frame
+dimen item_touch_helper_swipe_escape_max_velocity
+dimen item_touch_helper_swipe_escape_velocity
 dimen notification_action_icon_size
 dimen notification_action_text_size
 dimen notification_big_circle_margin
@@ -496,6 +508,9 @@ dimen notification_small_icon_size_as_large
 dimen notification_subtext_size
 dimen notification_top_pad
 dimen notification_top_pad_large_text
+dimen sp_12
+dimen sp_14
+dimen sp_16
 drawable abc_ab_share_pack_mtrl_alpha
 drawable abc_action_bar_item_background_material
 drawable abc_btn_borderless_material
@@ -614,6 +629,8 @@ drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
 drawable path2
 drawable right
+drawable sample_footer_loading
+drawable sample_footer_loading_progress
 drawable shape_bg_rect
 drawable shape_btn_bg_blue
 drawable shape_point_normal
@@ -622,6 +639,10 @@ drawable success
 drawable text_style
 drawable toast_style
 id BOTTOM
+id BaseQuickAdapter_databinding_support
+id BaseQuickAdapter_dragging_support
+id BaseQuickAdapter_swiping_support
+id BaseQuickAdapter_viewholder_support
 id CENTER
 id LEFT
 id NO
@@ -721,6 +742,10 @@ id ifRoom
 id image
 id imview
 id info
+id item_replenishment_details_layout_addTime
+id item_replenishment_details_layout_name
+id item_replenishment_details_layout_number
+id item_touch_helper_previous_elevation
 id iv_close
 id iv_delete_face
 id iv_delete_group
@@ -730,6 +755,11 @@ id line3
 id listMode
 id list_item
 id ll
+id load_more_load_end_view
+id load_more_load_fail_view
+id load_more_loading_view
+id loading_progress
+id loading_text
 id lv_group_info
 id lv_group_name
 id media_actions
@@ -749,6 +779,12 @@ id preview
 id progress_circular
 id progress_horizontal
 id radio
+id replenishment_details_recyclerView
+id replenishment_item_name_tv
+id replenishment_item_number_tv
+id replenishment_item_tv
+id replenishment_recyclerview
+id replenishment_tv
 id right_icon
 id right_side
 id screen
@@ -803,6 +839,7 @@ id tv_face_unbind
 id tv_group_name
 id tv_hello
 id tv_meg2
+id tv_prompt
 id tv_show_sync_data
 id up
 id useLogo
@@ -846,8 +883,12 @@ layout abc_select_dialog_material
 layout activity_advertising
 layout activity_control
 layout activity_main
+layout activity_replenishment
+layout activity_replenishment_details
 layout activity_splash
 layout admin_login_dialog
+layout item_replenishment
+layout item_replenishment_details_layout
 layout layout_dialog_face_operation
 layout layout_dialog_sync_groups
 layout layout_item_face_token
@@ -868,6 +909,7 @@ layout notification_template_media_custom
 layout notification_template_part_chronometer
 layout notification_template_part_time
 layout qr_code_layout
+layout quick_view_load_more
 layout select_dialog_item_material
 layout select_dialog_multichoice_material
 layout select_dialog_singlechoice_material
@@ -918,6 +960,9 @@ string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
 string app_name
+string load_end
+string load_failed
+string loading
 string search_menu_title
 string status_bar_notification_info_overflow
 style AlertDialog_AppCompat
@@ -1302,6 +1347,7 @@ styleable MenuView android_windowAnimationStyle android_itemTextAppearance andro
 styleable PopupWindow android_popupBackground android_popupAnimationStyle overlapAnchor
 styleable PopupWindowBackgroundState state_above_anchor
 styleable RecycleListView paddingBottomNoButtons paddingTopNoTitle
+styleable RecyclerView android_orientation android_descendantFocusability layoutManager reverseLayout spanCount stackFromEnd
 styleable SearchView android_focusable android_maxWidth android_inputType android_imeOptions closeIcon commitIcon defaultQueryHint goIcon iconifiedByDefault layout queryBackground queryHint searchHintIcon searchIcon submitBackground suggestionRowLayout voiceIcon
 styleable Spinner android_entries android_popupBackground android_prompt android_dropDownWidth popupTheme
 styleable SwitchCompat android_textOn android_textOff android_thumb showText splitTrack switchMinWidth switchPadding switchTextAppearance thumbTextPadding thumbTint thumbTintMode track trackTint trackTintMode

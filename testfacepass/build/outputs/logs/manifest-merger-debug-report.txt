@@ -1,23 +1,23 @@
 -- Merging decision tree log ---
 action#megvii.testfacepass.intent.action.COMMAND
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:165:17-81
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:156:17-81
 	android:name
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:165:25-78
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:156:25-78
 provider#com.umeng.message.provider.MessageProvider
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:212:9-217:20
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:203:9-208:20
 	android:authorities
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:214:13-65
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:205:13-65
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:215:13-37
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:206:13-37
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:213:13-70
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:204:13-70
 manifest
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
 MERGED from [:serialportlibrary] C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\serialportlibrary\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-14:12
 MERGED from [:FacePassAndroidSDK-month-release:] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\e7c7ff3e525cf6e986ee914488e6a55c\AndroidManifest.xml:2:1-20:12
 MERGED from [com.android.volley:volley:1.0.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bf7cf678650fbb321ef354dbb310440d\AndroidManifest.xml:2:1-11:12
@@ -28,28 +28,30 @@ MERGED from [com.github.xiaohaibin:XBanner:1.6.1] C:\Users\Administrator\.gradle
 MERGED from [:socket-client-release:] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\a5803b840f094ff3ae0fc52a6b8985d9\AndroidManifest.xml:2:1-11:12
 MERGED from [com.umeng.umsdk:asms:1.1.3] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6feb35196d372fbc2f7c7894129dc78d\AndroidManifest.xml:2:1-11:12
 MERGED from [com.umeng.umsdk:crash:0.0.4] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\b5e7e4bf023f8737a575ff8b5d728e91\AndroidManifest.xml:2:1-11:12
+MERGED from [com.android.support:recyclerview-v7:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\95343d57fc79f9b97bf64e683f2f9f3c\AndroidManifest.xml:17:1-28:12
+MERGED from [com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\ab1eba9c0a12d4baff9879adf4743ee0\AndroidManifest.xml:2:1-11:12
 MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\8acb85bc106bb32d947c947a9d6551a4\AndroidManifest.xml:17:1-28:12
 MERGED from [com.android.support:support-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1cbf933067da8cfb2ceeb1a9567d98d3\AndroidManifest.xml:17:1-28:12
 MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\f60a7b12b2fec595f5adac5b9e812980\AndroidManifest.xml:17:1-31:12
 MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6d3245800a57a3ccd35ab722204ae179\AndroidManifest.xml:17:1-31:12
+MERGED from [com.android.support:support-core-ui:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\49275b66dded629ca500a8ea7c3b6439\AndroidManifest.xml:17:1-31:12
 MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bcf152e9e1bbc7aefce52e16e712e4e6\AndroidManifest.xml:17:1-31:12
 MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1a31b5b6350ca4940514aabadf32a307\AndroidManifest.xml:17:1-31:12
-MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\5c2d3cbd7cb957132dcb0e2851956d54\AndroidManifest.xml:17:1-31:12
-MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\cefc9b145d5f5ec37a5659c087b6c740\AndroidManifest.xml:17:1-31:12
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
-INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
+MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\453f32f5e73b9279a23e566b20a1b18f\AndroidManifest.xml:17:1-31:12
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
+INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
 	package
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:3:5-34
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 	android:versionCode
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-221:12
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:1-211:12
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:2:11-69
@@ -82,49 +84,49 @@ ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass
 	android:name
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:10:22-81
 uses-permission#android.permission.ACCESS_WIFI_STATE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:13:5-76
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:11:5-76
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:13:22-73
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:11:22-73
 uses-permission#android.permission.WAKE_LOCK
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:14:5-68
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:12:5-68
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:14:22-65
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:12:22-65
 uses-permission#android.permission.READ_PHONE_STATE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:15:5-75
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:13:5-75
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:15:22-72
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:13:22-72
 uses-permission#android.permission.BROADCAST_PACKAGE_ADDED
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:16:5-82
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:14:5-82
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:16:22-79
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:14:22-79
 uses-permission#android.permission.BROADCAST_PACKAGE_CHANGED
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:17:5-84
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:15:5-84
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:17:22-81
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:15:22-81
 uses-permission#android.permission.BROADCAST_PACKAGE_INSTALL
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:18:5-84
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:16:5-84
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:18:22-81
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:16:22-81
 uses-permission#android.permission.BROADCAST_PACKAGE_REPLACED
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:19:5-85
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:17:5-85
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:19:22-82
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:17:22-82
 uses-permission#android.permission.GET_TASKS
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:20:5-68
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:18:5-68
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:20:22-65
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:18:22-65
 uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:21:5-81
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:19:5-81
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:21:22-78
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:19:22-78
 permission#android.permission.INTERACT_ACROSS_USERS_FULL
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:26:5-28:47
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:20:5-22:47
 	android:protectionLevel
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:28:9-44
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:22:9-44
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:27:9-69
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:21:9-69
 application
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:30:5-219:19
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:24:5-209:19
 MERGED from [:FacePassAndroidSDK-month-release:] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\e7c7ff3e525cf6e986ee914488e6a55c\AndroidManifest.xml:11:5-18:19
 MERGED from [:FacePassAndroidSDK-month-release:] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\e7c7ff3e525cf6e986ee914488e6a55c\AndroidManifest.xml:11:5-18:19
 MERGED from [com.android.volley:volley:1.0.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bf7cf678650fbb321ef354dbb310440d\AndroidManifest.xml:9:5-20
@@ -135,6 +137,8 @@ MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Ad
 MERGED from [com.android.support.constraint:constraint-layout:1.0.2] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\04eafcbe01f2752bd0007c28d6e9b88a\AndroidManifest.xml:9:5-20
 MERGED from [com.github.xiaohaibin:XBanner:1.6.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\a87b6a9d874218a4dd5cbd655aafbd63\AndroidManifest.xml:9:5-12:19
 MERGED from [com.github.xiaohaibin:XBanner:1.6.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\a87b6a9d874218a4dd5cbd655aafbd63\AndroidManifest.xml:9:5-12:19
+MERGED from [com.android.support:recyclerview-v7:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\95343d57fc79f9b97bf64e683f2f9f3c\AndroidManifest.xml:22:5-26:19
+MERGED from [com.android.support:recyclerview-v7:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\95343d57fc79f9b97bf64e683f2f9f3c\AndroidManifest.xml:22:5-26:19
 MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\8acb85bc106bb32d947c947a9d6551a4\AndroidManifest.xml:26:5-20
 MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\8acb85bc106bb32d947c947a9d6551a4\AndroidManifest.xml:26:5-20
 MERGED from [com.android.support:support-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1cbf933067da8cfb2ceeb1a9567d98d3\AndroidManifest.xml:26:5-20
@@ -143,80 +147,88 @@ MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Administrator\.grad
 MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\f60a7b12b2fec595f5adac5b9e812980\AndroidManifest.xml:29:5-20
 MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6d3245800a57a3ccd35ab722204ae179\AndroidManifest.xml:29:5-20
 MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6d3245800a57a3ccd35ab722204ae179\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\49275b66dded629ca500a8ea7c3b6439\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-core-ui:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\49275b66dded629ca500a8ea7c3b6439\AndroidManifest.xml:25:5-29:19
 MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bcf152e9e1bbc7aefce52e16e712e4e6\AndroidManifest.xml:29:5-20
 MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bcf152e9e1bbc7aefce52e16e712e4e6\AndroidManifest.xml:29:5-20
 MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1a31b5b6350ca4940514aabadf32a307\AndroidManifest.xml:29:5-20
 MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1a31b5b6350ca4940514aabadf32a307\AndroidManifest.xml:29:5-20
-MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\5c2d3cbd7cb957132dcb0e2851956d54\AndroidManifest.xml:29:5-20
-MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\5c2d3cbd7cb957132dcb0e2851956d54\AndroidManifest.xml:29:5-20
-MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\cefc9b145d5f5ec37a5659c087b6c740\AndroidManifest.xml:29:5-20
-MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\cefc9b145d5f5ec37a5659c087b6c740\AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\453f32f5e73b9279a23e566b20a1b18f\AndroidManifest.xml:25:5-29:19
+MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\453f32f5e73b9279a23e566b20a1b18f\AndroidManifest.xml:25:5-29:19
 	android:supportsRtl
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:36:9-35
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:30:9-35
 	android:label
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:34:9-41
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:28:9-41
 	android:roundIcon
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:35:9-54
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:29:9-54
 	android:icon
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:33:9-43
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:27:9-43
 	android:allowBackup
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:32:9-35
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:26:9-35
 	android:theme
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:37:9-40
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:31:9-40
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:31:9-28
-activity#megvii.testfacepass.ControlActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:40:9-85
-	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:40:51-82
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:25:9-28
+activity#megvii.testfacepass.ReplenishmentDetailsActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:32:9-75
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:40:19-50
-activity#megvii.testfacepass.AdvertisingActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:43:9-113
-	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:43:79-110
-	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:43:55-78
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:32:19-63
+activity#megvii.testfacepass.ReplenishmentActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:34:9-40:20
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:43:19-54
-activity#megvii.testfacepass.SplashActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:46:9-77
-	android:label
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:46:50-74
-	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:46:19-49
-activity#megvii.testfacepass.MainActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:49:9-55:20
-	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:49:48-79
-	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:49:19-47
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:34:19-56
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:50:13-54:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:35:13-39:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:51:17-69
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:36:17-69
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:51:25-66
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:36:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:53:17-77
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:38:17-77
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:53:27-74
-activity#megvii.testfacepass.SettingActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:58:9-144
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:38:27-74
+activity#megvii.testfacepass.ControlActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:41:9-43:47
 	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:58:51-82
-	android:theme
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:58:83-141
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:43:13-44
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:58:19-50
-activity#megvii.testfacepass.serialport.SerialPortActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:61:9-123
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:42:13-44
+activity#megvii.testfacepass.AdvertisingActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:44:9-47:47
 	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:61:65-96
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:47:13-44
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:61:97-120
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:46:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:61:19-64
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:45:13-48
+activity#megvii.testfacepass.SplashActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:48:9-50:40
+	android:label
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:50:13-37
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:49:13-43
+activity#megvii.testfacepass.MainActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:51:9-53:56
+	android:launchMode
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:53:13-44
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:52:13-41
+activity#megvii.testfacepass.SettingActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:54:9-57:74
+	android:launchMode
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:56:13-44
+	android:theme
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:57:13-71
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:55:13-44
+activity#megvii.testfacepass.serialport.SerialPortActivity
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:58:9-61:47
+	android:launchMode
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:61:13-44
+	android:exported
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:60:13-36
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:59:13-58
 provider#megvii.testfacepass.MyFileProvider
 ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:63:9-71:20
 	android:grantUriPermissions
@@ -234,207 +246,207 @@ ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass
 	android:name
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:69:17-67
 service#com.taobao.accs.ChannelService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:76:9-86:19
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:72:9-82:19
 	android:process
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:79:13-39
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:75:13-39
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:78:13-36
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:74:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:77:13-58
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:73:13-58
 intent-filter#action:name:com.taobao.accs.intent.action.SERVICE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:80:13-82:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:76:13-78:29
 action#com.taobao.accs.intent.action.SERVICE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:81:17-80
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:77:17-80
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:81:25-77
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:77:25-77
 intent-filter#action:name:com.taobao.accs.intent.action.ELECTION
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:83:13-85:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:79:13-81:29
 action#com.taobao.accs.intent.action.ELECTION
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:84:17-81
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:80:17-81
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:84:25-78
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:80:25-78
 service#com.taobao.accs.data.MsgDistributeService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:88:9-94:19
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:83:9-89:19
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:90:13-36
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:85:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:89:13-69
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:84:13-69
 intent-filter#action:name:com.taobao.accs.intent.action.RECEIVE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:91:13-93:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:86:13-88:29
 action#com.taobao.accs.intent.action.RECEIVE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:92:17-80
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:87:17-80
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:92:25-77
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:87:25-77
 receiver#com.taobao.accs.EventReceiver
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:96:9-112:20
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:91:9-108:20
 	android:process
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:98:13-39
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:93:13-39
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:97:13-57
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:92:13-57
 intent-filter#action:name:android.intent.action.BOOT_COMPLETED
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:99:13-101:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:94:13-96:29
 action#android.intent.action.BOOT_COMPLETED
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:100:17-79
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:95:17-79
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:100:25-76
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:95:25-76
 intent-filter#action:name:android.net.conn.CONNECTIVITY_CHANGE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:102:13-104:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:97:13-99:29
 action#android.net.conn.CONNECTIVITY_CHANGE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:103:17-79
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:98:17-79
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:103:25-76
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:98:25-76
 intent-filter#action:name:android.intent.action.PACKAGE_REMOVED+data:scheme:package
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:105:13-108:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:100:13-104:29
 action#android.intent.action.PACKAGE_REMOVED
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:106:17-80
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:101:17-80
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:106:25-77
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:101:25-77
 data
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:107:17-50
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:103:17-50
 	android:scheme
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:107:23-47
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:103:23-47
 intent-filter#action:name:android.intent.action.USER_PRESENT
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:109:13-111:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:105:13-107:29
 action#android.intent.action.USER_PRESENT
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:110:17-77
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:106:17-77
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:110:25-74
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:106:25-74
 receiver#com.taobao.accs.ServiceReceiver
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:114:9-123:20
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:109:9-118:20
 	android:process
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:116:13-39
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:111:13-39
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:115:13-59
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:110:13-59
 intent-filter#action:name:com.taobao.accs.intent.action.COMMAND
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:117:13-119:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:112:13-114:29
 action#com.taobao.accs.intent.action.COMMAND
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:118:17-80
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:113:17-80
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:118:25-77
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:113:25-77
 intent-filter#action:name:com.taobao.accs.intent.action.START_FROM_AGOO
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:120:13-122:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:115:13-117:29
 action#com.taobao.accs.intent.action.START_FROM_AGOO
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:121:17-88
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:116:17-88
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:121:25-85
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:116:25-85
 service#com.taobao.accs.internal.AccsJobService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:125:9-128:41
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:120:9-123:42
 	android:process
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:128:13-39
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:123:13-39
 	android:permission
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:127:13-69
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:122:13-69
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:126:13-67
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:121:13-67
 service#com.taobao.accs.ChannelService$KernelService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:130:9-132:42
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:124:9-126:42
 	android:process
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:132:13-39
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:126:13-39
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:131:13-72
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:125:13-72
 service#org.android.agoo.accs.AgooService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:134:9-140:19
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:127:9-133:19
+	android:exported
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:129:13-36
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:128:13-61
+service#com.umeng.message.UmengIntentService
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:134:9-141:19
+	android:process
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:137:13-39
 	android:exported
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:136:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:135:13-61
-service#com.umeng.message.UmengIntentService
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:135:13-64
+intent-filter#action:name:org.agoo.android.intent.action.RECEIVE
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:138:13-140:29
+action#org.agoo.android.intent.action.RECEIVE
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:139:17-81
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:139:25-78
+service#com.umeng.message.XiaomiIntentService
 ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:142:9-149:19
 	android:process
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:145:13-39
 	android:exported
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:144:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:143:13-64
-intent-filter#action:name:org.agoo.android.intent.action.RECEIVE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:146:13-148:29
-action#org.agoo.android.intent.action.RECEIVE
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:147:17-81
-	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:147:25-78
-service#com.umeng.message.XiaomiIntentService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:151:9-158:19
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:143:13-65
+receiver#com.taobao.agoo.AgooCommondReceiver
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:151:9-163:20
 	android:process
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:154:13-39
 	android:exported
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:153:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:152:13-65
-receiver#com.taobao.agoo.AgooCommondReceiver
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:160:9-171:20
-	android:process
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:163:13-39
-	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:162:13-36
-	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:161:13-63
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:152:13-63
 intent-filter#action:name:megvii.testfacepass.intent.action.COMMAND
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:164:13-166:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:155:13-157:29
 service#com.umeng.message.UmengMessageIntentReceiverService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:173:9-180:19
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:165:9-172:19
 	android:process
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:176:13-39
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:168:13-39
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:175:13-36
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:167:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:174:13-79
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:166:13-79
 intent-filter#action:name:org.android.agoo.client.MessageReceiverService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:177:13-179:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:169:13-171:29
 action#org.android.agoo.client.MessageReceiverService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:178:17-89
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:170:17-89
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:178:25-86
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:170:25-86
 receiver#com.umeng.message.NotificationProxyBroadcastReceiver
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:182:9-184:40
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:174:9-176:40
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:184:13-37
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:176:13-37
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:183:13-80
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:175:13-80
 service#com.umeng.message.UmengMessageCallbackHandlerService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:186:9-205:19
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:178:9-197:19
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:189:13-37
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:180:13-37
 	android:permission
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:188:13-69
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:181:13-69
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:187:13-80
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:179:13-80
 intent-filter#action:name:com.umeng.messge.registercallback.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:190:13-192:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:182:13-184:29
 action#com.umeng.messge.registercallback.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:191:17-83
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:183:17-83
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:191:25-80
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:183:25-80
 intent-filter#action:name:com.umeng.message.enablecallback.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:193:13-195:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:185:13-187:29
 action#com.umeng.message.enablecallback.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:194:17-82
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:186:17-82
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:194:25-79
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:186:25-79
 intent-filter#action:name:com.umeng.message.disablecallback.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:196:13-198:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:188:13-190:29
 action#com.umeng.message.disablecallback.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:197:17-83
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:189:17-83
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:197:25-80
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:189:25-80
 intent-filter#action:name:com.umeng.message.message.handler.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:199:13-201:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:191:13-193:29
 action#com.umeng.message.message.handler.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:200:17-83
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:192:17-83
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:200:25-80
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:192:25-80
 intent-filter#action:name:com.umeng.message.message.sendmessage.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:202:13-204:29
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:194:13-196:29
 action#com.umeng.message.message.sendmessage.action
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:203:17-87
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:195:17-87
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:203:25-84
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:195:25-84
 service#com.umeng.message.UmengDownloadResourceService
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:207:9-210:40
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:198:9-201:72
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:210:13-37
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:200:13-37
 	android:permission
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:209:13-69
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:201:13-69
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:208:13-74
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:199:13-74
 uses-sdk
 INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
@@ -459,6 +471,10 @@ MERGED from [com.umeng.umsdk:asms:1.1.3] C:\Users\Administrator\.gradle\caches\t
 MERGED from [com.umeng.umsdk:asms:1.1.3] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6feb35196d372fbc2f7c7894129dc78d\AndroidManifest.xml:7:5-9:41
 MERGED from [com.umeng.umsdk:crash:0.0.4] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\b5e7e4bf023f8737a575ff8b5d728e91\AndroidManifest.xml:7:5-9:41
 MERGED from [com.umeng.umsdk:crash:0.0.4] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\b5e7e4bf023f8737a575ff8b5d728e91\AndroidManifest.xml:7:5-9:41
+MERGED from [com.android.support:recyclerview-v7:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\95343d57fc79f9b97bf64e683f2f9f3c\AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:recyclerview-v7:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\95343d57fc79f9b97bf64e683f2f9f3c\AndroidManifest.xml:20:5-43
+MERGED from [com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\ab1eba9c0a12d4baff9879adf4743ee0\AndroidManifest.xml:7:5-9:41
+MERGED from [com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\ab1eba9c0a12d4baff9879adf4743ee0\AndroidManifest.xml:7:5-9:41
 MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\8acb85bc106bb32d947c947a9d6551a4\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\8acb85bc106bb32d947c947a9d6551a4\AndroidManifest.xml:20:5-44
 MERGED from [com.android.support:support-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1cbf933067da8cfb2ceeb1a9567d98d3\AndroidManifest.xml:20:5-43
@@ -467,14 +483,14 @@ MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Administrator\.grad
 MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\f60a7b12b2fec595f5adac5b9e812980\AndroidManifest.xml:21:5-23:54
 MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6d3245800a57a3ccd35ab722204ae179\AndroidManifest.xml:21:5-23:60
 MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6d3245800a57a3ccd35ab722204ae179\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-core-ui:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\49275b66dded629ca500a8ea7c3b6439\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-ui:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\49275b66dded629ca500a8ea7c3b6439\AndroidManifest.xml:21:5-23:58
 MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bcf152e9e1bbc7aefce52e16e712e4e6\AndroidManifest.xml:21:5-23:63
 MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bcf152e9e1bbc7aefce52e16e712e4e6\AndroidManifest.xml:21:5-23:63
 MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1a31b5b6350ca4940514aabadf32a307\AndroidManifest.xml:21:5-23:61
 MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1a31b5b6350ca4940514aabadf32a307\AndroidManifest.xml:21:5-23:61
-MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\5c2d3cbd7cb957132dcb0e2851956d54\AndroidManifest.xml:21:5-23:58
-MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\5c2d3cbd7cb957132dcb0e2851956d54\AndroidManifest.xml:21:5-23:58
-MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\cefc9b145d5f5ec37a5659c087b6c740\AndroidManifest.xml:21:5-23:58
-MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\cefc9b145d5f5ec37a5659c087b6c740\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\453f32f5e73b9279a23e566b20a1b18f\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\453f32f5e73b9279a23e566b20a1b18f\AndroidManifest.xml:21:5-23:58
 INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 	tools:overrideLibrary
@@ -488,9 +504,9 @@ INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FaceP
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 		INJECTED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml
 grant-uri-permission
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:216:13-62
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:207:13-62
 	android:pathPattern
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:216:35-59
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:207:35-59
 meta-data#android.support.VERSION
 ADDED from [com.android.support:appcompat-v7:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\7426a0e187423a366f6023902c603be5\AndroidManifest.xml:25:5-27:34
 MERGED from [com.android.support:animated-vector-drawable:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\8acb85bc106bb32d947c947a9d6551a4\AndroidManifest.xml:22:5-24:34
@@ -501,14 +517,14 @@ MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Administrator\.grad
 MERGED from [com.android.support:support-v4:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\f60a7b12b2fec595f5adac5b9e812980\AndroidManifest.xml:25:5-27:34
 MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6d3245800a57a3ccd35ab722204ae179\AndroidManifest.xml:25:5-27:34
 MERGED from [com.android.support:support-fragment:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\6d3245800a57a3ccd35ab722204ae179\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-core-ui:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\49275b66dded629ca500a8ea7c3b6439\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-core-ui:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\49275b66dded629ca500a8ea7c3b6439\AndroidManifest.xml:26:9-28:38
 MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bcf152e9e1bbc7aefce52e16e712e4e6\AndroidManifest.xml:25:5-27:34
 MERGED from [com.android.support:support-media-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\bcf152e9e1bbc7aefce52e16e712e4e6\AndroidManifest.xml:25:5-27:34
 MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1a31b5b6350ca4940514aabadf32a307\AndroidManifest.xml:25:5-27:34
 MERGED from [com.android.support:support-core-utils:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\1a31b5b6350ca4940514aabadf32a307\AndroidManifest.xml:25:5-27:34
-MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\5c2d3cbd7cb957132dcb0e2851956d54\AndroidManifest.xml:25:5-27:34
-MERGED from [com.android.support:support-core-ui:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\5c2d3cbd7cb957132dcb0e2851956d54\AndroidManifest.xml:25:5-27:34
-MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\cefc9b145d5f5ec37a5659c087b6c740\AndroidManifest.xml:25:5-27:34
-MERGED from [com.android.support:support-compat:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\cefc9b145d5f5ec37a5659c087b6c740\AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\453f32f5e73b9279a23e566b20a1b18f\AndroidManifest.xml:26:9-28:38
+MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\453f32f5e73b9279a23e566b20a1b18f\AndroidManifest.xml:26:9-28:38
 	android:value
 		ADDED from [com.android.support:appcompat-v7:25.3.1] C:\Users\Administrator\.gradle\caches\transforms-2\files-2.1\7426a0e187423a366f6023902c603be5\AndroidManifest.xml:27:9-31
 	android:name

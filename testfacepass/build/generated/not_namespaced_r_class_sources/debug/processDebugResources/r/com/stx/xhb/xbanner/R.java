@@ -24,42 +24,42 @@ public final class R {
         public static final int isShowNumberIndicator = 0x7f02007d;
         public static final int isShowTips = 0x7f02007e;
         public static final int isTipsMarquee = 0x7f02007f;
-        public static final int numberIndicatorBacgroud = 0x7f0200c0;
-        public static final int pageChangeDuration = 0x7f0200c6;
-        public static final int placeholderDrawable = 0x7f0200ca;
-        public static final int pointContainerLeftRightPadding = 0x7f0200cb;
-        public static final int pointContainerPosition = 0x7f0200cc;
-        public static final int pointLeftRightPadding = 0x7f0200cd;
-        public static final int pointNormal = 0x7f0200ce;
-        public static final int pointSelect = 0x7f0200cf;
-        public static final int pointTopBottomPadding = 0x7f0200d0;
-        public static final int pointsContainerBackground = 0x7f0200d1;
-        public static final int pointsPosition = 0x7f0200d2;
-        public static final int pointsVisibility = 0x7f0200d3;
-        public static final int tipTextColor = 0x7f02010e;
-        public static final int tipTextSize = 0x7f02010f;
-        public static final int viewpagerMargin = 0x7f02011f;
+        public static final int numberIndicatorBacgroud = 0x7f0200c1;
+        public static final int pageChangeDuration = 0x7f0200c7;
+        public static final int placeholderDrawable = 0x7f0200cb;
+        public static final int pointContainerLeftRightPadding = 0x7f0200cc;
+        public static final int pointContainerPosition = 0x7f0200cd;
+        public static final int pointLeftRightPadding = 0x7f0200ce;
+        public static final int pointNormal = 0x7f0200cf;
+        public static final int pointSelect = 0x7f0200d0;
+        public static final int pointTopBottomPadding = 0x7f0200d1;
+        public static final int pointsContainerBackground = 0x7f0200d2;
+        public static final int pointsPosition = 0x7f0200d3;
+        public static final int pointsVisibility = 0x7f0200d4;
+        public static final int tipTextColor = 0x7f020112;
+        public static final int tipTextSize = 0x7f020113;
+        public static final int viewpagerMargin = 0x7f020123;
     }
     public static final class drawable {
         private drawable() {}
 
-        public static final int shape_point_normal = 0x7f06007a;
-        public static final int shape_point_select = 0x7f06007b;
+        public static final int shape_point_normal = 0x7f06007c;
+        public static final int shape_point_select = 0x7f06007d;
     }
     public static final class id {
         private id() {}
 
         public static final int BOTTOM = 0x7f070000;
-        public static final int CENTER = 0x7f070001;
-        public static final int LEFT = 0x7f070002;
-        public static final int RIGHT = 0x7f070004;
-        public static final int TOP = 0x7f070005;
-        public static final int xbanner_pointId = 0x7f0700bd;
+        public static final int CENTER = 0x7f070005;
+        public static final int LEFT = 0x7f070006;
+        public static final int RIGHT = 0x7f070008;
+        public static final int TOP = 0x7f070009;
+        public static final int xbanner_pointId = 0x7f0700d1;
     }
     public static final class layout {
         private layout() {}
 
-        public static final int xbanner_item_image = 0x7f09003b;
+        public static final int xbanner_item_image = 0x7f090040;
     }
     public static final class string {
         private string() {}
@@ -69,7 +69,7 @@ public final class R {
     public static final class styleable {
         private styleable() {}
 
-        public static final int[] XBanner = { 0x7f020000, 0x7f020040, 0x7f020041, 0x7f020075, 0x7f020077, 0x7f020078, 0x7f020079, 0x7f02007a, 0x7f02007c, 0x7f02007d, 0x7f02007e, 0x7f02007f, 0x7f0200c0, 0x7f0200c6, 0x7f0200ca, 0x7f0200cb, 0x7f0200cc, 0x7f0200cd, 0x7f0200ce, 0x7f0200cf, 0x7f0200d0, 0x7f0200d1, 0x7f0200d2, 0x7f0200d3, 0x7f02010e, 0x7f02010f, 0x7f02011f };
+        public static final int[] XBanner = { 0x7f020000, 0x7f020040, 0x7f020041, 0x7f020075, 0x7f020077, 0x7f020078, 0x7f020079, 0x7f02007a, 0x7f02007c, 0x7f02007d, 0x7f02007e, 0x7f02007f, 0x7f0200c1, 0x7f0200c7, 0x7f0200cb, 0x7f0200cc, 0x7f0200cd, 0x7f0200ce, 0x7f0200cf, 0x7f0200d0, 0x7f0200d1, 0x7f0200d2, 0x7f0200d3, 0x7f0200d4, 0x7f020112, 0x7f020113, 0x7f020123 };
         public static final int XBanner_AutoPlayTime = 0;
         public static final int XBanner_clipChildrenLeftRightMargin = 1;
         public static final int XBanner_clipChildrenTopBottomMargin = 2;
