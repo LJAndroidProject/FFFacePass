@@ -15,6 +15,10 @@ import org.greenrobot.greendao.annotation.Generated;
         @Index(value = "cupboardNumber,tierNumber,tierChildrenNumber,tierChildrenCommodityNumber", unique = true)
 })
 public class CommodityBean {
+    //  必须设置一个自增长ID，不用管它
+    @Id(autoincrement = true)
+    public Long id;
+
     //  商品id ，和 CommodityAlternativeBean 中的 commodityID 一样，主要是为了方便查询
     private long commodityID;
 
@@ -44,13 +48,10 @@ public class CommodityBean {
 
 
 
-
-
-
-    @Generated(hash = 1149085640)
-    public CommodityBean(long commodityID, CommodityAlternativeBean commodityAlternativeBean,
-            long cupboardNumber, long tierNumber, int tierChildrenNumber,
-            int tierChildrenCommodityNumber, long dateInProduced, long addTime) {
+    @Generated(hash = 474410596)
+    public CommodityBean(Long id, long commodityID, CommodityAlternativeBean commodityAlternativeBean, long cupboardNumber,
+            long tierNumber, int tierChildrenNumber, int tierChildrenCommodityNumber, long dateInProduced, long addTime) {
+        this.id = id;
         this.commodityID = commodityID;
         this.commodityAlternativeBean = commodityAlternativeBean;
         this.cupboardNumber = cupboardNumber;
@@ -68,9 +69,53 @@ public class CommodityBean {
 
 
 
+
     @Generated(hash = 1829956951)
     public CommodityBean() {
     }
+
+
+
+
+
+    @Override
+    public String toString() {
+        return "CommodityBean{" +
+                "commodityID=" + commodityID +
+                ", commodityAlternativeBean=" + (commodityAlternativeBean != null ? commodityAlternativeBean.toString() : "" ) +
+                ", cupboardNumber=" + cupboardNumber +
+                ", tierNumber=" + tierNumber +
+                ", tierChildrenNumber=" + tierChildrenNumber +
+                ", tierChildrenCommodityNumber=" + tierChildrenCommodityNumber +
+                ", dateInProduced=" + dateInProduced +
+                ", addTime=" + addTime +
+                '}';
+    }
+
+
+
+
+
+
+
+
+
+    public Long getId() {
+        return this.id;
+    }
+
+
+
+
+
+
+
+
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
 
 
 
@@ -90,9 +135,11 @@ public class CommodityBean {
 
 
 
+
     public void setCommodityID(long commodityID) {
         this.commodityID = commodityID;
     }
+
 
 
 
@@ -112,9 +159,11 @@ public class CommodityBean {
 
 
 
+
     public void setCommodityAlternativeBean(CommodityAlternativeBean commodityAlternativeBean) {
         this.commodityAlternativeBean = commodityAlternativeBean;
     }
+
 
 
 
@@ -134,9 +183,11 @@ public class CommodityBean {
 
 
 
+
     public void setCupboardNumber(long cupboardNumber) {
         this.cupboardNumber = cupboardNumber;
     }
+
 
 
 
@@ -156,9 +207,11 @@ public class CommodityBean {
 
 
 
+
     public void setTierNumber(long tierNumber) {
         this.tierNumber = tierNumber;
     }
+
 
 
 
@@ -178,9 +231,11 @@ public class CommodityBean {
 
 
 
+
     public void setTierChildrenNumber(int tierChildrenNumber) {
         this.tierChildrenNumber = tierChildrenNumber;
     }
+
 
 
 
@@ -200,9 +255,11 @@ public class CommodityBean {
 
 
 
+
     public void setTierChildrenCommodityNumber(int tierChildrenCommodityNumber) {
         this.tierChildrenCommodityNumber = tierChildrenCommodityNumber;
     }
+
 
 
 
@@ -222,9 +279,11 @@ public class CommodityBean {
 
 
 
+
     public void setDateInProduced(long dateInProduced) {
         this.dateInProduced = dateInProduced;
     }
+
 
 
 
@@ -244,24 +303,18 @@ public class CommodityBean {
 
 
 
+
     public void setAddTime(long addTime) {
         this.addTime = addTime;
     }
 
 
-    @Override
-    public String toString() {
-        return "CommodityBean{" +
-                "commodityID=" + commodityID +
-                ", commodityAlternativeBean=" + (commodityAlternativeBean != null ? commodityAlternativeBean.toString() : "" ) +
-                ", cupboardNumber=" + cupboardNumber +
-                ", tierNumber=" + tierNumber +
-                ", tierChildrenNumber=" + tierChildrenNumber +
-                ", tierChildrenCommodityNumber=" + tierChildrenCommodityNumber +
-                ", dateInProduced=" + dateInProduced +
-                ", addTime=" + addTime +
-                '}';
-    }
+
+
+
+
+
+
 
     public static class CatConverter implements PropertyConverter<CommodityAlternativeBean, String> {
         @Override

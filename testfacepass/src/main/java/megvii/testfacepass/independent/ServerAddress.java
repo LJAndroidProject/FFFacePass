@@ -8,7 +8,7 @@ public class ServerAddress {
     //  ip 地址
     public final static String IP = "https://ffadmin.fenfeneco.com/";
     //  微信扫码登陆
-    public final static String LOGIN = IP + "/vxLogin?token=";
+    public final static String LOGIN = IP + "/index.php/index/index/faceRegister?device_id=";
 
     //  人脸图片上传到云服务器
     public final static String FACE_AND_USER_ID_UPLOAD = IP + "api/Other/userUpload";

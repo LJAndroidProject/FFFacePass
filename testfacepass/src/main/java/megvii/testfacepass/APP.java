@@ -50,7 +50,7 @@ public class APP extends Application {
             @Override
             public void onSuccess(String deviceToken) {
                 //  获取用于区分用户的 deviceToken
-                //  Log.i("结果",deviceToken);
+                Log.i("推送调试（如果收不到，看看是不是卸载了）",deviceToken);
             }
 
             @Override

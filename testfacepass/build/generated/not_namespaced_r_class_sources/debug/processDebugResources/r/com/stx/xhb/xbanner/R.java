@@ -12,64 +12,64 @@ public final class R {
     public static final class attr {
         private attr() {}
 
-        public static final int AutoPlayTime = 0x7f020000;
-        public static final int clipChildrenLeftRightMargin = 0x7f020040;
-        public static final int clipChildrenTopBottomMargin = 0x7f020041;
-        public static final int indicatorDrawable = 0x7f020075;
-        public static final int isAutoPlay = 0x7f020077;
-        public static final int isClipChildrenMode = 0x7f020078;
-        public static final int isClipChildrenModeLessThree = 0x7f020079;
-        public static final int isHandLoop = 0x7f02007a;
-        public static final int isShowIndicatorOnlyOne = 0x7f02007c;
-        public static final int isShowNumberIndicator = 0x7f02007d;
-        public static final int isShowTips = 0x7f02007e;
-        public static final int isTipsMarquee = 0x7f02007f;
-        public static final int numberIndicatorBacgroud = 0x7f0200c1;
-        public static final int pageChangeDuration = 0x7f0200c7;
-        public static final int placeholderDrawable = 0x7f0200cb;
-        public static final int pointContainerLeftRightPadding = 0x7f0200cc;
-        public static final int pointContainerPosition = 0x7f0200cd;
-        public static final int pointLeftRightPadding = 0x7f0200ce;
-        public static final int pointNormal = 0x7f0200cf;
-        public static final int pointSelect = 0x7f0200d0;
-        public static final int pointTopBottomPadding = 0x7f0200d1;
-        public static final int pointsContainerBackground = 0x7f0200d2;
-        public static final int pointsPosition = 0x7f0200d3;
-        public static final int pointsVisibility = 0x7f0200d4;
-        public static final int tipTextColor = 0x7f020112;
-        public static final int tipTextSize = 0x7f020113;
-        public static final int viewpagerMargin = 0x7f020123;
+        public static final int AutoPlayTime = 0x7f030000;
+        public static final int clipChildrenLeftRightMargin = 0x7f030048;
+        public static final int clipChildrenTopBottomMargin = 0x7f030049;
+        public static final int indicatorDrawable = 0x7f030094;
+        public static final int isAutoPlay = 0x7f030097;
+        public static final int isClipChildrenMode = 0x7f030098;
+        public static final int isClipChildrenModeLessThree = 0x7f030099;
+        public static final int isHandLoop = 0x7f03009a;
+        public static final int isShowIndicatorOnlyOne = 0x7f03009c;
+        public static final int isShowNumberIndicator = 0x7f03009d;
+        public static final int isShowTips = 0x7f03009e;
+        public static final int isTipsMarquee = 0x7f03009f;
+        public static final int numberIndicatorBacgroud = 0x7f0300f2;
+        public static final int pageChangeDuration = 0x7f0300f8;
+        public static final int placeholderDrawable = 0x7f030101;
+        public static final int pointContainerLeftRightPadding = 0x7f030102;
+        public static final int pointContainerPosition = 0x7f030103;
+        public static final int pointLeftRightPadding = 0x7f030104;
+        public static final int pointNormal = 0x7f030105;
+        public static final int pointSelect = 0x7f030106;
+        public static final int pointTopBottomPadding = 0x7f030107;
+        public static final int pointsContainerBackground = 0x7f030108;
+        public static final int pointsPosition = 0x7f030109;
+        public static final int pointsVisibility = 0x7f03010a;
+        public static final int tipTextColor = 0x7f030164;
+        public static final int tipTextSize = 0x7f030165;
+        public static final int viewpagerMargin = 0x7f030178;
     }
     public static final class drawable {
         private drawable() {}
 
-        public static final int shape_point_normal = 0x7f06007c;
-        public static final int shape_point_select = 0x7f06007d;
+        public static final int shape_point_normal = 0x7f07008b;
+        public static final int shape_point_select = 0x7f07008c;
     }
     public static final class id {
         private id() {}
 
-        public static final int BOTTOM = 0x7f070000;
-        public static final int CENTER = 0x7f070005;
-        public static final int LEFT = 0x7f070006;
-        public static final int RIGHT = 0x7f070008;
-        public static final int TOP = 0x7f070009;
-        public static final int xbanner_pointId = 0x7f0700d1;
+        public static final int BOTTOM = 0x7f080000;
+        public static final int CENTER = 0x7f080005;
+        public static final int LEFT = 0x7f080006;
+        public static final int RIGHT = 0x7f080008;
+        public static final int TOP = 0x7f080009;
+        public static final int xbanner_pointId = 0x7f080100;
     }
     public static final class layout {
         private layout() {}
 
-        public static final int xbanner_item_image = 0x7f090040;
+        public static final int xbanner_item_image = 0x7f0a004e;
     }
     public static final class string {
         private string() {}
 
-        public static final int app_name = 0x7f0b001f;
+        public static final int app_name = 0x7f0c001f;
     }
     public static final class styleable {
         private styleable() {}
 
-        public static final int[] XBanner = { 0x7f020000, 0x7f020040, 0x7f020041, 0x7f020075, 0x7f020077, 0x7f020078, 0x7f020079, 0x7f02007a, 0x7f02007c, 0x7f02007d, 0x7f02007e, 0x7f02007f, 0x7f0200c1, 0x7f0200c7, 0x7f0200cb, 0x7f0200cc, 0x7f0200cd, 0x7f0200ce, 0x7f0200cf, 0x7f0200d0, 0x7f0200d1, 0x7f0200d2, 0x7f0200d3, 0x7f0200d4, 0x7f020112, 0x7f020113, 0x7f020123 };
+        public static final int[] XBanner = { 0x7f030000, 0x7f030048, 0x7f030049, 0x7f030094, 0x7f030097, 0x7f030098, 0x7f030099, 0x7f03009a, 0x7f03009c, 0x7f03009d, 0x7f03009e, 0x7f03009f, 0x7f0300f2, 0x7f0300f8, 0x7f030101, 0x7f030102, 0x7f030103, 0x7f030104, 0x7f030105, 0x7f030106, 0x7f030107, 0x7f030108, 0x7f030109, 0x7f03010a, 0x7f030164, 0x7f030165, 0x7f030178 };
         public static final int XBanner_AutoPlayTime = 0;
         public static final int XBanner_clipChildrenLeftRightMargin = 1;
         public static final int XBanner_clipChildrenTopBottomMargin = 2;

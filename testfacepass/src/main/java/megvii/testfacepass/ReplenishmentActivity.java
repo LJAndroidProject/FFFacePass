@@ -9,7 +9,12 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
@@ -30,6 +35,8 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
     //  查询货道列表
     List<CommodityBean> result;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +45,24 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
 
 
+        //  商品备选
+        List<CommodityAlternativeBean> commodityAlternativeBean = DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().build().list();
+
+        if(commodityAlternativeBean != null && commodityAlternativeBean.size() > 0 ){
+            Toast.makeText(this, "存在备选商品列表", Toast.LENGTH_SHORT).show();
+        }else{
+
+            List<CommodityAlternativeBean> commodityAlternativeBeans = new ArrayList<>();
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 1,9,"面包",false,0,true,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",360));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 2,6,"小面包",false,0,true,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",360));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 3,5.5,"方便面",true,500,true,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",180));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 4,10,"瑞士卷",false,0,false,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",90));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 5,4,"纯牛奶",true,400,false,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",90));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 6,2,"矿泉水",true,200,false,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",360));
+
+
+            DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().insertInTx(commodityAlternativeBeans);
+        }
 
 
 
@@ -91,6 +116,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
                 intent.putExtra("cupboardNumber",result.get(position).getCupboardNumber());
                 intent.putExtra("tierNumber",result.get(position).getTierNumber());
                 intent.putExtra("tierChildrenNumber",result.get(position).getTierChildrenNumber());
+                intent.putExtra("commodityID",result.get(position).getCommodityID());
 
                 Log.i("结果","传递" + result.get(position).toString());
 
@@ -133,7 +159,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
         for(int h = 1 ; h <= 6 ; h++){
             for(int w = 1 ; w <= 10 ; w++){
                 for(int z = 1 ; z <= 10 ; z++){
-                    commodityBeanList.add(new CommodityBean(0,null,1,w,h,z,0,0));
+                    commodityBeanList.add(new CommodityBean(null,0,null,1,w,h,z,0,0));
                     Log.i("结果",commodityBeanList.get((commodityBeanList.size()-1)).toString());
                 }
             }
@@ -185,6 +211,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
                 //  设置商品名称
                 helper.setText(R.id.replenishment_item_name_tv,commodityBean.getCommodityAlternativeBean().getCommodityName());
             }else{
+                Glide.with(mContext).load(R.mipmap.chuyu).into((ImageView) helper.getView(R.id.replenishment_item_image));
                 helper.setText(R.id.replenishment_item_name_tv,"缺货状态");
             }
 

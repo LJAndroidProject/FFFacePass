@@ -1728,14 +1728,14 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  获取安卓设备唯一标识符
         String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         //  添加时间戳
-        loginToken =  "dustbinScanLogin," + System.currentTimeMillis() + "," +androidID;
+        loginToken =  androidID;
         //  生成token 二维码
 
 
         Log.i(PUSH,loginToken);
 
         //  拼接地址 传递 token
-        qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + loginToken));
+        qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + androidID));
 
         //  暂时添加一个点击事件，模拟扫码成功，并通过TCP连接返回了用户id和token
         qr_code_login.setOnClickListener(new View.OnClickListener() {

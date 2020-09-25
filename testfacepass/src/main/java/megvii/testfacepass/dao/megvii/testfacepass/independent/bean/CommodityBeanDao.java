@@ -15,7 +15,7 @@ import megvii.testfacepass.independent.bean.CommodityBean.CatConverter;
 /** 
  * DAO for table "COMMODITY_BEAN".
 */
-public class CommodityBeanDao extends AbstractDao<CommodityBean, Void> {
+public class CommodityBeanDao extends AbstractDao<CommodityBean, Long> {
 
     public static final String TABLENAME = "COMMODITY_BEAN";
 
@@ -24,14 +24,15 @@ public class CommodityBeanDao extends AbstractDao<CommodityBean, Void> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property CommodityID = new Property(0, long.class, "commodityID", false, "COMMODITY_ID");
-        public final static Property CommodityAlternativeBean = new Property(1, String.class, "commodityAlternativeBean", false, "COMMODITY_ALTERNATIVE_BEAN");
-        public final static Property CupboardNumber = new Property(2, long.class, "cupboardNumber", false, "CUPBOARD_NUMBER");
-        public final static Property TierNumber = new Property(3, long.class, "tierNumber", false, "TIER_NUMBER");
-        public final static Property TierChildrenNumber = new Property(4, int.class, "tierChildrenNumber", false, "TIER_CHILDREN_NUMBER");
-        public final static Property TierChildrenCommodityNumber = new Property(5, int.class, "tierChildrenCommodityNumber", false, "TIER_CHILDREN_COMMODITY_NUMBER");
-        public final static Property DateInProduced = new Property(6, long.class, "dateInProduced", false, "DATE_IN_PRODUCED");
-        public final static Property AddTime = new Property(7, long.class, "addTime", false, "ADD_TIME");
+        public final static Property Id = new Property(0, Long.class, "id", true, "_id");
+        public final static Property CommodityID = new Property(1, long.class, "commodityID", false, "COMMODITY_ID");
+        public final static Property CommodityAlternativeBean = new Property(2, String.class, "commodityAlternativeBean", false, "COMMODITY_ALTERNATIVE_BEAN");
+        public final static Property CupboardNumber = new Property(3, long.class, "cupboardNumber", false, "CUPBOARD_NUMBER");
+        public final static Property TierNumber = new Property(4, long.class, "tierNumber", false, "TIER_NUMBER");
+        public final static Property TierChildrenNumber = new Property(5, int.class, "tierChildrenNumber", false, "TIER_CHILDREN_NUMBER");
+        public final static Property TierChildrenCommodityNumber = new Property(6, int.class, "tierChildrenCommodityNumber", false, "TIER_CHILDREN_COMMODITY_NUMBER");
+        public final static Property DateInProduced = new Property(7, long.class, "dateInProduced", false, "DATE_IN_PRODUCED");
+        public final static Property AddTime = new Property(8, long.class, "addTime", false, "ADD_TIME");
     }
 
     private final CatConverter commodityAlternativeBeanConverter = new CatConverter();
@@ -48,14 +49,15 @@ public class CommodityBeanDao extends AbstractDao<CommodityBean, Void> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"COMMODITY_BEAN\" (" + //
-                "\"COMMODITY_ID\" INTEGER NOT NULL ," + // 0: commodityID
-                "\"COMMODITY_ALTERNATIVE_BEAN\" TEXT," + // 1: commodityAlternativeBean
-                "\"CUPBOARD_NUMBER\" INTEGER NOT NULL ," + // 2: cupboardNumber
-                "\"TIER_NUMBER\" INTEGER NOT NULL ," + // 3: tierNumber
-                "\"TIER_CHILDREN_NUMBER\" INTEGER NOT NULL ," + // 4: tierChildrenNumber
-                "\"TIER_CHILDREN_COMMODITY_NUMBER\" INTEGER NOT NULL ," + // 5: tierChildrenCommodityNumber
-                "\"DATE_IN_PRODUCED\" INTEGER NOT NULL ," + // 6: dateInProduced
-                "\"ADD_TIME\" INTEGER NOT NULL );"); // 7: addTime
+                "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: id
+                "\"COMMODITY_ID\" INTEGER NOT NULL ," + // 1: commodityID
+                "\"COMMODITY_ALTERNATIVE_BEAN\" TEXT," + // 2: commodityAlternativeBean
+                "\"CUPBOARD_NUMBER\" INTEGER NOT NULL ," + // 3: cupboardNumber
+                "\"TIER_NUMBER\" INTEGER NOT NULL ," + // 4: tierNumber
+                "\"TIER_CHILDREN_NUMBER\" INTEGER NOT NULL ," + // 5: tierChildrenNumber
+                "\"TIER_CHILDREN_COMMODITY_NUMBER\" INTEGER NOT NULL ," + // 6: tierChildrenCommodityNumber
+                "\"DATE_IN_PRODUCED\" INTEGER NOT NULL ," + // 7: dateInProduced
+                "\"ADD_TIME\" INTEGER NOT NULL );"); // 8: addTime
         // Add Indexes
         db.execSQL("CREATE UNIQUE INDEX " + constraint + "IDX_COMMODITY_BEAN_CUPBOARD_NUMBER_TIER_NUMBER_TIER_CHILDREN_NUMBER_TIER_CHILDREN_COMMODITY_NUMBER ON \"COMMODITY_BEAN\"" +
                 " (\"CUPBOARD_NUMBER\" ASC,\"TIER_NUMBER\" ASC,\"TIER_CHILDREN_NUMBER\" ASC,\"TIER_CHILDREN_COMMODITY_NUMBER\" ASC);");
@@ -70,84 +72,99 @@ public class CommodityBeanDao extends AbstractDao<CommodityBean, Void> {
     @Override
     protected final void bindValues(DatabaseStatement stmt, CommodityBean entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getCommodityID());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+        stmt.bindLong(2, entity.getCommodityID());
  
         CommodityAlternativeBean commodityAlternativeBean = entity.getCommodityAlternativeBean();
         if (commodityAlternativeBean != null) {
-            stmt.bindString(2, commodityAlternativeBeanConverter.convertToDatabaseValue(commodityAlternativeBean));
+            stmt.bindString(3, commodityAlternativeBeanConverter.convertToDatabaseValue(commodityAlternativeBean));
         }
-        stmt.bindLong(3, entity.getCupboardNumber());
-        stmt.bindLong(4, entity.getTierNumber());
-        stmt.bindLong(5, entity.getTierChildrenNumber());
-        stmt.bindLong(6, entity.getTierChildrenCommodityNumber());
-        stmt.bindLong(7, entity.getDateInProduced());
-        stmt.bindLong(8, entity.getAddTime());
+        stmt.bindLong(4, entity.getCupboardNumber());
+        stmt.bindLong(5, entity.getTierNumber());
+        stmt.bindLong(6, entity.getTierChildrenNumber());
+        stmt.bindLong(7, entity.getTierChildrenCommodityNumber());
+        stmt.bindLong(8, entity.getDateInProduced());
+        stmt.bindLong(9, entity.getAddTime());
     }
 
     @Override
     protected final void bindValues(SQLiteStatement stmt, CommodityBean entity) {
         stmt.clearBindings();
-        stmt.bindLong(1, entity.getCommodityID());
+ 
+        Long id = entity.getId();
+        if (id != null) {
+            stmt.bindLong(1, id);
+        }
+        stmt.bindLong(2, entity.getCommodityID());
  
         CommodityAlternativeBean commodityAlternativeBean = entity.getCommodityAlternativeBean();
         if (commodityAlternativeBean != null) {
-            stmt.bindString(2, commodityAlternativeBeanConverter.convertToDatabaseValue(commodityAlternativeBean));
+            stmt.bindString(3, commodityAlternativeBeanConverter.convertToDatabaseValue(commodityAlternativeBean));
         }
-        stmt.bindLong(3, entity.getCupboardNumber());
-        stmt.bindLong(4, entity.getTierNumber());
-        stmt.bindLong(5, entity.getTierChildrenNumber());
-        stmt.bindLong(6, entity.getTierChildrenCommodityNumber());
-        stmt.bindLong(7, entity.getDateInProduced());
-        stmt.bindLong(8, entity.getAddTime());
+        stmt.bindLong(4, entity.getCupboardNumber());
+        stmt.bindLong(5, entity.getTierNumber());
+        stmt.bindLong(6, entity.getTierChildrenNumber());
+        stmt.bindLong(7, entity.getTierChildrenCommodityNumber());
+        stmt.bindLong(8, entity.getDateInProduced());
+        stmt.bindLong(9, entity.getAddTime());
     }
 
     @Override
-    public Void readKey(Cursor cursor, int offset) {
-        return null;
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
     public CommodityBean readEntity(Cursor cursor, int offset) {
         CommodityBean entity = new CommodityBean( //
-            cursor.getLong(offset + 0), // commodityID
-            cursor.isNull(offset + 1) ? null : commodityAlternativeBeanConverter.convertToEntityProperty(cursor.getString(offset + 1)), // commodityAlternativeBean
-            cursor.getLong(offset + 2), // cupboardNumber
-            cursor.getLong(offset + 3), // tierNumber
-            cursor.getInt(offset + 4), // tierChildrenNumber
-            cursor.getInt(offset + 5), // tierChildrenCommodityNumber
-            cursor.getLong(offset + 6), // dateInProduced
-            cursor.getLong(offset + 7) // addTime
+            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // id
+            cursor.getLong(offset + 1), // commodityID
+            cursor.isNull(offset + 2) ? null : commodityAlternativeBeanConverter.convertToEntityProperty(cursor.getString(offset + 2)), // commodityAlternativeBean
+            cursor.getLong(offset + 3), // cupboardNumber
+            cursor.getLong(offset + 4), // tierNumber
+            cursor.getInt(offset + 5), // tierChildrenNumber
+            cursor.getInt(offset + 6), // tierChildrenCommodityNumber
+            cursor.getLong(offset + 7), // dateInProduced
+            cursor.getLong(offset + 8) // addTime
         );
         return entity;
     }
      
     @Override
     public void readEntity(Cursor cursor, CommodityBean entity, int offset) {
-        entity.setCommodityID(cursor.getLong(offset + 0));
-        entity.setCommodityAlternativeBean(cursor.isNull(offset + 1) ? null : commodityAlternativeBeanConverter.convertToEntityProperty(cursor.getString(offset + 1)));
-        entity.setCupboardNumber(cursor.getLong(offset + 2));
-        entity.setTierNumber(cursor.getLong(offset + 3));
-        entity.setTierChildrenNumber(cursor.getInt(offset + 4));
-        entity.setTierChildrenCommodityNumber(cursor.getInt(offset + 5));
-        entity.setDateInProduced(cursor.getLong(offset + 6));
-        entity.setAddTime(cursor.getLong(offset + 7));
+        entity.setId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setCommodityID(cursor.getLong(offset + 1));
+        entity.setCommodityAlternativeBean(cursor.isNull(offset + 2) ? null : commodityAlternativeBeanConverter.convertToEntityProperty(cursor.getString(offset + 2)));
+        entity.setCupboardNumber(cursor.getLong(offset + 3));
+        entity.setTierNumber(cursor.getLong(offset + 4));
+        entity.setTierChildrenNumber(cursor.getInt(offset + 5));
+        entity.setTierChildrenCommodityNumber(cursor.getInt(offset + 6));
+        entity.setDateInProduced(cursor.getLong(offset + 7));
+        entity.setAddTime(cursor.getLong(offset + 8));
      }
     
     @Override
-    protected final Void updateKeyAfterInsert(CommodityBean entity, long rowId) {
-        // Unsupported or missing PK type
-        return null;
+    protected final Long updateKeyAfterInsert(CommodityBean entity, long rowId) {
+        entity.setId(rowId);
+        return rowId;
     }
     
     @Override
-    public Void getKey(CommodityBean entity) {
-        return null;
+    public Long getKey(CommodityBean entity) {
+        if(entity != null) {
+            return entity.getId();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean hasKey(CommodityBean entity) {
-        // TODO
-        return false;
+        return entity.getId() != null;
     }
 
     @Override
