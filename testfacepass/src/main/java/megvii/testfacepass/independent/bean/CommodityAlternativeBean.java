@@ -31,7 +31,7 @@ public class CommodityAlternativeBean{
     //  图片地址
     private String imageUrl;
 
-    //  保质期
+    //  保质期时间长度 而不是 到某一天！！！
     private long expirationDate;
 
     @Generated(hash = 1835223671)

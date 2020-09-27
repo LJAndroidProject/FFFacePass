@@ -3,6 +3,7 @@ package megvii.testfacepass;
 import android.app.Application;
 import android.app.Notification;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.umeng.commonsdk.UMConfigure;
@@ -23,6 +24,8 @@ import megvii.testfacepass.independent.bean.DustbinBean;
 public class APP extends Application {
 
     private long userId;
+
+    private String deviceToken;
 
     private static List<DustbinBean> dustbinBeanList;
 
@@ -51,6 +54,14 @@ public class APP extends Application {
             public void onSuccess(String deviceToken) {
                 //  获取用于区分用户的 deviceToken
                 Log.i("推送调试（如果收不到，看看是不是卸载了）",deviceToken);
+
+
+                setDeviceToken(deviceToken);
+
+
+                /*SharedPreferences.Editor editor = getSharedPreferences("appConfig", MODE_PRIVATE).edit();
+                editor.putString("deviceToken",deviceToken);
+                editor.apply();*/
             }
 
             @Override
@@ -85,5 +96,14 @@ public class APP extends Application {
 
     public static void setDustbinBeanList(List<DustbinBean> dustbinBeanList) {
         APP.dustbinBeanList = dustbinBeanList;
+    }
+
+
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }

@@ -89,9 +89,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import mcv.facepass.FacePassException;
@@ -118,9 +122,12 @@ import megvii.testfacepass.adapter.GroupNameAdapter;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
 import megvii.testfacepass.camera.CameraPreviewData;
+import megvii.testfacepass.independent.bean.JsonMould;
+import megvii.testfacepass.independent.bean.VXLoginCall;
 import megvii.testfacepass.independent.bean.VXLoginResult;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.VoiceUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
 import megvii.testfacepass.independent.util.QRCodeUtil;
@@ -308,6 +315,46 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         app = (APP) getApplication();
         mainHandler = new Handler(Looper.getMainLooper());
 
+
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                long nowTime = System.currentTimeMillis() / 1000 ;
+
+                String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                APP app = (APP) getApplication();
+                Map<String,String> map = new HashMap<>();
+                map.put("device_id", androidID);
+                map.put("device_token",app.getDeviceToken());
+                map.put("sign",md5(androidID + nowTime + key).toUpperCase());
+                map.put("timestamp",String.valueOf(nowTime));
+
+                Log.i(MY_TAG,map.toString());
+                NetWorkUtil.getInstance().doPost(ServerAddress.DEVICE_REGISTER, map, new NetWorkUtil.NetWorkListener() {
+                    @Override
+                    public void success(String response) {
+                        Log.i(MY_TAG, "success: " + response);
+                    }
+
+                    @Override
+                    public void fail(Call call, IOException e) {
+                        Log.i(MY_TAG, "fail: " + e.getMessage());
+                    }
+
+                    @Override
+                    public void error(Exception e) {
+                        Log.i(MY_TAG, "error: " + e.getMessage());
+                    }
+                });
+
+
+            }
+        },2000);
+
+
+
         //  开启友盟推送
         PushAgent.getInstance(this).onAppStart();
 
@@ -393,6 +440,32 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         }
     }
 
+
+    private String key = "e0e9061d403f1898a501b8d7a840b949";
+    @NonNull
+    public static String md5(String string) {
+        if (TextUtils.isEmpty(string)) {
+            return "";
+        }
+        MessageDigest md5 = null;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            byte[] bytes = md5.digest(string.getBytes());
+            StringBuilder result = new StringBuilder();
+            for (byte b : bytes) {
+                String temp = Integer.toHexString(b & 0xff);
+                if (temp.length() == 1) {
+                    temp = "0" + temp;
+                }
+                result.append(temp);
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     private void initAndroidHandler() {
 
         mAndroidHandler = new Handler();
@@ -414,11 +487,127 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     public void ServerToAndroid(UMessage msg){
         Log.i(PUSH,"服务器传过来的结果" + msg.custom);
 
+
+
+        Gson gson = new Gson();
+
+        try{
+
+            JSONObject jsonObject = new JSONObject(msg.custom);
+            String action = jsonObject.getString("action");
+            String list = jsonObject.getString("list");
+
+            if("QrReturn".equals(action)){
+                VXLoginCall vxLoginCall = gson.fromJson(list,VXLoginCall.class);
+                Log.i(PUSH,"接收"+vxLoginCall.toString());
+                Log.i(PUSH,"设置用户id" + app.getUserId());
+                //  修改当前设置的用户id
+                app.setUserId(vxLoginCall.getInfo().getUser_id());
+                Log.i(PUSH,"设置用户id" + app.getUserId());
+
+                //  隐藏二维码扫码
+                if(qrCodeDialog != null && qrCodeDialog.isShowing()){
+                    Log.i(PUSH,"隐藏二维码弹窗");
+                    qrCodeDialog.dismiss();
+                }
+
+                //  云端有该人的人脸特征，则将特征保存到本地
+                if(vxLoginCall.isFeatrue_state() && vxLoginCall.isFace_image_state()){
+                    Log.i(PUSH,"含有人脸特征值");
+                    //  获取来自服务器人脸特征 ( 字符串之前是 Base64 形式 )
+                    byte[] feature = Base64.decode(vxLoginCall.getInfo().getFeatrue(),Base64.DEFAULT);
+
+                    FacePassFeatureAppendInfo facePassFeatureAppendInfo = new FacePassFeatureAppendInfo();
+                    //  插入人脸特征值，返回faceToken ，如果特征值不可用会抛出异常
+                    String faceToken = mFacePassHandler.insertFeature(feature,facePassFeatureAppendInfo);
+                    //  facetoken 绑定底库
+                    boolean bindResult = mFacePassHandler.bindGroup(group_name, faceToken.getBytes());
+                    //  绑定成功就可以 将 facetoken 和 id 进行绑定了
+
+                    if(bindResult){
+                        Log.i(PUSH,"绑定成功，将跳转控制台");
+                        //  facetoken 和用户id 绑定
+                        DataBaseUtil.getInstance(this).insertUserIdAndFaceToken(app.getUserId(),faceToken);
+
+                        //  跳转到垃圾箱控制台
+                        Intent intent = new Intent(MainActivity.this,ControlActivity.class);
+                        intent.putExtra("userId",app.getUserId());
+                        startActivity(intent);
+
+
+                        //  将用户id和特征、图片上传至服务器   ===========================================
+
+
+                    }else{
+                        Log.i(PUSH,"绑定失败，删除人脸");
+                        //  如果没有则删除之前的绑定
+                        mFacePassHandler.deleteFace(faceToken.getBytes());
+                    }
+                }else{
+                    //   云端 没有该用户的 人脸 特征值，则提示需要人脸注册
+                    Log.i(PUSH,"显示人脸录入");
+
+
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            showVerifyFail();
+                        }
+                    });
+
+
+
+                }
+
+
+
+
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        /*Gson gson = new Gson();
+        JsonMould jsonMould = gson.fromJson(msg.custom,JsonMould.class);
+
+        Log.i(PUSH,"接收：" + jsonMould.toString());
+        if("QrReturn".equals(jsonMould.getAction())){
+            VXLoginCall vxLoginCall = gson.fromJson(jsonMould.getAction(),VXLoginCall.class);
+
+            if(vxLoginCall.isFace_image_state() && vxLoginCall.isFeatrue_state()){
+
+
+
+
+
+            }else{
+
+                Log.i(PUSH,"无人脸");
+
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        showVerifyFail();
+                    }
+                });
+            }
+        }*/
+
         /*VXLoginResult vxLoginResult = new Gson().fromJson(msg.custom,VXLoginResult.class);
 
         Log.i(PUSH,vxLoginResult.toString());
         vxLogin(qrCodeDialog,vxLoginResult.getUserId() , vxLoginResult.getQRCode(),nowFaceToken);*/
 
+        //msg.custom;
+
+        /*String custom =  msg.custom;
+        JSONObject jsonObject = new JSONObject(custom);*/
+
+        if(true){
+            return;
+        }
 
         try {
 
@@ -1560,7 +1749,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             Log.i(TAG,"绑定成功" + faceToken);
 
                             //  将该facetoken 和用户id进行绑定
-                            DataBaseUtil.getInstance(this).insertUserIdAndFaceToken(app.getUserId(),nowFaceToken);
+
 
 
 
@@ -1737,6 +1926,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  拼接地址 传递 token
         qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + androidID));
 
+
         //  暂时添加一个点击事件，模拟扫码成功，并通过TCP连接返回了用户id和token
         qr_code_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1806,13 +1996,27 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         // 设置文件以及文件上传类型封装
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), file);
 
+
+        long nowTime = System.currentTimeMillis() / 1000 ;
+
+        String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+
+
         // 文件上传的请求体封装
         MultipartBody multipartBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("userId", String.valueOf(userId))
-                .addFormDataPart("feature", Base64.encodeToString(feature,Base64.DEFAULT))
-                .addFormDataPart("faceImageFile", file.getName(), requestBody)
+                .addFormDataPart("user_id",String.valueOf(userId))
+                .addFormDataPart("featrue", Base64.encodeToString(feature,Base64.DEFAULT))
+                .addFormDataPart("face_image", file.getName(), requestBody)
+
+                .addFormDataPart("sign",md5(androidID + nowTime + key).toUpperCase())
+                .addFormDataPart("device_id",androidID)
+                .addFormDataPart("timestamp",String.valueOf(nowTime))
                 .build();
+
+
+
 
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(ServerAddress.FACE_AND_USER_ID_UPLOAD)
@@ -1830,7 +2034,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
             @Override
             public void onResponse(Call call, okhttp3.Response response) throws IOException {
-                Log.i(PUSH,response.body().string());
+
+                DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(app.getUserId(),nowFaceToken);
+
+
+                Log.i(PUSH,"图片上传结果：" + response.body().string().substring(7000));
                 file.delete();
             }
         });

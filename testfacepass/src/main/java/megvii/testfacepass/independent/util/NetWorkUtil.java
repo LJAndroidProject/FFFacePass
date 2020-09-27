@@ -2,6 +2,7 @@ package megvii.testfacepass.independent.util;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -39,15 +41,18 @@ public class NetWorkUtil {
 
     public void doPost(String url, Map<String,String> map, final NetWorkListener networkListener){
 
-        MultipartBody.Builder multipartBody = new MultipartBody.Builder();
+        FormBody.Builder formBody = new FormBody.Builder();
 
-        if(map != null && map.size() == 0){
+        if(map != null && map.size() > 0){
             for(Map.Entry<String,String> e : map.entrySet()){
-                multipartBody.addFormDataPart(e.getKey(),e.getValue());
+                formBody.add(e.getKey(),e.getValue());
             }
         }
 
-        Request request = new Request.Builder().post(multipartBody.build()).build();
+
+        Request request = new Request.Builder().url( url).post(formBody.build()).build();
+        Log.i("结果","multipartBody:"+request.toString());
+
 
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override

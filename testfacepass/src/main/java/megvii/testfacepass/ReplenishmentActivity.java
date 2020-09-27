@@ -1,12 +1,17 @@
 package megvii.testfacepass;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Handler;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,13 +24,21 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
 import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.NetWorkUtil;
+import okhttp3.Call;
 
 public class ReplenishmentActivity extends AppCompatActivity {
 
@@ -37,10 +50,26 @@ public class ReplenishmentActivity extends AppCompatActivity {
     List<CommodityBean> result;
 
 
+    public final static int UPDATE_CODE = 100;
+
+
+    ReplenishmentAdapter replenishmentAdapter;
+
+    Button replenishment_clear_btn;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_replenishment);
+
+
+        /*        SharedPreferences sharedPreferences = getSharedPreferences("appConfig",MODE_PRIVATE);
+        String deviceToken = sharedPreferences.getString("deviceToken",null);*/
+
+        replenishment_clear_btn = (Button)findViewById(R.id.replenishment_clear_btn);
+
+
 
 
 
@@ -106,13 +135,14 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
         result = DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.TierChildrenCommodityNumber.eq(1)).orderAsc(CommodityBeanDao.Properties.TierNumber,CommodityBeanDao.Properties.TierChildrenNumber).build().list();
         replenishment_recyclerview = (RecyclerView) findViewById(R.id.replenishment_recyclerview);
-        ReplenishmentAdapter replenishmentAdapter = new ReplenishmentAdapter(R.layout.item_replenishment,result);
+        replenishmentAdapter = new ReplenishmentAdapter(R.layout.item_replenishment,result);
 
 
         replenishmentAdapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
                 Intent intent = new Intent(ReplenishmentActivity.this,ReplenishmentDetailsActivity.class);
+                intent.putExtra("listPosition",position);
                 intent.putExtra("cupboardNumber",result.get(position).getCupboardNumber());
                 intent.putExtra("tierNumber",result.get(position).getTierNumber());
                 intent.putExtra("tierChildrenNumber",result.get(position).getTierChildrenNumber());
@@ -120,7 +150,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
                 Log.i("结果","传递" + result.get(position).toString());
 
-                startActivity(intent);
+                startActivityForResult(intent,UPDATE_CODE);
             }
         });
 
@@ -144,8 +174,29 @@ public class ReplenishmentActivity extends AppCompatActivity {
         }*/
 
 
+        replenishment_clear_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //  清空
+                DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().deleteAll();
+
+                //  重新初始化
+                initReplenishment();
+
+
+                List<CommodityBean> newData = DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.TierChildrenCommodityNumber.eq(1)).orderAsc(CommodityBeanDao.Properties.TierNumber,CommodityBeanDao.Properties.TierChildrenNumber).build().list();
+                replenishmentAdapter.setNewData(newData);
+
+
+
+
+            }
+        });
 
     }
+
+
+
 
 
     /**
@@ -184,6 +235,33 @@ public class ReplenishmentActivity extends AppCompatActivity {
         Log.i(tag, msg);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == UPDATE_CODE && resultCode == RESULT_OK){
+
+            //  更新列表
+
+
+            //  之前传递过去的 list 位置
+            int listPosition = data.getIntExtra("listPosition",-1);
+            //  返回一个货道对象
+            CommodityBean commodityBean = new Gson().fromJson(data.getStringExtra("commodityJsonString"),CommodityBean.class);
+
+
+            Log.i(TAG, "onActivityResult: " + commodityBean.toString());
+
+            if(listPosition != -1){
+                replenishmentAdapter.setData(listPosition,commodityBean);
+            }
+
+        }else{
+            Log.i(TAG, "onActivityResult: " + requestCode + "," + resultCode);
+        }
+    }
+
     public class ReplenishmentAdapter extends BaseQuickAdapter<CommodityBean,BaseViewHolder>{
 
         public ReplenishmentAdapter(int layoutResId, @Nullable List<CommodityBean> data) {
@@ -209,6 +287,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
             if(number != 0 && commodityBean.getCommodityAlternativeBean() != null){
                 //  设置商品名称
+                Glide.with(mContext).load(commodityBean.getCommodityAlternativeBean().getImageUrl()).into((ImageView) helper.getView(R.id.replenishment_item_image));
                 helper.setText(R.id.replenishment_item_name_tv,commodityBean.getCommodityAlternativeBean().getCommodityName());
             }else{
                 Glide.with(mContext).load(R.mipmap.chuyu).into((ImageView) helper.getView(R.id.replenishment_item_image));

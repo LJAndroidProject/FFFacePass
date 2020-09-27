@@ -23,25 +23,32 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
         <Button
+            android:id="@+id/replenishment_details_clear_btn"
             android:text="清空库存"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/replenishment_details_save_btn"
+            android:text="确定补货"
+            android:layout_marginStart="20dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="100dp">
+        android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/replenishment_details_image"
             android:padding="10dp"
             android:src="@mipmap/logo"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="match_parent"/>
+            android:layout_height="100dp"/>
         <TextView
             android:id="@+id/replenishment_details_message"
             android:padding="20dp"
-            android:text="123123123"
+            android:text="商品名称："
             android:gravity="center|left"
             android:layout_weight="1"
             android:layout_width="0dp"

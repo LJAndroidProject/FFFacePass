@@ -215,7 +215,7 @@ public class OrderUtil {
      * @param centerStr 为设备版本号、命令、数据长度、数据参数位
      * 返回 hex 转 字符串类型校验和
      * */
-    public static String centerStrToSumStr(String centerStr){
+    /*public static String centerStrToSumStr(String centerStr){
         if(centerStr.contains(" ")){
             centerStr = centerStr.replace(" ", "");
         }
@@ -231,6 +231,65 @@ public class OrderUtil {
         byte[] sumBytes = new byte[]{intToBytes(sum)[0]};
 
         return ByteStringUtil.byteArrayToHexStr(sumBytes);
+    }*/
+
+
+    /*public static String centerStrToSumStr(String centerStr){
+        if(centerStr.contains(" ")){
+            centerStr = centerStr.replace(" ", "");
+        }
+
+
+        //  中间内容转为 byte[] 数组
+        byte[] bytes = ByteStringUtil.hexStrToByteArray(centerStr);
+
+        //  取 int 类型的 校验和
+        int sum = CheckSum(bytes);
+
+        sum = bytes[0] + bytes[1] + bytes[2] + bytes[3] + bytes[4] + bytes[5] ;
+
+
+        int result = 0;
+        for(byte b : bytes){
+            result += b;
+        }
+
+        //Log.i("结果",sum < 10 ? ("0"+sum) : String.valueOf(sum));
+
+        // int 类型的校验和 取 低位
+        //byte[] sumBytes = new byte[]{intToBytes(sum)[0]};
+
+
+
+        //return sum < 10 ? ("0"+sum) : String.valueOf(sum);
+
+        return String.valueOf(result);
+
+    }*/
+
+
+
+    /**
+     * 中间字符串转 校验和 （数据累加）
+     * @param centerStr 中间字符串
+     * @return 校验和字符串
+     * */
+    public static String centerStrToSumStr(String centerStr){
+        if(centerStr.contains(" ")){
+            centerStr = centerStr.replace(" ", "");
+        }
+
+        //  中间内容转为 byte[] 数组
+        byte[] bytes = ByteStringUtil.hexStrToByteArray(centerStr);
+
+        int result = 0;
+        for(byte b : bytes){
+            result += b;
+        }
+
+
+        //Log.i("结果","指令："+Integer.toHexString(result));
+        return Integer.toHexString(result);
     }
 
 

@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.serialportlibrary.service.impl.SerialPortService;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -32,6 +34,7 @@ import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
+import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
@@ -55,6 +58,8 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
 
+
+
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
         replenishment_tv = (TextView)findViewById(R.id.replenishment_tv);
         replenishment_tv.setOnClickListener(new View.OnClickListener() {
@@ -65,9 +70,11 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+         /*int i = 0x00 + 0x01 + 0x01 + 0x01 + 0x01 + 0x11;
+        Log.i("结果",  String.valueOf(i));*/
 
         intent = getIntent();
-        userId = intent.getLongExtra("userId",0);
+        userId = intent.getLongExtra("userId",1);
 
         if(userId == 0){
             Toast.makeText(ControlActivity.this,"特殊用户",Toast.LENGTH_LONG).show();
@@ -91,7 +98,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         //  进入范围，打开其它和厨余垃圾
         List<DustbinBean> list = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.OTHER);
         list.addAll(DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.KITCHEN));
-        openDoor(list);
+        //openDoor(list);
     }
 
 
@@ -226,21 +233,24 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
             return null;
         }
 
-        for(DustbinBean dustbinBean : dustbinTypeChildList){
+        /*for(DustbinBean dustbinBean : dustbinTypeChildList){
             byte[] responseByte = SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().openDoor(dustbinBean.getDoorNumber()));
             if(responseByte != null && responseByte[7] == 0x10){
-                /*String responseString = ByteStringUtil.byteArrayToHexStr(responseByte);
+                *//*String responseString = ByteStringUtil.byteArrayToHexStr(responseByte);
 
                 String door = OrderUtil.cutOrderByIndex(responseString,5);
 
-                return Integer.parseInt(door);*/
+                return Integer.parseInt(door);*//*
 
                 //  打开门板成功后关闭消毒灯，关闭门板后再打开消毒灯
                 SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().openTheDisinfection(1));
 
                 return dustbinBean;
             }
-        }
+        }*/
+
+        SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().openDoor(2));
+
 
         return null;
     }

@@ -21,14 +21,19 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"/>
     <TextView
-        android:text="21/09/05"
-        android:id="@+id/item_replenishment_details_layout_addTime"
-        android:gravity="center|left"
+        android:text="过期时间"
+        android:id="@+id/item_replenishment_details_layout_expirationTime"
+        android:paddingStart="20dp"
+        android:paddingRight="20dp"
+        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"/>
-    <ImageView
-        android:padding="10dp"
-        android:src="@drawable/ic_baseline_close_24"
+    <TextView
+        android:text="生产日期"
+        android:id="@+id/item_replenishment_details_dateInProduced"
+        android:paddingStart="20dp"
+        android:paddingRight="20dp"
+        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"/>
 </LinearLayout>
