@@ -914,8 +914,9 @@ id ifRoom
 id image
 id imview
 id info
+id item_replenishment_details_dateInProduced
 id item_replenishment_details_layout
-id item_replenishment_details_layout_addTime
+id item_replenishment_details_layout_expirationTime
 id item_replenishment_details_layout_name
 id item_replenishment_details_layout_number
 id item_touch_helper_previous_elevation
@@ -959,7 +960,9 @@ id preview
 id progress_circular
 id progress_horizontal
 id radio
+id replenishment_clear_btn
 id replenishment_details_add_btn
+id replenishment_details_clear_btn
 id replenishment_details_image
 id replenishment_details_message
 id replenishment_details_recyclerView

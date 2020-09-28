@@ -13,6 +13,8 @@ public class ServerAddress {
     //  人脸图片上传到云服务器
     public final static String FACE_AND_USER_ID_UPLOAD = IP + "api/other/userFaceRegister";
 
+    public final static String FILE_UPLOAD = IP + "api/Other/userUpload";
+
     //  信息上报
     public final static String MESSAGE_UPLOAD = IP + "";
 

@@ -4,6 +4,9 @@ import android.app.Application;
 import android.app.Notification;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.umeng.commonsdk.UMConfigure;
@@ -16,10 +19,17 @@ import com.umeng.message.entity.UMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.DustbinBean;
+import megvii.testfacepass.independent.util.NetWorkUtil;
+import okhttp3.Call;
 
 public class APP extends Application {
 
@@ -58,6 +68,32 @@ public class APP extends Application {
 
                 setDeviceToken(deviceToken);
 
+                long nowTime = System.currentTimeMillis() / 1000 ;
+                String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+                Map<String,String> map = new HashMap<>();
+                map.put("device_id", androidID);
+                map.put("device_token",deviceToken);
+                map.put("sign",md5(androidID + nowTime + key).toUpperCase());
+                map.put("timestamp",String.valueOf(nowTime));
+
+                NetWorkUtil.getInstance().doPost(ServerAddress.DEVICE_REGISTER, map, new NetWorkUtil.NetWorkListener() {
+                    @Override
+                    public void success(String response) {
+                        Log.i("人脸注册","deviceToken 注册成功" + response);
+                    }
+
+                    @Override
+                    public void fail(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void error(Exception e) {
+
+                    }
+                });
+
+
 
                 /*SharedPreferences.Editor editor = getSharedPreferences("appConfig", MODE_PRIVATE).edit();
                 editor.putString("deviceToken",deviceToken);
@@ -81,6 +117,35 @@ public class APP extends Application {
         mPushAgent.setMessageHandler(messageHandler);
 
     }
+
+
+
+    private String key = "e0e9061d403f1898a501b8d7a840b949";
+    @NonNull
+    public static String md5(String string) {
+        if (TextUtils.isEmpty(string)) {
+            return "";
+        }
+        MessageDigest md5 = null;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            byte[] bytes = md5.digest(string.getBytes());
+            StringBuilder result = new StringBuilder();
+            for (byte b : bytes) {
+                String temp = Integer.toHexString(b & 0xff);
+                if (temp.length() == 1) {
+                    temp = "0" + temp;
+                }
+                result.append(temp);
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+
 
     public long getUserId() {
         return userId;

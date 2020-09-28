@@ -3,6 +3,7 @@ package megvii.testfacepass;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -235,13 +236,22 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().saveInTx(list);
 
-                Intent intent = new Intent(ReplenishmentDetailsActivity.this,ReplenishmentActivity.class);
-                intent.putExtra("listPosition",listPosition);
-                intent.putExtra("commodityJsonString",new Gson().toJson(list.get(0)));
-                setResult(RESULT_OK,intent);
-                finish();
+                if(commodityBean != null && commodityBean.getCommodityAlternativeBean() != null){
+
+
+                    DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().saveInTx(list);
+
+                    Intent intent = new Intent(ReplenishmentDetailsActivity.this,ReplenishmentActivity.class);
+                    intent.putExtra("listPosition",listPosition);
+                    intent.putExtra("commodityJsonString",new Gson().toJson(list.get(0)));
+                    setResult(RESULT_OK,intent);
+                    finish();
+
+
+                }else{
+                    finish();
+                }
             }
         });
 
@@ -368,7 +378,17 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
                 helper.setText(R.id.item_replenishment_details_layout_name, commodityBean.getCommodityAlternativeBean().getCommodityName());
                 helper.setText(R.id.item_replenishment_details_dateInProduced, "生产日期：" + stampToDate(commodityBean.getDateInProduced()));
 
-                helper.setText(R.id.item_replenishment_details_layout_expirationTime,"过期时间："+stampToDate(commodityBean.getDateInProduced() + (commodityBean.getCommodityAlternativeBean().getExpirationDate() * 24 * 60)));
+                //  过期时间
+                long outOfDay = commodityBean.getDateInProduced() + (commodityBean.getCommodityAlternativeBean().getExpirationDate() * 86400000);
+
+                helper.setText(R.id.item_replenishment_details_layout_expirationTime,"过期时间："+stampToDate(outOfDay));
+
+                //  过期了
+                if(outOfDay < System.currentTimeMillis()){
+                    helper.setTextColor(R.id.item_replenishment_details_layout_expirationTime, Color.RED);
+                }
+
+
             }else{
                 helper.setAlpha(R.id.item_replenishment_details_layout,0.5f);
                 helper.setText(R.id.item_replenishment_details_layout_number, String.valueOf(commodityBean.getTierChildrenCommodityNumber()));

@@ -17,14 +17,14 @@
             android:layout_width="56dp"
             android:layout_height="56dp"/>
         <TextView
-            android:text="库存管理"
+            android:text="货道管理"
             android:gravity="center|left"
             android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
         <Button
             android:id="@+id/replenishment_clear_btn"
-            android:text="清空库存"
+            android:text="清空所有货道"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>

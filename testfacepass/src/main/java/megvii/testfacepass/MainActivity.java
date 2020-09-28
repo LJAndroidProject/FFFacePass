@@ -3,6 +3,7 @@ package megvii.testfacepass;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -122,7 +123,9 @@ import megvii.testfacepass.adapter.GroupNameAdapter;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
 import megvii.testfacepass.camera.CameraPreviewData;
+import megvii.testfacepass.independent.bean.ImageUploadResult;
 import megvii.testfacepass.independent.bean.JsonMould;
+import megvii.testfacepass.independent.bean.ResultMould;
 import megvii.testfacepass.independent.bean.VXLoginCall;
 import megvii.testfacepass.independent.bean.VXLoginResult;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
@@ -316,8 +319,13 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         mainHandler = new Handler(Looper.getMainLooper());
 
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("加载中...");
+        progressDialog.create();
 
-        new Handler().postDelayed(new Runnable() {
+
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -351,7 +359,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
             }
-        },2000);
+        },2000);*/
 
 
 
@@ -488,6 +496,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         Log.i(PUSH,"服务器传过来的结果" + msg.custom);
 
 
+        Log.i(NOW_TAG,"接收到友盟推送的内容" + msg.custom);
 
         Gson gson = new Gson();
 
@@ -499,21 +508,21 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
             if("QrReturn".equals(action)){
                 VXLoginCall vxLoginCall = gson.fromJson(list,VXLoginCall.class);
-                Log.i(PUSH,"接收"+vxLoginCall.toString());
-                Log.i(PUSH,"设置用户id" + app.getUserId());
+                Log.i(NOW_TAG,"list 内容 : " + vxLoginCall.toString());
+                Log.i(NOW_TAG,"设置用户 id 之前的用户 id " + app.getUserId());
                 //  修改当前设置的用户id
                 app.setUserId(vxLoginCall.getInfo().getUser_id());
-                Log.i(PUSH,"设置用户id" + app.getUserId());
+                Log.i(NOW_TAG,"设置用户 id 之后 的用户 id" + app.getUserId());
 
                 //  隐藏二维码扫码
                 if(qrCodeDialog != null && qrCodeDialog.isShowing()){
-                    Log.i(PUSH,"隐藏二维码弹窗");
+                    Log.i(NOW_TAG,"隐藏二维码弹窗");
                     qrCodeDialog.dismiss();
                 }
 
                 //  云端有该人的人脸特征，则将特征保存到本地
                 if(vxLoginCall.isFeatrue_state() && vxLoginCall.isFace_image_state()){
-                    Log.i(PUSH,"含有人脸特征值");
+                    Log.i(NOW_TAG,"当前用户 含有人脸特征值 和 人脸图片");
                     //  获取来自服务器人脸特征 ( 字符串之前是 Base64 形式 )
                     byte[] feature = Base64.decode(vxLoginCall.getInfo().getFeatrue(),Base64.DEFAULT);
 
@@ -525,7 +534,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     //  绑定成功就可以 将 facetoken 和 id 进行绑定了
 
                     if(bindResult){
-                        Log.i(PUSH,"绑定成功，将跳转控制台");
+                        Log.i(NOW_TAG,"绑定成功，将跳转控制台");
                         //  facetoken 和用户id 绑定
                         DataBaseUtil.getInstance(this).insertUserIdAndFaceToken(app.getUserId(),faceToken);
 
@@ -539,13 +548,13 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
                     }else{
-                        Log.i(PUSH,"绑定失败，删除人脸");
+                        Log.i(NOW_TAG,"绑定失败，删除人脸");
                         //  如果没有则删除之前的绑定
                         mFacePassHandler.deleteFace(faceToken.getBytes());
                     }
                 }else{
                     //   云端 没有该用户的 人脸 特征值，则提示需要人脸注册
-                    Log.i(PUSH,"显示人脸录入");
+                    Log.i(NOW_TAG,"云端没有该人脸图片和特征值，显示人脸注册");
 
 
                     mainHandler.post(new Runnable() {
@@ -554,8 +563,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             showVerifyFail();
                         }
                     });
-
-
 
                 }
 
@@ -1141,6 +1148,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
+                                    Log.i(NOW_TAG, "验证失败，安卓板底库中没有该人脸");
                                     showQRCodeDialog();
                                     //  showVerifyFail();
                                 }
@@ -1174,6 +1182,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     //showToast("ID = " + String.valueOf(trackId), Toast.LENGTH_SHORT, false, null);    原先处理方式
                     Log.i(MY_TAG,"searchScore : " + searchScore + ",livenessScore : " + livenessScore + "验证不通过" );
                     //  显示验证识别并录脸
+                    Log.i(NOW_TAG, "验证失败，人脸分小于 64 显示二维码登陆弹窗");
                     showQRCodeDialog();
                     //  showVerifyFail();
                 }else{
@@ -1641,6 +1650,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             imageView.setImageResource(R.drawable.ic_baseline_error_outline_24);
 
 
+            Log.i(NOW_TAG, "验证失败，showToast 中的 验证失败");
             showQRCodeDialog();
             //  显示验证识别并录脸
             //  showVerifyFail();
@@ -1750,11 +1760,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                             //  将该facetoken 和用户id进行绑定
 
-
-
-
-
                             //  上传人脸图片,特征值，以及用户id
+
+
                             uploadFace(file,facePassExtractFeatureResult.featureData,app.getUserId());
                         }else{
                             mFacePassHandler.deleteFace(faceToken.getBytes());
@@ -1926,6 +1934,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  拼接地址 传递 token
         qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + androidID));
 
+        Log.i(NOW_TAG,"二维码显示的内容 : " + ServerAddress.LOGIN + androidID);
+
 
         //  暂时添加一个点击事件，模拟扫码成功，并通过TCP连接返回了用户id和token
         qr_code_login.setOnClickListener(new View.OnClickListener() {
@@ -1985,63 +1995,209 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 });
     }
 
+
+    private final String NOW_TAG = "人脸注册";
+
     /**
      * 扫码后发现没有录入人脸，则将人脸上传到云服务器
      * @param userId 用户id
      * @param file 人脸图片
      * */
-    public void uploadFace(final File file, byte[] feature,final long userId){
+    public void uploadFace(final File file,final byte[] feature,final long userId){
+        progressDialog.show();
+
         OkHttpClient client = new OkHttpClient.Builder().build();
 
         // 设置文件以及文件上传类型封装
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), file);
 
 
-        long nowTime = System.currentTimeMillis() / 1000 ;
+        final long nowTime = System.currentTimeMillis() / 1000 ;
 
-        String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
+        final String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
 
         // 文件上传的请求体封装
         MultipartBody multipartBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("user_id",String.valueOf(userId))
-                .addFormDataPart("featrue", Base64.encodeToString(feature,Base64.DEFAULT))
-                .addFormDataPart("face_image", file.getName(), requestBody)
+                //.addFormDataPart("user_id",String.valueOf(userId))
+                //.addFormDataPart("featrue", Base64.encodeToString(feature,Base64.DEFAULT))
+                .addFormDataPart("file", file.getName(), requestBody)
 
-                .addFormDataPart("sign",md5(androidID + nowTime + key).toUpperCase())
-                .addFormDataPart("device_id",androidID)
-                .addFormDataPart("timestamp",String.valueOf(nowTime))
+                //.addFormDataPart("sign",md5(androidID + nowTime + key).toUpperCase())
+                //.addFormDataPart("device_id",androidID)
+                //.addFormDataPart("timestamp",String.valueOf(nowTime))
                 .build();
-
-
-
 
         okhttp3.Request request = new okhttp3.Request.Builder()
-                .url(ServerAddress.FACE_AND_USER_ID_UPLOAD)
+                .url(ServerAddress.FILE_UPLOAD)
                 .post(multipartBody)
                 .build();
-
 
         Call call = client.newCall(request);
 
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                toast("失败");
+
+                Log.i(NOW_TAG,"图片上传失败：" + e.getMessage() );
+
+
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        //  如果存在二维码弹窗，则关闭
+                        if(qrCodeDialog != null && qrCodeDialog.isShowing()){
+                            qrCodeDialog.dismiss();
+                        }
+
+                        if(progressDialog != null && progressDialog.isShowing()){
+                            progressDialog.dismiss();
+                        }
+
+                        AlertDialog.Builder alertB = new AlertDialog.Builder(MainActivity.this);
+                        alertB.setCancelable(false);
+                        alertB.setTitle("提示");
+                        alertB.setMessage("人脸注册失败");
+                        alertB.setPositiveButton("重试", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                uploadFace(file,feature,userId);
+
+                            }
+                        });
+                        alertB.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        alertB.create();
+                        alertB.show();
+
+
+                    }
+                });
             }
 
             @Override
             public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                ImageUploadResult imageUploadResult = new Gson().fromJson(response.body().string(),ImageUploadResult.class);
 
-                DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(app.getUserId(),nowFaceToken);
+                Log.i(NOW_TAG,"图片上传结果：" + imageUploadResult.toString());
 
 
-                Log.i(PUSH,"图片上传结果：" + response.body().string().substring(7000));
-                file.delete();
+                //  图片上传成功
+                if(imageUploadResult.getCode() == 1){
+                    Map<String,String> map = new HashMap<>();
+                    map.put("user_id",String.valueOf(userId));
+                    map.put("featrue",Base64.encodeToString(feature,Base64.DEFAULT));
+                    map.put("face_image",imageUploadResult.getData());
+                    map.put("sign",md5(androidID + nowTime + key).toUpperCase());
+                    map.put("device_id",androidID);
+                    map.put("timestamp",String.valueOf(nowTime));
+                    NetWorkUtil.getInstance().doPost(ServerAddress.FACE_AND_USER_ID_UPLOAD, map, new NetWorkUtil.NetWorkListener() {
+                        @Override
+                        public void success(String response) {
+                            Log.i(NOW_TAG,"人脸注册 json 结果："+response);
+
+
+                            ResultMould resultMould = new Gson().fromJson(response,ResultMould.class);
+                            //  人脸注册成功
+                            if(resultMould.getCode() == 1){
+
+                                Log.i(NOW_TAG,"开始本地 userToken 和 userID 绑定");
+
+                                //  本地实现
+                                DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(app.getUserId(),nowFaceToken);
+
+
+                                Log.i(NOW_TAG,app.getUserId() + "绑定 " + nowFaceToken);
+
+                                file.delete();
+
+                                //  如果二维码扫码弹窗显示 则 隐藏
+                                if(qrCodeDialog != null && qrCodeDialog.isShowing()){
+                                    qrCodeDialog.dismiss();
+                                }
+
+
+                                if(progressDialog != null && progressDialog.isShowing()){
+                                    progressDialog.dismiss();
+                                }
+
+
+                                Intent intent = new Intent(MainActivity.this,ControlActivity.class);
+                                intent.putExtra("userId",app.getUserId());
+                                startActivity(intent);
+
+
+                            }
+                        }
+
+                        @Override
+                        public void fail(Call call, IOException e) {
+                            Log.i(NOW_TAG,"人脸注册失败 fail：" + e.getMessage());
+
+                            if(progressDialog != null && progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
+                        }
+
+                        @Override
+                        public void error(Exception e) {
+                            Log.i(NOW_TAG,"人脸注册失败error ：" + e.getMessage());
+
+                            if(progressDialog != null && progressDialog.isShowing()){
+                                progressDialog.dismiss();
+                            }
+                        }
+                    });
+                }
+
+
+
+
+                //  DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(app.getUserId(),nowFaceToken);
+
+
+                //Log.i(PUSH,"图片上传结果：" + response.body().string().substring(7000));
+                //Log.i("结果",response.body().string());
+
             }
         });
+    }
+
+
+
+    ProgressDialog progressDialog ;
+
+    public void userRegisterFace(){
+        Map<String,String> map = new HashMap<>();
+        map.put("user_id","");
+        map.put("featrue","");
+        map.put("face_image","");
+        map.put("sign","");
+        map.put("device_id","");
+        map.put("timestamp","");
+        NetWorkUtil.getInstance().doPost(ServerAddress.FACE_AND_USER_ID_UPLOAD, map, new NetWorkUtil.NetWorkListener() {
+            @Override
+            public void success(String response) {
+
+            }
+
+            @Override
+            public void fail(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void error(Exception e) {
+
+            }
+        });
+
     }
 
 
@@ -2203,6 +2359,13 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             //  如果人脸底库中存在该人脸，但是没有使用微信登陆过，则显示 扫描二维码弹窗
 
             if(!isHasShowDialog()){
+                Log.i(NOW_TAG, "验证失败，人脸底库中存在该人脸，但是没有使用微信登陆过");
+
+                List<UserMessage> list = userMessageDao.queryBuilder().list();
+                for(UserMessage um : list){
+                    Log.i(NOW_TAG, "人脸id数据库：" + um.toString());
+                }
+
                 showQRCodeDialog();
             }
 
@@ -2235,6 +2398,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             return true;
         }
 
+
+        if(progressDialog != null && progressDialog.isShowing()){
+            return true;
+        }
 
         return false;
     }

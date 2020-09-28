@@ -82,12 +82,12 @@ public class ReplenishmentActivity extends AppCompatActivity {
         }else{
 
             List<CommodityAlternativeBean> commodityAlternativeBeans = new ArrayList<>();
-            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 1,9,"面包",false,0,true,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",360));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 1,9,"面包",false,0,true,"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2383288134,2143816432&fm=15&gp=0.jpg",360));
             commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 2,6,"小面包",false,0,true,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",360));
-            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 3,5.5,"方便面",true,500,true,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",180));
-            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 4,10,"瑞士卷",false,0,false,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",90));
-            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 5,4,"纯牛奶",true,400,false,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",90));
-            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 6,2,"矿泉水",true,200,false,"https://file-cloud.yst.com.cn/website/2020/04/14/c58577d3507046b79e28564fc9f4767c.png",360));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 3,5.5,"方便面",true,500,true,"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3214305998,151990978&fm=26&gp=0.jpg",180));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 4,10,"瑞士卷",false,0,false,"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2975923086,1932516814&fm=26&gp=0.jpg",90));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 5,4,"纯牛奶",true,400,false,"https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2336638272,2853397711&fm=26&gp=0.jpg",90));
+            commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 6,2,"矿泉水",true,200,false,"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1132615959,1940036971&fm=26&gp=0.jpg",360));
 
 
             DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().insertInTx(commodityAlternativeBeans);
@@ -290,8 +290,8 @@ public class ReplenishmentActivity extends AppCompatActivity {
                 Glide.with(mContext).load(commodityBean.getCommodityAlternativeBean().getImageUrl()).into((ImageView) helper.getView(R.id.replenishment_item_image));
                 helper.setText(R.id.replenishment_item_name_tv,commodityBean.getCommodityAlternativeBean().getCommodityName());
             }else{
-                Glide.with(mContext).load(R.mipmap.chuyu).into((ImageView) helper.getView(R.id.replenishment_item_image));
-                helper.setText(R.id.replenishment_item_name_tv,"缺货状态");
+                Glide.with(mContext).load(R.mipmap.logo).into((ImageView) helper.getView(R.id.replenishment_item_image));
+                helper.setText(R.id.replenishment_item_name_tv,"未上架商品");
             }
 
 
