@@ -54,12 +54,12 @@ public final class R {
         public static final int LEFT = 0x7f080006;
         public static final int RIGHT = 0x7f080008;
         public static final int TOP = 0x7f080009;
-        public static final int xbanner_pointId = 0x7f080104;
+        public static final int xbanner_pointId = 0x7f080109;
     }
     public static final class layout {
         private layout() {}
 
-        public static final int xbanner_item_image = 0x7f0a004e;
+        public static final int xbanner_item_image = 0x7f0a0050;
     }
     public static final class string {
         private string() {}

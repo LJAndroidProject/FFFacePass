@@ -379,7 +379,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         Intent intent2 = new Intent("android.q_zheng.action.APPMONITOR");
         intent2.putExtra("package_name","megvii.testfacepass"); //设置所监控应用的包名为 com.xxx.yyy
         intent2.putExtra("self_starting", true); //设置开机自启动
-        intent2.putExtra("period", 15); //设置监控应有的周期，秒为单位，最小值为 15 秒，如果不设置
+        intent2.putExtra("period", 0); //设置监控应有的周期，秒为单位，最小值为 15 秒，如果不设置
         //或者为 0，表示不需要系统对应用是否在前台进行监控
         sendBroadcast(intent2);
 
@@ -2444,6 +2444,14 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, mUri);
                 startActivityForResult(intent, REQUEST_CODE_CAMERA);
 
+            }
+        });
+        alertB.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                app.setUserId(0);
+
+                dialog.dismiss();
             }
         });
         alertB.create();

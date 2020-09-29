@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:id="@+id/item_vendingMachineActivity_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_margin="20dp"
+        android:id="@+id/item_vendingMachineActivity_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+    <TextView
+        android:text="商品名称"
+        android:gravity="center"
+        android:padding="20dp"
+        android:textSize="20sp"
+        android:id="@+id/vendingMachineActivity_txt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

@@ -108,7 +108,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         if(commodityBean.getCommodityID() == 0){
 
             //  图片和文字填充
-            Glide.with(this).load(R.mipmap.chuyu).into(replenishment_details_image);
+            Glide.with(this).load(R.mipmap.logo).into(replenishment_details_image);
             replenishment_details_message.setText("点击指定此货道商品类型");
 
 
