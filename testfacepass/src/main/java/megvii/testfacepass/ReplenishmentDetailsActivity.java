@@ -66,6 +66,8 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
     int dateInProducedMonth;
     int dateInProducedDay;
 
+
+    private final long DAY_TIME = 86400000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +77,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
 
 
          dateInProducedYear = calendar.get(Calendar.YEAR);
-         dateInProducedMonth = calendar.get(Calendar.MONTH);
+         dateInProducedMonth = calendar.get(Calendar.MONTH) + 1;
          dateInProducedDay = calendar.get(Calendar.DAY_OF_MONTH);
 
         //  绑定组件
@@ -323,7 +325,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
                         //  设置商品备选
                         data.setCommodityAlternativeBean(commodityBean.getCommodityAlternativeBean());
                         //  设置生产日期
-                        data.setDateInProduced(convertTimeToLong(dateInProducedYear + "-" + dateInProducedMonth + "-" + dateInProducedDay));
+                        data.setDateInProduced(convertTimeToLong(dateInProducedYear + "-" + (dateInProducedMonth) + "-" + dateInProducedDay));
                         //  设置柜号
                         data.setCupboardNumber(commodityBean.getCupboardNumber());
                         //  设置层号
@@ -378,14 +380,22 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
                 helper.setText(R.id.item_replenishment_details_layout_name, commodityBean.getCommodityAlternativeBean().getCommodityName());
                 helper.setText(R.id.item_replenishment_details_dateInProduced, "生产日期：" + stampToDate(commodityBean.getDateInProduced()));
 
-                //  过期时间
-                long outOfDay = commodityBean.getDateInProduced() + (commodityBean.getCommodityAlternativeBean().getExpirationDate() * 86400000);
+                //  过期时间    提前 30 天警告，    commodityBean.getCommodityAlternativeBean().getExpirationDate() - 30
+                long outOfDay = commodityBean.getDateInProduced() + (commodityBean.getCommodityAlternativeBean().getExpirationDate() * DAY_TIME);
 
                 helper.setText(R.id.item_replenishment_details_layout_expirationTime,"过期时间："+stampToDate(outOfDay));
 
-                //  过期了
-                if(outOfDay < System.currentTimeMillis()){
-                    helper.setTextColor(R.id.item_replenishment_details_layout_expirationTime, Color.RED);
+                //  临近过期
+                if(outOfDay - (30 * DAY_TIME) < System.currentTimeMillis()){
+                    helper.setTextColor(R.id.item_replenishment_details_layout_expirationTime, Color.BLUE);
+
+                    if(outOfDay < System.currentTimeMillis()){
+                        //  过期
+                        helper.setTextColor(R.id.item_replenishment_details_layout_expirationTime, Color.RED);
+                    }
+
+                }else{
+                    helper.setTextColor(R.id.item_replenishment_details_layout_expirationTime, Color.GRAY);
                 }
 
 

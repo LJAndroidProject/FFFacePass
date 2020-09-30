@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "COMMODITY_ALTERNATIVE_BEAN".
 */
-public class CommodityAlternativeBeanDao extends AbstractDao<CommodityAlternativeBean, Void> {
+public class CommodityAlternativeBeanDao extends AbstractDao<CommodityAlternativeBean, Long> {
 
     public static final String TABLENAME = "COMMODITY_ALTERNATIVE_BEAN";
 
@@ -22,7 +22,7 @@ public class CommodityAlternativeBeanDao extends AbstractDao<CommodityAlternativ
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property CommodityID = new Property(0, Long.class, "commodityID", false, "COMMODITY_ID");
+        public final static Property CommodityID = new Property(0, Long.class, "commodityID", true, "_id");
         public final static Property CommodityMoney = new Property(1, double.class, "commodityMoney", false, "COMMODITY_MONEY");
         public final static Property CommodityName = new Property(2, String.class, "commodityName", false, "COMMODITY_NAME");
         public final static Property CanUserIntegral = new Property(3, boolean.class, "canUserIntegral", false, "CAN_USER_INTEGRAL");
@@ -45,7 +45,7 @@ public class CommodityAlternativeBeanDao extends AbstractDao<CommodityAlternativ
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"COMMODITY_ALTERNATIVE_BEAN\" (" + //
-                "\"COMMODITY_ID\" INTEGER UNIQUE ," + // 0: commodityID
+                "\"_id\" INTEGER PRIMARY KEY ," + // 0: commodityID
                 "\"COMMODITY_MONEY\" REAL NOT NULL ," + // 1: commodityMoney
                 "\"COMMODITY_NAME\" TEXT," + // 2: commodityName
                 "\"CAN_USER_INTEGRAL\" INTEGER NOT NULL ," + // 3: canUserIntegral
@@ -112,8 +112,8 @@ public class CommodityAlternativeBeanDao extends AbstractDao<CommodityAlternativ
     }
 
     @Override
-    public Void readKey(Cursor cursor, int offset) {
-        return null;
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
     }    
 
     @Override
@@ -144,20 +144,23 @@ public class CommodityAlternativeBeanDao extends AbstractDao<CommodityAlternativ
      }
     
     @Override
-    protected final Void updateKeyAfterInsert(CommodityAlternativeBean entity, long rowId) {
-        // Unsupported or missing PK type
-        return null;
+    protected final Long updateKeyAfterInsert(CommodityAlternativeBean entity, long rowId) {
+        entity.setCommodityID(rowId);
+        return rowId;
     }
     
     @Override
-    public Void getKey(CommodityAlternativeBean entity) {
-        return null;
+    public Long getKey(CommodityAlternativeBean entity) {
+        if(entity != null) {
+            return entity.getCommodityID();
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean hasKey(CommodityAlternativeBean entity) {
-        // TODO
-        return false;
+        return entity.getCommodityID() != null;
     }
 
     @Override

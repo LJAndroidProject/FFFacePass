@@ -1,6 +1,7 @@
 package megvii.testfacepass.independent.bean;
 
 import org.greenrobot.greendao.annotation.Entity;
+import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Unique;
 import org.greenrobot.greendao.annotation.Generated;
 
@@ -10,7 +11,7 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class CommodityAlternativeBean{
     //  商品id
-    @Unique
+    @Id
     private Long commodityID;
 
     //  商品价格

@@ -920,6 +920,8 @@ id item_replenishment_details_layout_expirationTime
 id item_replenishment_details_layout_name
 id item_replenishment_details_layout_number
 id item_touch_helper_previous_elevation
+id item_vendingMachineActivity_image
+id item_vendingMachineActivity_layout
 id iv_close
 id iv_delete_face
 id iv_delete_group
@@ -1045,6 +1047,9 @@ id tv_prompt
 id tv_show_sync_data
 id up
 id useLogo
+id vendingMachineActivity_recyclerView
+id vendingMachineActivity_title
+id vendingMachineActivity_txt
 id view_offset_helper
 id visible
 id withText
@@ -1094,6 +1099,7 @@ layout activity_main
 layout activity_replenishment
 layout activity_replenishment_details
 layout activity_splash
+layout activity_vending_machine
 layout admin_login_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
@@ -1139,6 +1145,7 @@ layout setting
 layout support_simple_spinner_dropdown_item
 layout test_serialport_layout
 layout toast
+layout vending_machine_layout
 layout xbanner_item_image
 mipmap chuyu
 mipmap ic_launcher
