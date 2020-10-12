@@ -324,7 +324,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         progressDialog.setMessage("加载中...");
         progressDialog.create();
 
-
         /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -406,7 +405,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         //  初始化 TCP 连接，与服务器进行通信
-        //  initTCP();
+        initTCP();
 
         if (SDK_MODE == FacePassSDKMode.MODE_ONLINE) {
             //  http://10.199.1.14:8080/api/service/recognize/v1
@@ -3192,4 +3191,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             return result;
         }
     }
+
+
+
 }

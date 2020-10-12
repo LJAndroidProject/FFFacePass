@@ -207,14 +207,39 @@ public class ReplenishmentActivity extends AppCompatActivity {
         //  创建货道列表
         List<CommodityBean> commodityBeanList = new ArrayList<>();
 
-        for(int h = 1 ; h <= 6 ; h++){
+        /*for(int h = 1 ; h <= 6 ; h++){
             for(int w = 1 ; w <= 10 ; w++){
                 for(int z = 1 ; z <= 10 ; z++){
                     commodityBeanList.add(new CommodityBean(null,0,null,1,w,h,z,0,0));
                     Log.i("结果",commodityBeanList.get((commodityBeanList.size()-1)).toString());
                 }
             }
+        }*/
+
+        //  货道数
+        int number = 1;
+
+        //  第一层 可存放8个
+        for(; number <= 9; number += 2){
+            for(int tierChildrenCommodityNumber = 0 ; tierChildrenCommodityNumber <= 8 ; tierChildrenCommodityNumber++){
+                commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
+            }
         }
+
+        //  第二层 可存放3个
+        for(; number <= 19; number +=2 ){
+            for(int tierChildrenCommodityNumber = 0 ; tierChildrenCommodityNumber <= 3 ; tierChildrenCommodityNumber++){
+                commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
+            }
+        }
+
+        //  三 至 六层 可存放10个
+        for(; number <= 60; number++){
+            for(int tierChildrenCommodityNumber = 0 ; tierChildrenCommodityNumber <= 10 ; tierChildrenCommodityNumber++){
+                commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
+            }
+        }
+
 
         Log.i(TAG, "创建成功 : " + commodityBeanList.size() );
         DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().insertInTx(commodityBeanList);
@@ -270,7 +295,8 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
         @Override
         protected void convert(BaseViewHolder helper, CommodityBean commodityBean) {
-            helper.setText(R.id.replenishment_item_tv, commodityBean.getCupboardNumber() + "-" + commodityBean.getTierNumber() + "-" +commodityBean.getTierChildrenNumber());
+                //  helper.setText(R.id.replenishment_item_tv, commodityBean.getCupboardNumber() + "-" + commodityBean.getTierNumber() + "-" +commodityBean.getTierChildrenNumber());
+            helper.setText(R.id.replenishment_item_tv, "A " + commodityBean.getTierChildrenNumber());
 
             //  查询库存数
             int number = DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder()

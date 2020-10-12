@@ -242,7 +242,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
                 if(commodityBean != null && commodityBean.getCommodityAlternativeBean() != null){
 
 
-                    DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().saveInTx(list);
+                    DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().insertOrReplaceInTx(list);
 
                     Intent intent = new Intent(ReplenishmentDetailsActivity.this,ReplenishmentActivity.class);
                     intent.putExtra("listPosition",listPosition);

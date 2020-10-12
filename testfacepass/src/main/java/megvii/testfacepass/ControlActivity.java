@@ -70,6 +70,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+
          /*int i = 0x00 + 0x01 + 0x01 + 0x01 + 0x01 + 0x11;
         Log.i("结果",  String.valueOf(i));*/
 
@@ -183,6 +184,9 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.btn_harmful_waste:
                 list = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByType(DustbinENUM.HARMFUL);
+                break;
+            case R.id.btn_vending_machine:
+                SerialPortUtil.getInstance().sendData("0d 24 28 00 60 00 03 0a 0a 31 32 33 34 35 36 37 38 39 30 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4E 0d 0a");
                 break;
         }
 

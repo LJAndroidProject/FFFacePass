@@ -176,53 +176,53 @@ MERGED from [com.android.support:support-compat:25.4.0] C:\Users\Administrator\.
 	android:name
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:25:9-28
 activity#megvii.testfacepass.VendingMachineActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:32:9-38:20
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:32:9-34:20
 	android:name
 		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:32:19-57
-intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:33:13-37:29
-action#android.intent.action.MAIN
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:34:17-69
-	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:34:25-66
-category#android.intent.category.LAUNCHER
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:36:17-77
-	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:36:27-74
 activity#megvii.testfacepass.ReplenishmentDetailsActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:39:9-75
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:35:9-75
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:39:19-63
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:35:19-63
 activity#megvii.testfacepass.ReplenishmentActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:40:9-68
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:36:9-68
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:40:19-56
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:36:19-56
 activity#megvii.testfacepass.ControlActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:41:9-45:20
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:37:9-41:20
 	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:43:13-44
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:39:13-44
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:42:13-44
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:38:13-44
 activity#megvii.testfacepass.AdvertisingActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:46:9-49:47
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:42:9-45:47
 	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:49:13-44
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:45:13-44
 	android:exported
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:48:13-36
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:44:13-36
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:47:13-48
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:43:13-48
 activity#megvii.testfacepass.SplashActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:50:9-52:40
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:46:9-48:40
 	android:label
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:52:13-37
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:48:13-37
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:51:13-43
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:47:13-43
 activity#megvii.testfacepass.MainActivity
-ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:53:9-57:20
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:49:9-57:20
 	android:launchMode
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:55:13-44
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:51:13-44
 	android:name
-		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:54:13-41
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:50:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:52:13-56:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:53:17-69
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:53:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:55:17-77
+	android:name
+		ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:55:27-74
 activity#megvii.testfacepass.SettingActivity
 ADDED from C:\Users\Administrator\AndroidStudioProjects\DustbinFacePass\FacePass\testfacepass\src\main\AndroidManifest.xml:58:9-61:74
 	android:launchMode

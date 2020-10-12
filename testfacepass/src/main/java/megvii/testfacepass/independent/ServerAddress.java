@@ -23,4 +23,8 @@ public class ServerAddress {
 
     //  设备注册
     public final static String DEVICE_REGISTER = IP + "api/Other/equipmentRegister";
+
+
+    //  获取商品备选列表
+    public final static String GET_GOODS_POS = IP + "api/other/getGoodsPos";
 }

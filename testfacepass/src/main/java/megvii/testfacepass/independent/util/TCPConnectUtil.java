@@ -23,8 +23,8 @@ public class TCPConnectUtil {
 
 
                     mNettyTcpClient = new NettyTcpClient.Builder()
-                            .setHost("47.106.33.158")    //设置服务端地址
-                            .setTcpPort(9999) //设置服务端端口号
+                            .setHost("47.115.76.11")    //设置服务端地址
+                            .setTcpPort(2346) //设置服务端端口号
                             .setMaxReconnectTimes(-1)    //设置最大重连次数 -1时无限重连
                             .setReconnectIntervalTime(5000)    //设置重连间隔时间。单位 毫秒
                             .setSendheartBeat(true) //设置是否发送心跳

@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,16 +21,26 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.google.gson.Gson;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
+import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
 import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
+import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.NetWorkUtil;
+import okhttp3.Call;
 
 
 /**
@@ -79,7 +90,7 @@ public class VendingMachineActivity extends AppCompatActivity {
 
 
         //  更新商品列表
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+        /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
 
@@ -94,7 +105,7 @@ public class VendingMachineActivity extends AppCompatActivity {
 
                 updateCommodity(commodityAlternativeBeans);
             }
-        },5000);
+        },5000);*/
 
 
 
@@ -186,6 +197,53 @@ public class VendingMachineActivity extends AppCompatActivity {
             }
         });
 
+
+
+        List<CommodityAlternativeBean> commodityAlternativeBean = DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().build().list();
+        if(commodityAlternativeBean != null && commodityAlternativeBean.size() > 0 ){
+            Toast.makeText(this, "存在备选商品列表", Toast.LENGTH_SHORT).show();
+        }else{
+
+            NetWorkUtil.getInstance().doGet(ServerAddress.GET_GOODS_POS, null, new NetWorkUtil.NetWorkListener() {
+                @Override
+                public void success(String response) {
+                    GetServerGoods getServerGoods = new Gson().fromJson(response,GetServerGoods.class);
+                    //  获取商品列表
+                    List<GetServerGoods.DataBean.ListBean> listBeans = getServerGoods.getData().getList();
+
+
+
+                    List<CommodityAlternativeBean> commodityAlternativeBeans = new ArrayList<>();
+                    for(GetServerGoods.DataBean.ListBean listBean : listBeans){
+                        CommodityAlternativeBean commodityBean = new CommodityAlternativeBean();
+                        commodityBean.setCommodityName(listBean.getGoods_name());
+                        commodityBean.setCanUserIntegral(listBean.getScore_pay() == 1);
+                        commodityBean.setCommodityID((long) listBean.getId());
+                        commodityBean.setCommodityMoney(listBean.getGoods_price());
+                        commodityBean.setExpirationDate(listBean.getGoods_wonderful_days());
+                        commodityBean.setImageUrl(listBean.getGoods_image());
+                        commodityBean.setIntegralNumber(listBean.getScore_pay());
+                        commodityBean.setShelvesOf(listBean.getStatus() == 1);
+
+                        commodityAlternativeBeans.add(commodityBean);
+                    }
+
+
+                    DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityAlternativeBeanDao().insertInTx(commodityAlternativeBeans);
+                }
+
+                @Override
+                public void fail(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void error(Exception e) {
+
+                }
+            });
+
+        }
     }
 
 
