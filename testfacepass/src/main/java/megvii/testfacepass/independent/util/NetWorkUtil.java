@@ -116,7 +116,12 @@ public class NetWorkUtil {
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(final Call call,final IOException e) {
-                networkListener.fail(call,e);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        networkListener.fail(call,e);
+                    }
+                });
 
             }
 
@@ -124,13 +129,23 @@ public class NetWorkUtil {
             public void onResponse(final Call call, final Response response) {
 
                 if(response.isSuccessful()){
-                    try {
-                        networkListener.success(response.body().string());
-                    }catch (Exception e){
-                        networkListener.error(e);
-                    }
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                networkListener.success(response.body().string());
+                            }catch (Exception e){
+                                networkListener.error(e);
+                            }
+                        }
+                    });
                 }else{
-                    networkListener.error(new Exception("服务器异常"));
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            networkListener.error(new Exception("服务器异常"));
+                        }
+                    });
                 }
 
             }

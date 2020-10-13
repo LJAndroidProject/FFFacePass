@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_gravity="center"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
-    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ControlActivity">
     <TextView
+        android:layout_marginTop="100dp"
         android:paddingStart="70dp"
         android:paddingEnd="70dp"
         android:text="欢迎用户 13813813800，进入操作界面"
@@ -18,6 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
+        android:layout_below="@+id/control_welcome_textView"
         android:paddingStart="70dp"
         android:paddingEnd="70dp"
         android:layout_marginBottom="20dp"
@@ -26,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <TextView
+        android:layout_below="@+id/control_alert_textView"
         android:id="@+id/replenishment_tv"
         android:text="售货机补货"
         android:paddingStart="70dp"
@@ -34,12 +34,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <ImageView
+        android:id="@+id/control_image"
+        android:layout_below="@+id/replenishment_tv"
         android:src="@mipmap/wenzi"
         android:padding="20dp"
         android:scaleType="centerInside"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
     <TableLayout
+        android:layout_below="@+id/control_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TableRow
@@ -77,5 +80,10 @@
                 android:id="@+id/btn_harmful_waste"/>
         </TableRow>
     </TableLayout>
-
-</LinearLayout>
+    <TextureView
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:id="@+id/textTueView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"/>
+</RelativeLayout>

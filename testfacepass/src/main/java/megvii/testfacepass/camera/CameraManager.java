@@ -130,8 +130,8 @@ public class CameraManager implements CameraPreview.CameraPreviewListener {
             new AsyncTask<Object, Object, Object>() {
                 @Override
                 protected Object doInBackground(Object... params) {
-                    cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                    //cameraId = front ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK;  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                    //  cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                    cameraId = front ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK;
                     try {
                         camera = Camera.open(cameraId);
                     } catch (Exception e) {

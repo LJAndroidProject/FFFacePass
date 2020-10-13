@@ -1,11 +1,13 @@
 package megvii.testfacepass;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -177,15 +179,34 @@ public class ReplenishmentActivity extends AppCompatActivity {
         replenishment_clear_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //  清空
-                DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().deleteAll();
+                AlertDialog.Builder alert = new AlertDialog.Builder(ReplenishmentActivity.this);
+                alert.setTitle("警告：");
+                alert.setMessage("此操作会清空货道所有商品");
+                alert.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                //  重新初始化
-                initReplenishment();
+                        //  清空
+                        DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().deleteAll();
 
+                        //  重新初始化
+                        initReplenishment();
 
-                List<CommodityBean> newData = DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.TierChildrenCommodityNumber.eq(1)).orderAsc(CommodityBeanDao.Properties.TierNumber,CommodityBeanDao.Properties.TierChildrenNumber).build().list();
-                replenishmentAdapter.setNewData(newData);
+                        List<CommodityBean> newData = DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.TierChildrenCommodityNumber.eq(1)).orderAsc(CommodityBeanDao.Properties.TierNumber,CommodityBeanDao.Properties.TierChildrenNumber).build().list();
+                        replenishmentAdapter.setNewData(newData);
+
+                        Toast.makeText(ReplenishmentActivity.this, "已清空", Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+                alert.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                alert.create();
+                alert.show();
 
 
 
@@ -221,21 +242,21 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
         //  第一层 可存放8个
         for(; number <= 9; number += 2){
-            for(int tierChildrenCommodityNumber = 0 ; tierChildrenCommodityNumber <= 8 ; tierChildrenCommodityNumber++){
+            for(int tierChildrenCommodityNumber = 1 ; tierChildrenCommodityNumber <= 8 ; tierChildrenCommodityNumber++){
                 commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
             }
         }
 
         //  第二层 可存放3个
         for(; number <= 19; number +=2 ){
-            for(int tierChildrenCommodityNumber = 0 ; tierChildrenCommodityNumber <= 3 ; tierChildrenCommodityNumber++){
+            for(int tierChildrenCommodityNumber = 1 ; tierChildrenCommodityNumber <= 3 ; tierChildrenCommodityNumber++){
                 commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
             }
         }
 
         //  三 至 六层 可存放10个
         for(; number <= 60; number++){
-            for(int tierChildrenCommodityNumber = 0 ; tierChildrenCommodityNumber <= 10 ; tierChildrenCommodityNumber++){
+            for(int tierChildrenCommodityNumber = 1 ; tierChildrenCommodityNumber <= 10 ; tierChildrenCommodityNumber++){
                 commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
             }
         }
@@ -296,7 +317,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
         @Override
         protected void convert(BaseViewHolder helper, CommodityBean commodityBean) {
                 //  helper.setText(R.id.replenishment_item_tv, commodityBean.getCupboardNumber() + "-" + commodityBean.getTierNumber() + "-" +commodityBean.getTierChildrenNumber());
-            helper.setText(R.id.replenishment_item_tv, "A " + commodityBean.getTierChildrenNumber());
+            helper.setText(R.id.replenishment_item_tv, "A" + commodityBean.getTierChildrenNumber());
 
             //  查询库存数
             int number = DataBaseUtil.getInstance(ReplenishmentActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder()
@@ -316,7 +337,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
                 Glide.with(mContext).load(commodityBean.getCommodityAlternativeBean().getImageUrl()).into((ImageView) helper.getView(R.id.replenishment_item_image));
                 helper.setText(R.id.replenishment_item_name_tv,commodityBean.getCommodityAlternativeBean().getCommodityName());
             }else{
-                Glide.with(mContext).load(R.mipmap.logo).into((ImageView) helper.getView(R.id.replenishment_item_image));
+                Glide.with(mContext).load(R.mipmap.ic_empty).into((ImageView) helper.getView(R.id.replenishment_item_image));
                 helper.setText(R.id.replenishment_item_name_tv,"未上架商品");
             }
 

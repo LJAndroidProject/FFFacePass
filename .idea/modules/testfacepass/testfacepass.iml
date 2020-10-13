@@ -125,6 +125,7 @@
     <orderEntry type="library" name="Gradle: com.android.support.constraint:constraint-layout-solver:1.0.2@jar" level="project" />
     <orderEntry type="library" name="Gradle: org.greenrobot:greendao-api:3.2.2@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.squareup.okio:okio:1.14.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: io.reactivex:rxjava:1.1.6@jar" level="project" />
     <orderEntry type="library" name="Gradle: :FacePassAndroidSDK-month-release:@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.volley:volley:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.jakewharton:butterknife:8.5.1@aar" level="project" />
@@ -137,6 +138,7 @@
     <orderEntry type="library" name="Gradle: com.umeng.umsdk:crash:0.0.4@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:recyclerview-v7:25.4.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30@aar" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.Liuguihong:AndroidUVCCamera:1.0.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:transition:25.4.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-v4:25.4.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:animated-vector-drawable:25.4.0@aar" level="project" />
@@ -146,6 +148,7 @@
     <orderEntry type="library" name="Gradle: com.android.support:support-media-compat:25.4.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-core-utils:25.4.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:support-compat:25.4.0@aar" level="project" />
+    <orderEntry type="library" name="Gradle: io.reactivex:rxandroid:1.2.1@aar" level="project" />
     <orderEntry type="module" module-name="serialportlibrary" />
   </component>
 </module>

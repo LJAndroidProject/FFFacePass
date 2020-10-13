@@ -11,28 +11,42 @@
         android:layout_width="match_parent"
         android:background="@color/colorPrimaryDark"
         android:layout_height="56dp">
-        <ImageView
-            android:padding="10dp"
-            android:src="@drawable/ic_baseline_close_24"
+        <megvii.testfacepass.independent.view.BackButton
+            android:layout_gravity="center"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_width="56dp"
             android:layout_height="56dp"/>
         <TextView
+            android:id="@+id/replenishment_details_title"
             android:text="货道库存管理"
             android:gravity="center|left"
             android:layout_weight="1"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"/>
         <Button
             android:id="@+id/replenishment_details_clear_btn"
-            android:text="清空当前货道商品"
+            android:text="清空当前货道"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="20dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:background="@android:color/transparent"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"/>
         <Button
             android:id="@+id/replenishment_details_save_btn"
             android:text="保存"
+            android:textColor="#FFFFFF"
+            android:paddingEnd="20dp"
+            android:paddingStart="20dp"
+            android:background="@android:color/transparent"
             android:layout_marginStart="20dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="match_parent"/>
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
@@ -41,9 +55,8 @@
         <ImageView
             android:id="@+id/replenishment_details_image"
             android:padding="10dp"
-            android:src="@mipmap/logo"
-            android:layout_weight="1"
-            android:layout_width="0dp"
+            android:src="@mipmap/ic_empty"
+            android:layout_width="wrap_content"
             android:layout_height="100dp"/>
         <TextView
             android:id="@+id/replenishment_details_message"
@@ -64,5 +77,5 @@
         android:text="添加库存"
         android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="60dp"/>
 </LinearLayout>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".InitConfig">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="第一次使用垃圾箱或者垃圾箱或者重置需要创建基本配置"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/edit_dustbin_query"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="查询需要绑定的垃圾箱 ID"
+        android:inputType="number"
+        android:padding="20dp" />
+
+    <Button
+        android:id="@+id/btn_getDustbinConfig"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="20dp"
+        android:text="获取配置与绑定" />
+
+    <Button
+        android:id="@+id/btn_getGoodsPos"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginTop="20dp"
+        android:text="获取售货机备选商品"
+        android:visibility="gone" />
+</LinearLayout>

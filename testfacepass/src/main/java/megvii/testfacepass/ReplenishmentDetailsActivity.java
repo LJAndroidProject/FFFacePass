@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -29,11 +30,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBeanDao;
 import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.QRCodeUtil;
 
 public class ReplenishmentDetailsActivity extends AppCompatActivity {
 
@@ -48,7 +51,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
     private List<CommodityBean> list;
     private CommodityAlternativeBean commodityAlternativeBeanTitle;
     private ImageView replenishment_details_image;
-    private TextView replenishment_details_message;
+    private TextView replenishment_details_message,replenishment_details_title;
     private Button replenishment_details_add_btn;
     private ReplenishmentDetailsAdapter replenishmentDetailsAdapter;
 
@@ -86,6 +89,8 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         replenishment_details_add_btn = (Button) findViewById(R.id.replenishment_details_add_btn);
         replenishment_details_save_btn = (Button) findViewById(R.id.replenishment_details_save_btn);
         replenishment_details_clear_btn = (Button) findViewById(R.id.replenishment_details_clear_btn);
+        replenishment_details_title = (TextView)findViewById(R.id.replenishment_details_title);
+
 
 
         //  获取意图对象
@@ -103,6 +108,9 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         commodityBean.setCommodityAlternativeBean(DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().where(CommodityAlternativeBeanDao.Properties.CommodityID.eq(commodityBean.getCommodityID())).build().unique());
 
 
+        //  设置货道标题
+        replenishment_details_title.setText("A" + commodityBean.getTierChildrenNumber());
+
         Log.i(TAG,"当前货道商品：" + commodityBean.toString());
 
 
@@ -110,7 +118,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         if(commodityBean.getCommodityID() == 0){
 
             //  图片和文字填充
-            Glide.with(this).load(R.mipmap.logo).into(replenishment_details_image);
+            Glide.with(this).load(R.mipmap.ic_empty).into(replenishment_details_image);
             replenishment_details_message.setText("点击指定此货道商品类型");
 
 
@@ -177,6 +185,12 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         replenishment_details_message.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(true){
+                    alert();
+
+                    return;
+                }
 
 
                 //  获取商品备选列表
@@ -451,6 +465,41 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
             e.printStackTrace();
             return 0L;
         }
+    }
+
+
+    VendingMachineActivity.VendingMachineAdapter vendingMachineAdapter;
+    private void alert(){
+
+        RecyclerView recyclerView = new RecyclerView(this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
+        recyclerView.setLayoutManager(gridLayoutManager);
+
+
+        list = DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().queryBuilder()
+                .where(CommodityBeanDao.Properties.CommodityID.notEq(0))
+                .where(CommodityBeanDao.Properties.TierChildrenCommodityNumber.eq(1))
+                .list();
+
+        //  设置适配器
+        vendingMachineAdapter = new VendingMachineActivity.VendingMachineAdapter(R.layout.vending_machine_layout,VendingMachineActivity.removeDuplicateUser(list));
+        vendingMachineAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(final BaseQuickAdapter adapter, View view, final int position) {
+                if(view.getId() == R.id.item_vendingMachineActivity_layout){
+
+
+                }
+            }
+        });
+        recyclerView.setAdapter(vendingMachineAdapter);
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(ReplenishmentDetailsActivity.this);
+        alert.setTitle("选择当前货道商品");
+        alert.setView(recyclerView);
+        alert.create();
+        alert.show();
     }
 
 }

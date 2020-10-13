@@ -3,22 +3,36 @@ package megvii.testfacepass;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Camera;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lgh.uvccamera.UVCCameraProxy;
+import com.lgh.uvccamera.bean.PicturePath;
+import com.lgh.uvccamera.callback.ConnectCallback;
+import com.lgh.uvccamera.callback.PictureCallback;
 import com.serialportlibrary.service.impl.SerialPortService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +52,7 @@ import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
+import megvii.testfacepass.independent.view.AdminLoginDialog;
 import okhttp3.Call;
 
 public class ControlActivity extends AppCompatActivity implements View.OnClickListener,View.OnTouchListener{
@@ -51,13 +66,38 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     private int closeDoorFailNumber = 0;
 
     private TextView control_welcome_textView,replenishment_tv;
+    private ImageView control_image;
 
 
+    //  摄像头
+    private TextureView textTueView;
+    private UVCCameraProxy mUVCCamera;
+    private UsbDevice mUsbDevice;
+
+
+    private int mSecretNumber = 0;
+    private static final long CLICK_INTERVAL = 600;
+    private long mLastClickTime;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
 
+
+        textTueView = (TextureView) findViewById(R.id.textTueView);
+        control_image = (ImageView) findViewById(R.id.control_image);
+
+        mUVCCamera = new UVCCameraProxy(this);
+        mUVCCamera.getConfig()
+                .isDebug(true) // 是否调试
+                .setPicturePath(PicturePath.APPCACHE) // 图片保存路径，保存在app缓存还是sd卡
+                .setDirName("uvccamera") // 图片保存目录名称
+                .setProductId(0) // 产品id，用于过滤设备，不需要可不设置 37424
+                .setVendorId(0); // 供应商id，用于过滤设备，不需要可不设置 1443
+
+        mUVCCamera.setPreviewTexture(textTueView); // TextureView
+
+        mUsbDevice = getUsbCameraDevice();
 
 
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
@@ -67,6 +107,26 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
             public void onClick(View v) {
                 Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        control_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long curTime = System.currentTimeMillis();
+                long durTime = curTime - mLastClickTime;
+                mLastClickTime = curTime;
+                if (durTime < CLICK_INTERVAL) {
+                    ++mSecretNumber;
+                    if (mSecretNumber == 5) {
+
+                        Toast.makeText(ControlActivity.this, "快速", Toast.LENGTH_SHORT).show();
+
+
+                    }
+                } else {
+                    mSecretNumber = 0;
+                }
             }
         });
 
@@ -100,6 +160,57 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         List<DustbinBean> list = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.OTHER);
         list.addAll(DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.KITCHEN));
         //openDoor(list);
+
+
+
+        mUVCCamera.setPictureTakenCallback(new PictureCallback() {
+            @Override
+            public void onPictureTaken(String path) {
+                /*textView.append("图片路径" + path);
+                textView.append("\n");*/
+            }
+        });
+
+        mUVCCamera.setConnectCallback(new ConnectCallback() {
+            @Override
+            public void onAttached(UsbDevice usbDevice) {
+
+
+                mUVCCamera.requestPermission(mUsbDevice); // USB设备授权
+            }
+
+            @Override
+            public void onGranted(UsbDevice usbDevice, boolean granted) {
+
+                /*MainActivity3.textView.append("onGranted:"  +granted);
+                MainActivity3.textView.append("\n");*/
+
+                /*if(usbDevice.getDeviceName().endsWith("/021")){
+                    mUVCCamera.connectDevice(usbDevice); // 连接USB设备
+                }*/
+                /*if (granted) {
+                    mUVCCamera.connectDevice(usbDevice); // 连接USB设备
+                }*/
+                mUVCCamera.connectDevice(mUsbDevice);
+                // 外置摄像头是/dev/bus/usb/001/021
+            }
+
+            @Override
+            public void onConnected(UsbDevice usbDevice) {
+                mUVCCamera.openCamera(); // 打开相机
+            }
+
+            @Override
+            public void onCameraOpened() {
+                mUVCCamera.setPreviewSize(640, 480); // 设置预览尺寸
+                mUVCCamera.startPreview(); // 开始预览
+            }
+
+            @Override
+            public void onDetached(UsbDevice usbDevice) {
+                mUVCCamera.closeCamera(); // 关闭相机
+            }
+        });
     }
 
 
@@ -296,6 +407,34 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
 
 
     }
+
+
+
+
+    public UsbDevice getUsbCameraDevice() {
+        UsbManager mUsbManager = (UsbManager) getSystemService(USB_SERVICE);
+
+        HashMap<String, UsbDevice> deviceMap = mUsbManager.getDeviceList();
+        if (deviceMap != null) {
+            //  textView.append("摄像头数量:" + deviceMap.size() + "\n");
+            for (UsbDevice usbDevice : deviceMap.values()) {
+                /*textView.append("摄像头名称:" + usbDevice.getDeviceName() + "\n");
+                textView.append("摄像头ProductId:" + usbDevice.getProductId() + "\n");
+                textView.append("摄像头DeviceId:" + usbDevice.getDeviceId() + "\n");
+                textView.append("摄像头VendorId:" + usbDevice.getVendorId() + "\n");
+                textView.append("\n");*/
+                if (usbDevice.getVendorId() == 1443) {
+                    return usbDevice;
+                }
+            }
+        }
+        return null;
+    }
+
+    public boolean isUsbCamera(UsbDevice usbDevice) {
+        return usbDevice != null && 239 == usbDevice.getDeviceClass() && 2 == usbDevice.getDeviceSubclass();
+    }
+
 
 
 }

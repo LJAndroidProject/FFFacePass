@@ -208,6 +208,10 @@
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\drawable-xxxhdpi-v4\\abc_switch_track_mtrl_alpha.9.png"
     },
     {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi_ic_empty.png.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\mipmap-xhdpi\\ic_empty.png"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\layout_abc_popup_menu_header_item_layout.xml.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\layout\\abc_popup_menu_header_item_layout.xml"
     },
@@ -504,6 +508,10 @@
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\968bbdb6e31c5ca74ae4bf6ff1cd50c7\\res\\animator-v21\\design_appbar_state_list_animator.xml"
     },
     {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\layout_activity_init_config.xml.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\layout\\activity_init_config.xml"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\layout_abc_activity_chooser_view_list_item.xml.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\layout\\abc_activity_chooser_view_list_item.xml"
     },
@@ -748,8 +756,16 @@
         "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\drawable\\ic_baseline_error_outline_24.xml"
     },
     {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\drawable_ic_empty.xml.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\drawable\\ic_empty.xml"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\drawable-xhdpi-v4_abc_btn_switch_to_on_mtrl_00001.9.png.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\drawable-xhdpi-v4\\abc_btn_switch_to_on_mtrl_00001.9.png"
+    },
+    {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\layout_buy_dialog_layout.xml.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\layout\\buy_dialog_layout.xml"
     },
     {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\drawable_abc_cab_background_top_material.xml.flat",

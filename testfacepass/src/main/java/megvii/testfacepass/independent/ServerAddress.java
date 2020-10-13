@@ -27,4 +27,8 @@ public class ServerAddress {
 
     //  获取商品备选列表
     public final static String GET_GOODS_POS = IP + "api/other/getGoodsPos";
+
+
+    //  获取商品备选列表
+    public final static String GET_DUSTBIN_CONFIG = IP + "api/other/getDustbinConfig";
 }

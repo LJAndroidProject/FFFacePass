@@ -40,6 +40,7 @@ import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.independent.util.QRCodeUtil;
 import okhttp3.Call;
 
 
@@ -153,9 +154,13 @@ public class VendingMachineActivity extends AppCompatActivity {
 
                     //  出货之前再次确认有货
                     if(result != null && result.size() > 0){
+                        ImageView imageView = new ImageView(VendingMachineActivity.this);
+                        imageView.setImageBitmap(QRCodeUtil.getAppletBuyCode(ServerAddress.LOGIN));
+
                         AlertDialog.Builder alert = new AlertDialog.Builder(VendingMachineActivity.this);
-                        alert.setTitle("购买窗口");
-                        alert.setMessage("你要购买" + commodityBean.getCommodityAlternativeBean().getCommodityName() + "吗 ? 现在还剩" + result.size() + "个。");
+                        alert.setTitle("购买" + commodityBean.getCommodityAlternativeBean().getCommodityName() );
+                        alert.setView(imageView);
+                        alert.setMessage("\n 现在还剩" + result.size() + "个，请使用微信扫码该二维码下单。");
                         alert.setPositiveButton("购买", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -288,7 +293,7 @@ public class VendingMachineActivity extends AppCompatActivity {
      *
      * @return 返回去重后的商品
      * */
-    private static ArrayList<CommodityBean> removeDuplicateUser(List<CommodityBean> list) {
+    public static ArrayList<CommodityBean> removeDuplicateUser(List<CommodityBean> list) {
         Set<CommodityBean> set = new TreeSet<>(new Comparator<CommodityBean>() {
             @Override
             public int compare(CommodityBean o1, CommodityBean o2) {
@@ -348,15 +353,15 @@ public class VendingMachineActivity extends AppCompatActivity {
         protected void convert(BaseViewHolder helper, CommodityBean commodityBean) {
 
             Glide.with(mContext).load(commodityBean.getCommodityAlternativeBean().getImageUrl()).into((ImageView) helper.getView(R.id.item_vendingMachineActivity_image));
-
+            helper.setText(R.id.vendingMachineActivity_money,"￥" + commodityBean.getCommodityAlternativeBean().getCommodityMoney());
             //  已经下架
             if(commodityBean.getCommodityAlternativeBean().getShelvesOf()){
-                helper.setAlpha(R.id.item_vendingMachineActivity_layout,0.4f);
-                helper.setText(R.id.vendingMachineActivity_txt,commodityBean.getCommodityAlternativeBean().getCommodityName() + " (已下架)" + "\n" + commodityBean.getCommodityAlternativeBean().getCommodityMoney());
-            }else{
                 //  添加点击事件
                 helper.addOnClickListener(R.id.item_vendingMachineActivity_layout);
                 helper.setText(R.id.vendingMachineActivity_txt,commodityBean.getCommodityAlternativeBean().getCommodityName() + "\n" + commodityBean.getCommodityAlternativeBean().getCommodityMoney());
+            }else{
+                helper.setAlpha(R.id.item_vendingMachineActivity_layout,0.4f);
+                helper.setText(R.id.vendingMachineActivity_txt,"( 已下架 ) " + commodityBean.getCommodityAlternativeBean().getCommodityName());
             }
 
         }

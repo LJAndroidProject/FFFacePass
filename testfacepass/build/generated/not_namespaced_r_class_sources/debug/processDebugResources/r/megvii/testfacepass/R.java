@@ -570,7 +570,6 @@ public final class R {
      */
     public static final int checkedTextViewStyle=0x7f030047;
     /**
-     * 一屏显示多个左右间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -579,7 +578,6 @@ public final class R {
      */
     public static final int clipChildrenLeftRightMargin=0x7f030048;
     /**
-     * 一屏显示多个上下间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -1162,13 +1160,11 @@ public final class R {
      */
     public static final int isAutoPlay=0x7f030097;
     /**
-     * 是否开启一屏显示多个模式 默认不开启
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
     public static final int isClipChildrenMode=0x7f030098;
     /**
-     * 少于三张是否支持一屏多显模式
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
@@ -1184,19 +1180,16 @@ public final class R {
      */
     public static final int isLightTheme=0x7f03009b;
     /**
-     * 当只有一页数据时是否显示指示器，默认值为false
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
     public static final int isShowIndicatorOnlyOne=0x7f03009c;
     /**
-     * 是否是数字指示器
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
     public static final int isShowNumberIndicator=0x7f03009d;
     /**
-     * 是否展示提示文案
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
      */
@@ -1944,7 +1937,6 @@ public final class R {
      */
     public static final int navigationMode=0x7f0300f1;
     /**
-     * 数字指示器背景
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
      * attribute in the form
@@ -1989,7 +1981,6 @@ public final class R {
      */
     public static final int paddingTopNoTitle=0x7f0300f7;
     /**
-     * 图片切换速度
      * <p>May be an integer value, such as "<code>100</code>".
      */
     public static final int pageChangeDuration=0x7f0300f8;
@@ -2054,7 +2045,6 @@ public final class R {
      */
     public static final int passwordToggleTintMode=0x7f030100;
     /**
-     * 图片轮播框架展占位图
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
      * attribute in the form
@@ -2062,7 +2052,6 @@ public final class R {
      */
     public static final int placeholderDrawable=0x7f030101;
     /**
-     * 指示点容器左右内间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -2083,7 +2072,6 @@ public final class R {
      */
     public static final int pointContainerPosition=0x7f030103;
     /**
-     * 指示点左右内间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -2106,7 +2094,6 @@ public final class R {
      */
     public static final int pointSelect=0x7f030106;
     /**
-     * 指示点上下内间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -2801,7 +2788,6 @@ public final class R {
      */
     public static final int tintMode=0x7f030163;
     /**
-     * 提示文案的文字颜色
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
      * attribute in the form
@@ -2812,7 +2798,6 @@ public final class R {
      */
     public static final int tipTextColor=0x7f030164;
     /**
-     * 提示文案的文字大小
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -2954,7 +2939,6 @@ public final class R {
      */
     public static final int useCompatPadding=0x7f030177;
     /**
-     * 设置viewpager间距
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
      * Available units are: px (pixels), dp (density-independent pixels),
@@ -3422,39 +3406,40 @@ public final class R {
     public static final int ic_baseline_close_24=0x7f07006c;
     public static final int ic_baseline_error_outline_24=0x7f07006d;
     public static final int ic_baseline_how_to_reg_24=0x7f07006e;
-    public static final int ic_harmful_waste=0x7f07006f;
-    public static final int ic_kitchen_garbage=0x7f070070;
-    public static final int ic_land=0x7f070071;
-    public static final int ic_launcher=0x7f070072;
-    public static final int ic_logo=0x7f070073;
-    public static final int ic_other_rubbish=0x7f070074;
-    public static final int ic_portrait=0x7f070075;
-    public static final int ic_recyclables=0x7f070076;
-    public static final int ic_success=0x7f070077;
-    public static final int navigation_empty_icon=0x7f070078;
-    public static final int notification_action_background=0x7f070079;
-    public static final int notification_bg=0x7f07007a;
-    public static final int notification_bg_low=0x7f07007b;
-    public static final int notification_bg_low_normal=0x7f07007c;
-    public static final int notification_bg_low_pressed=0x7f07007d;
-    public static final int notification_bg_normal=0x7f07007e;
-    public static final int notification_bg_normal_pressed=0x7f07007f;
-    public static final int notification_icon_background=0x7f070080;
-    public static final int notification_template_icon_bg=0x7f070081;
-    public static final int notification_template_icon_low_bg=0x7f070082;
-    public static final int notification_tile_bg=0x7f070083;
-    public static final int notify_panel_notification_icon_bg=0x7f070084;
-    public static final int path2=0x7f070085;
-    public static final int right=0x7f070086;
-    public static final int sample_footer_loading=0x7f070087;
-    public static final int sample_footer_loading_progress=0x7f070088;
-    public static final int shape_bg_rect=0x7f070089;
-    public static final int shape_btn_bg_blue=0x7f07008a;
-    public static final int shape_point_normal=0x7f07008b;
-    public static final int shape_point_select=0x7f07008c;
-    public static final int success=0x7f07008d;
-    public static final int text_style=0x7f07008e;
-    public static final int toast_style=0x7f07008f;
+    public static final int ic_empty=0x7f07006f;
+    public static final int ic_harmful_waste=0x7f070070;
+    public static final int ic_kitchen_garbage=0x7f070071;
+    public static final int ic_land=0x7f070072;
+    public static final int ic_launcher=0x7f070073;
+    public static final int ic_logo=0x7f070074;
+    public static final int ic_other_rubbish=0x7f070075;
+    public static final int ic_portrait=0x7f070076;
+    public static final int ic_recyclables=0x7f070077;
+    public static final int ic_success=0x7f070078;
+    public static final int navigation_empty_icon=0x7f070079;
+    public static final int notification_action_background=0x7f07007a;
+    public static final int notification_bg=0x7f07007b;
+    public static final int notification_bg_low=0x7f07007c;
+    public static final int notification_bg_low_normal=0x7f07007d;
+    public static final int notification_bg_low_pressed=0x7f07007e;
+    public static final int notification_bg_normal=0x7f07007f;
+    public static final int notification_bg_normal_pressed=0x7f070080;
+    public static final int notification_icon_background=0x7f070081;
+    public static final int notification_template_icon_bg=0x7f070082;
+    public static final int notification_template_icon_low_bg=0x7f070083;
+    public static final int notification_tile_bg=0x7f070084;
+    public static final int notify_panel_notification_icon_bg=0x7f070085;
+    public static final int path2=0x7f070086;
+    public static final int right=0x7f070087;
+    public static final int sample_footer_loading=0x7f070088;
+    public static final int sample_footer_loading_progress=0x7f070089;
+    public static final int shape_bg_rect=0x7f07008a;
+    public static final int shape_btn_bg_blue=0x7f07008b;
+    public static final int shape_point_normal=0x7f07008c;
+    public static final int shape_point_select=0x7f07008d;
+    public static final int success=0x7f07008e;
+    public static final int text_style=0x7f07008f;
+    public static final int toast_style=0x7f070090;
   }
   public static final class id {
     public static final int BOTTOM=0x7f080000;
@@ -3493,237 +3478,245 @@ public final class R {
     public static final int admin_login_button=0x7f080021;
     public static final int admin_login_close=0x7f080022;
     public static final int admin_login_edit=0x7f080023;
-    public static final int alertTitle=0x7f080024;
-    public static final int all=0x7f080025;
-    public static final int always=0x7f080026;
-    public static final int auto=0x7f080027;
-    public static final int back=0x7f080028;
-    public static final int basic=0x7f080029;
-    public static final int beginning=0x7f08002a;
-    public static final int bottom=0x7f08002b;
-    public static final int btn_add_face=0x7f08002c;
-    public static final int btn_bind_group=0x7f08002d;
-    public static final int btn_bottle=0x7f08002e;
-    public static final int btn_choose_picture=0x7f08002f;
-    public static final int btn_delete_face=0x7f080030;
-    public static final int btn_face_operation=0x7f080031;
-    public static final int btn_get_face_image=0x7f080032;
-    public static final int btn_get_group_info=0x7f080033;
-    public static final int btn_group_name=0x7f080034;
-    public static final int btn_handle_sync_data=0x7f080035;
-    public static final int btn_harmful_waste=0x7f080036;
-    public static final int btn_kitchen_garbage=0x7f080037;
-    public static final int btn_leatheroid=0x7f080038;
-    public static final int btn_mode_switch=0x7f080039;
-    public static final int btn_obtain_groups=0x7f08003a;
-    public static final int btn_obtain_sync_data=0x7f08003b;
-    public static final int btn_other_rubbish=0x7f08003c;
-    public static final int btn_submit=0x7f08003d;
-    public static final int btn_vending_machine=0x7f08003e;
-    public static final int buttonPanel=0x7f08003f;
-    public static final int camera0=0x7f080040;
-    public static final int camera180=0x7f080041;
-    public static final int camera270=0x7f080042;
-    public static final int camera90=0x7f080043;
-    public static final int cancel=0x7f080044;
-    public static final int cancel_action=0x7f080045;
-    public static final int center=0x7f080046;
-    public static final int center_horizontal=0x7f080047;
-    public static final int center_vertical=0x7f080048;
-    public static final int chains=0x7f080049;
-    public static final int checkbox=0x7f08004a;
-    public static final int chronometer=0x7f08004b;
-    public static final int clip_horizontal=0x7f08004c;
-    public static final int clip_vertical=0x7f08004d;
-    public static final int collapseActionView=0x7f08004e;
-    public static final int container=0x7f08004f;
-    public static final int contentPanel=0x7f080050;
-    public static final int control_alert_textView=0x7f080051;
-    public static final int control_welcome_textView=0x7f080052;
-    public static final int coordinator=0x7f080053;
-    public static final int custom=0x7f080054;
-    public static final int customPanel=0x7f080055;
-    public static final int decor_content_parent=0x7f080056;
-    public static final int default_activity_button=0x7f080057;
-    public static final int design_bottom_sheet=0x7f080058;
-    public static final int design_menu_item_action_area=0x7f080059;
-    public static final int design_menu_item_action_area_stub=0x7f08005a;
-    public static final int design_menu_item_text=0x7f08005b;
-    public static final int design_navigation_view=0x7f08005c;
-    public static final int disableHome=0x7f08005d;
-    public static final int edit_query=0x7f08005e;
-    public static final int end=0x7f08005f;
-    public static final int end_padder=0x7f080060;
-    public static final int enterAlways=0x7f080061;
-    public static final int enterAlwaysCollapsed=0x7f080062;
-    public static final int et_face_image_path=0x7f080063;
-    public static final int et_face_token=0x7f080064;
-    public static final int et_group_name=0x7f080065;
-    public static final int exitUntilCollapsed=0x7f080066;
-    public static final int expand_activities_button=0x7f080067;
-    public static final int expanded_menu=0x7f080068;
-    public static final int face0=0x7f080069;
-    public static final int face180=0x7f08006a;
-    public static final int face270=0x7f08006b;
-    public static final int face90=0x7f08006c;
-    public static final int fcview=0x7f08006d;
-    public static final int fill=0x7f08006e;
-    public static final int fill_horizontal=0x7f08006f;
-    public static final int fill_vertical=0x7f080070;
-    public static final int fixed=0x7f080071;
-    public static final int frame=0x7f080072;
-    public static final int front=0x7f080073;
-    public static final int home=0x7f080074;
-    public static final int homeAsUp=0x7f080075;
-    public static final int icon=0x7f080076;
-    public static final int icon_group=0x7f080077;
-    public static final int ifRoom=0x7f080078;
-    public static final int image=0x7f080079;
-    public static final int imview=0x7f08007a;
-    public static final int info=0x7f08007b;
-    public static final int item_replenishment_details_dateInProduced=0x7f08007c;
-    public static final int item_replenishment_details_layout=0x7f08007d;
-    public static final int item_replenishment_details_layout_expirationTime=0x7f08007e;
-    public static final int item_replenishment_details_layout_name=0x7f08007f;
-    public static final int item_replenishment_details_layout_number=0x7f080080;
-    public static final int item_touch_helper_previous_elevation=0x7f080081;
-    public static final int item_vendingMachineActivity_image=0x7f080082;
-    public static final int item_vendingMachineActivity_layout=0x7f080083;
-    public static final int iv_close=0x7f080084;
-    public static final int iv_delete_face=0x7f080085;
-    public static final int iv_delete_group=0x7f080086;
-    public static final int iv_qr_code_login=0x7f080087;
-    public static final int largeLabel=0x7f080088;
-    public static final int left=0x7f080089;
-    public static final int line1=0x7f08008a;
-    public static final int line3=0x7f08008b;
-    public static final int listMode=0x7f08008c;
-    public static final int list_item=0x7f08008d;
-    public static final int ll=0x7f08008e;
-    public static final int load_more_load_end_view=0x7f08008f;
-    public static final int load_more_load_fail_view=0x7f080090;
-    public static final int load_more_loading_view=0x7f080091;
-    public static final int loading_progress=0x7f080092;
-    public static final int loading_text=0x7f080093;
-    public static final int lv_group_info=0x7f080094;
-    public static final int lv_group_name=0x7f080095;
-    public static final int masked=0x7f080096;
-    public static final int media_actions=0x7f080097;
-    public static final int middle=0x7f080098;
-    public static final int mini=0x7f080099;
-    public static final int multiply=0x7f08009a;
-    public static final int navigation_header_container=0x7f08009b;
-    public static final int never=0x7f08009c;
-    public static final int none=0x7f08009d;
-    public static final int normal=0x7f08009e;
-    public static final int notification_background=0x7f08009f;
-    public static final int notification_main_column=0x7f0800a0;
-    public static final int notification_main_column_container=0x7f0800a1;
-    public static final int ok=0x7f0800a2;
-    public static final int packed=0x7f0800a3;
-    public static final int parallax=0x7f0800a4;
-    public static final int parent=0x7f0800a5;
-    public static final int parentPanel=0x7f0800a6;
-    public static final int pin=0x7f0800a7;
-    public static final int preview=0x7f0800a8;
-    public static final int progress_circular=0x7f0800a9;
-    public static final int progress_horizontal=0x7f0800aa;
-    public static final int radio=0x7f0800ab;
-    public static final int replenishment_clear_btn=0x7f0800ac;
-    public static final int replenishment_details_add_btn=0x7f0800ad;
-    public static final int replenishment_details_clear_btn=0x7f0800ae;
-    public static final int replenishment_details_image=0x7f0800af;
-    public static final int replenishment_details_message=0x7f0800b0;
-    public static final int replenishment_details_recyclerView=0x7f0800b1;
-    public static final int replenishment_details_save_btn=0x7f0800b2;
-    public static final int replenishment_item_image=0x7f0800b3;
-    public static final int replenishment_item_name_tv=0x7f0800b4;
-    public static final int replenishment_item_number_tv=0x7f0800b5;
-    public static final int replenishment_item_tv=0x7f0800b6;
-    public static final int replenishment_recyclerview=0x7f0800b7;
-    public static final int replenishment_tv=0x7f0800b8;
-    public static final int right=0x7f0800b9;
-    public static final int right_icon=0x7f0800ba;
-    public static final int right_side=0x7f0800bb;
-    public static final int screen=0x7f0800bc;
-    public static final int scroll=0x7f0800bd;
-    public static final int scrollIndicatorDown=0x7f0800be;
-    public static final int scrollIndicatorUp=0x7f0800bf;
-    public static final int scrollView=0x7f0800c0;
-    public static final int scrollable=0x7f0800c1;
-    public static final int search_badge=0x7f0800c2;
-    public static final int search_bar=0x7f0800c3;
-    public static final int search_button=0x7f0800c4;
-    public static final int search_close_btn=0x7f0800c5;
-    public static final int search_edit_frame=0x7f0800c6;
-    public static final int search_go_btn=0x7f0800c7;
-    public static final int search_mag_icon=0x7f0800c8;
-    public static final int search_plate=0x7f0800c9;
-    public static final int search_src_text=0x7f0800ca;
-    public static final int search_voice_btn=0x7f0800cb;
-    public static final int select_dialog_listview=0x7f0800cc;
-    public static final int settingLL=0x7f0800cd;
-    public static final int settingid=0x7f0800ce;
-    public static final int shortcut=0x7f0800cf;
-    public static final int showCustom=0x7f0800d0;
-    public static final int showHome=0x7f0800d1;
-    public static final int showTitle=0x7f0800d2;
-    public static final int smallLabel=0x7f0800d3;
-    public static final int snackbar_action=0x7f0800d4;
-    public static final int snackbar_text=0x7f0800d5;
-    public static final int snap=0x7f0800d6;
-    public static final int spacer=0x7f0800d7;
-    public static final int split_action_bar=0x7f0800d8;
-    public static final int spread=0x7f0800d9;
-    public static final int spread_inside=0x7f0800da;
-    public static final int src_atop=0x7f0800db;
-    public static final int src_in=0x7f0800dc;
-    public static final int src_over=0x7f0800dd;
-    public static final int start=0x7f0800de;
-    public static final int status_bar_latest_event_content=0x7f0800df;
-    public static final int submenuarrow=0x7f0800e0;
-    public static final int submit_area=0x7f0800e1;
-    public static final int sv_handle_sync_data=0x7f0800e2;
-    public static final int tabMode=0x7f0800e3;
-    public static final int text=0x7f0800e4;
-    public static final int text2=0x7f0800e5;
-    public static final int textSpacerNoButtons=0x7f0800e6;
-    public static final int textSpacerNoTitle=0x7f0800e7;
-    public static final int text_input_password_toggle=0x7f0800e8;
-    public static final int textinput_counter=0x7f0800e9;
-    public static final int textinput_error=0x7f0800ea;
-    public static final int time=0x7f0800eb;
-    public static final int title=0x7f0800ec;
-    public static final int titleDividerNoCustom=0x7f0800ed;
-    public static final int title_template=0x7f0800ee;
-    public static final int toastImageView=0x7f0800ef;
-    public static final int toastState=0x7f0800f0;
-    public static final int toastTextView=0x7f0800f1;
-    public static final int toastll=0x7f0800f2;
-    public static final int top=0x7f0800f3;
-    public static final int topPanel=0x7f0800f4;
-    public static final int touch_outside=0x7f0800f5;
-    public static final int transition_current_scene=0x7f0800f6;
-    public static final int transition_scene_layoutid_cache=0x7f0800f7;
-    public static final int tv_face_token=0x7f0800f8;
-    public static final int tv_face_unbind=0x7f0800f9;
-    public static final int tv_group_name=0x7f0800fa;
-    public static final int tv_hello=0x7f0800fb;
-    public static final int tv_meg2=0x7f0800fc;
-    public static final int tv_prompt=0x7f0800fd;
-    public static final int tv_show_sync_data=0x7f0800fe;
-    public static final int up=0x7f0800ff;
-    public static final int useLogo=0x7f080100;
-    public static final int vendingMachineActivity_recyclerView=0x7f080101;
-    public static final int vendingMachineActivity_title=0x7f080102;
-    public static final int vendingMachineActivity_txt=0x7f080103;
-    public static final int view_offset_helper=0x7f080104;
-    public static final int visible=0x7f080105;
-    public static final int withText=0x7f080106;
-    public static final int wrap=0x7f080107;
-    public static final int wrap_content=0x7f080108;
-    public static final int xbanner_pointId=0x7f080109;
-    public static final int xbanner_view=0x7f08010a;
+    public static final int admin_login_password=0x7f080024;
+    public static final int alertTitle=0x7f080025;
+    public static final int all=0x7f080026;
+    public static final int always=0x7f080027;
+    public static final int auto=0x7f080028;
+    public static final int back=0x7f080029;
+    public static final int basic=0x7f08002a;
+    public static final int beginning=0x7f08002b;
+    public static final int bottom=0x7f08002c;
+    public static final int btn_add_face=0x7f08002d;
+    public static final int btn_bind_group=0x7f08002e;
+    public static final int btn_bottle=0x7f08002f;
+    public static final int btn_choose_picture=0x7f080030;
+    public static final int btn_delete_face=0x7f080031;
+    public static final int btn_face_operation=0x7f080032;
+    public static final int btn_getDustbinConfig=0x7f080033;
+    public static final int btn_getGoodsPos=0x7f080034;
+    public static final int btn_get_face_image=0x7f080035;
+    public static final int btn_get_group_info=0x7f080036;
+    public static final int btn_group_name=0x7f080037;
+    public static final int btn_handle_sync_data=0x7f080038;
+    public static final int btn_harmful_waste=0x7f080039;
+    public static final int btn_kitchen_garbage=0x7f08003a;
+    public static final int btn_leatheroid=0x7f08003b;
+    public static final int btn_mode_switch=0x7f08003c;
+    public static final int btn_obtain_groups=0x7f08003d;
+    public static final int btn_obtain_sync_data=0x7f08003e;
+    public static final int btn_other_rubbish=0x7f08003f;
+    public static final int btn_submit=0x7f080040;
+    public static final int btn_vending_machine=0x7f080041;
+    public static final int buttonPanel=0x7f080042;
+    public static final int camera0=0x7f080043;
+    public static final int camera180=0x7f080044;
+    public static final int camera270=0x7f080045;
+    public static final int camera90=0x7f080046;
+    public static final int cancel=0x7f080047;
+    public static final int cancel_action=0x7f080048;
+    public static final int center=0x7f080049;
+    public static final int center_horizontal=0x7f08004a;
+    public static final int center_vertical=0x7f08004b;
+    public static final int chains=0x7f08004c;
+    public static final int checkbox=0x7f08004d;
+    public static final int chronometer=0x7f08004e;
+    public static final int clip_horizontal=0x7f08004f;
+    public static final int clip_vertical=0x7f080050;
+    public static final int collapseActionView=0x7f080051;
+    public static final int container=0x7f080052;
+    public static final int contentPanel=0x7f080053;
+    public static final int control_alert_textView=0x7f080054;
+    public static final int control_image=0x7f080055;
+    public static final int control_welcome_textView=0x7f080056;
+    public static final int coordinator=0x7f080057;
+    public static final int custom=0x7f080058;
+    public static final int customPanel=0x7f080059;
+    public static final int decor_content_parent=0x7f08005a;
+    public static final int default_activity_button=0x7f08005b;
+    public static final int design_bottom_sheet=0x7f08005c;
+    public static final int design_menu_item_action_area=0x7f08005d;
+    public static final int design_menu_item_action_area_stub=0x7f08005e;
+    public static final int design_menu_item_text=0x7f08005f;
+    public static final int design_navigation_view=0x7f080060;
+    public static final int disableHome=0x7f080061;
+    public static final int edit_dustbin_query=0x7f080062;
+    public static final int edit_query=0x7f080063;
+    public static final int end=0x7f080064;
+    public static final int end_padder=0x7f080065;
+    public static final int enterAlways=0x7f080066;
+    public static final int enterAlwaysCollapsed=0x7f080067;
+    public static final int et_face_image_path=0x7f080068;
+    public static final int et_face_token=0x7f080069;
+    public static final int et_group_name=0x7f08006a;
+    public static final int exitUntilCollapsed=0x7f08006b;
+    public static final int expand_activities_button=0x7f08006c;
+    public static final int expanded_menu=0x7f08006d;
+    public static final int face0=0x7f08006e;
+    public static final int face180=0x7f08006f;
+    public static final int face270=0x7f080070;
+    public static final int face90=0x7f080071;
+    public static final int fcview=0x7f080072;
+    public static final int fill=0x7f080073;
+    public static final int fill_horizontal=0x7f080074;
+    public static final int fill_vertical=0x7f080075;
+    public static final int fixed=0x7f080076;
+    public static final int frame=0x7f080077;
+    public static final int front=0x7f080078;
+    public static final int home=0x7f080079;
+    public static final int homeAsUp=0x7f08007a;
+    public static final int icon=0x7f08007b;
+    public static final int icon_group=0x7f08007c;
+    public static final int ifRoom=0x7f08007d;
+    public static final int image=0x7f08007e;
+    public static final int imview=0x7f08007f;
+    public static final int info=0x7f080080;
+    public static final int item_replenishment_details_dateInProduced=0x7f080081;
+    public static final int item_replenishment_details_layout=0x7f080082;
+    public static final int item_replenishment_details_layout_expirationTime=0x7f080083;
+    public static final int item_replenishment_details_layout_name=0x7f080084;
+    public static final int item_replenishment_details_layout_number=0x7f080085;
+    public static final int item_touch_helper_previous_elevation=0x7f080086;
+    public static final int item_vendingMachineActivity_image=0x7f080087;
+    public static final int item_vendingMachineActivity_layout=0x7f080088;
+    public static final int iv_close=0x7f080089;
+    public static final int iv_delete_face=0x7f08008a;
+    public static final int iv_delete_group=0x7f08008b;
+    public static final int iv_qr_code_login=0x7f08008c;
+    public static final int largeLabel=0x7f08008d;
+    public static final int left=0x7f08008e;
+    public static final int line1=0x7f08008f;
+    public static final int line3=0x7f080090;
+    public static final int listMode=0x7f080091;
+    public static final int list_item=0x7f080092;
+    public static final int ll=0x7f080093;
+    public static final int load_more_load_end_view=0x7f080094;
+    public static final int load_more_load_fail_view=0x7f080095;
+    public static final int load_more_loading_view=0x7f080096;
+    public static final int loading_progress=0x7f080097;
+    public static final int loading_text=0x7f080098;
+    public static final int lv_group_info=0x7f080099;
+    public static final int lv_group_name=0x7f08009a;
+    public static final int masked=0x7f08009b;
+    public static final int media_actions=0x7f08009c;
+    public static final int middle=0x7f08009d;
+    public static final int mini=0x7f08009e;
+    public static final int multiply=0x7f08009f;
+    public static final int navigation_header_container=0x7f0800a0;
+    public static final int never=0x7f0800a1;
+    public static final int none=0x7f0800a2;
+    public static final int normal=0x7f0800a3;
+    public static final int notification_background=0x7f0800a4;
+    public static final int notification_main_column=0x7f0800a5;
+    public static final int notification_main_column_container=0x7f0800a6;
+    public static final int ok=0x7f0800a7;
+    public static final int packed=0x7f0800a8;
+    public static final int parallax=0x7f0800a9;
+    public static final int parent=0x7f0800aa;
+    public static final int parentPanel=0x7f0800ab;
+    public static final int pin=0x7f0800ac;
+    public static final int preview=0x7f0800ad;
+    public static final int progress_circular=0x7f0800ae;
+    public static final int progress_horizontal=0x7f0800af;
+    public static final int radio=0x7f0800b0;
+    public static final int replenishment_clear_btn=0x7f0800b1;
+    public static final int replenishment_details_add_btn=0x7f0800b2;
+    public static final int replenishment_details_clear_btn=0x7f0800b3;
+    public static final int replenishment_details_image=0x7f0800b4;
+    public static final int replenishment_details_message=0x7f0800b5;
+    public static final int replenishment_details_recyclerView=0x7f0800b6;
+    public static final int replenishment_details_save_btn=0x7f0800b7;
+    public static final int replenishment_details_title=0x7f0800b8;
+    public static final int replenishment_item_image=0x7f0800b9;
+    public static final int replenishment_item_name_tv=0x7f0800ba;
+    public static final int replenishment_item_number_tv=0x7f0800bb;
+    public static final int replenishment_item_tv=0x7f0800bc;
+    public static final int replenishment_recyclerview=0x7f0800bd;
+    public static final int replenishment_tv=0x7f0800be;
+    public static final int right=0x7f0800bf;
+    public static final int right_icon=0x7f0800c0;
+    public static final int right_side=0x7f0800c1;
+    public static final int screen=0x7f0800c2;
+    public static final int scroll=0x7f0800c3;
+    public static final int scrollIndicatorDown=0x7f0800c4;
+    public static final int scrollIndicatorUp=0x7f0800c5;
+    public static final int scrollView=0x7f0800c6;
+    public static final int scrollable=0x7f0800c7;
+    public static final int search_badge=0x7f0800c8;
+    public static final int search_bar=0x7f0800c9;
+    public static final int search_button=0x7f0800ca;
+    public static final int search_close_btn=0x7f0800cb;
+    public static final int search_edit_frame=0x7f0800cc;
+    public static final int search_go_btn=0x7f0800cd;
+    public static final int search_mag_icon=0x7f0800ce;
+    public static final int search_plate=0x7f0800cf;
+    public static final int search_src_text=0x7f0800d0;
+    public static final int search_voice_btn=0x7f0800d1;
+    public static final int select_dialog_listview=0x7f0800d2;
+    public static final int settingLL=0x7f0800d3;
+    public static final int settingid=0x7f0800d4;
+    public static final int shortcut=0x7f0800d5;
+    public static final int showCustom=0x7f0800d6;
+    public static final int showHome=0x7f0800d7;
+    public static final int showTitle=0x7f0800d8;
+    public static final int smallLabel=0x7f0800d9;
+    public static final int snackbar_action=0x7f0800da;
+    public static final int snackbar_text=0x7f0800db;
+    public static final int snap=0x7f0800dc;
+    public static final int spacer=0x7f0800dd;
+    public static final int split_action_bar=0x7f0800de;
+    public static final int spread=0x7f0800df;
+    public static final int spread_inside=0x7f0800e0;
+    public static final int src_atop=0x7f0800e1;
+    public static final int src_in=0x7f0800e2;
+    public static final int src_over=0x7f0800e3;
+    public static final int start=0x7f0800e4;
+    public static final int status_bar_latest_event_content=0x7f0800e5;
+    public static final int submenuarrow=0x7f0800e6;
+    public static final int submit_area=0x7f0800e7;
+    public static final int sv_handle_sync_data=0x7f0800e8;
+    public static final int tabMode=0x7f0800e9;
+    public static final int text=0x7f0800ea;
+    public static final int text2=0x7f0800eb;
+    public static final int textSpacerNoButtons=0x7f0800ec;
+    public static final int textSpacerNoTitle=0x7f0800ed;
+    public static final int textTueView=0x7f0800ee;
+    public static final int text_input_password_toggle=0x7f0800ef;
+    public static final int textinput_counter=0x7f0800f0;
+    public static final int textinput_error=0x7f0800f1;
+    public static final int time=0x7f0800f2;
+    public static final int title=0x7f0800f3;
+    public static final int titleDividerNoCustom=0x7f0800f4;
+    public static final int title_template=0x7f0800f5;
+    public static final int toastImageView=0x7f0800f6;
+    public static final int toastState=0x7f0800f7;
+    public static final int toastTextView=0x7f0800f8;
+    public static final int toastll=0x7f0800f9;
+    public static final int top=0x7f0800fa;
+    public static final int topPanel=0x7f0800fb;
+    public static final int touch_outside=0x7f0800fc;
+    public static final int transition_current_scene=0x7f0800fd;
+    public static final int transition_scene_layoutid_cache=0x7f0800fe;
+    public static final int tv_face_token=0x7f0800ff;
+    public static final int tv_face_unbind=0x7f080100;
+    public static final int tv_group_name=0x7f080101;
+    public static final int tv_hello=0x7f080102;
+    public static final int tv_meg2=0x7f080103;
+    public static final int tv_prompt=0x7f080104;
+    public static final int tv_show_sync_data=0x7f080105;
+    public static final int up=0x7f080106;
+    public static final int useLogo=0x7f080107;
+    public static final int vendingMachineActivity_money=0x7f080108;
+    public static final int vendingMachineActivity_recyclerView=0x7f080109;
+    public static final int vendingMachineActivity_title=0x7f08010a;
+    public static final int vendingMachineActivity_txt=0x7f08010b;
+    public static final int view_offset_helper=0x7f08010c;
+    public static final int visible=0x7f08010d;
+    public static final int withText=0x7f08010e;
+    public static final int wrap=0x7f08010f;
+    public static final int wrap_content=0x7f080110;
+    public static final int xbanner_pointId=0x7f080111;
+    public static final int xbanner_view=0x7f080112;
   }
   public static final class integer {
     public static final int abc_config_activityDefaultDur=0x7f090000;
@@ -3766,70 +3759,73 @@ public final class R {
     public static final int abc_select_dialog_material=0x7f0a001a;
     public static final int activity_advertising=0x7f0a001b;
     public static final int activity_control=0x7f0a001c;
-    public static final int activity_main=0x7f0a001d;
-    public static final int activity_replenishment=0x7f0a001e;
-    public static final int activity_replenishment_details=0x7f0a001f;
-    public static final int activity_splash=0x7f0a0020;
-    public static final int activity_vending_machine=0x7f0a0021;
-    public static final int admin_login_dialog=0x7f0a0022;
-    public static final int design_bottom_navigation_item=0x7f0a0023;
-    public static final int design_bottom_sheet_dialog=0x7f0a0024;
-    public static final int design_layout_snackbar=0x7f0a0025;
-    public static final int design_layout_snackbar_include=0x7f0a0026;
-    public static final int design_layout_tab_icon=0x7f0a0027;
-    public static final int design_layout_tab_text=0x7f0a0028;
-    public static final int design_menu_item_action_area=0x7f0a0029;
-    public static final int design_navigation_item=0x7f0a002a;
-    public static final int design_navigation_item_header=0x7f0a002b;
-    public static final int design_navigation_item_separator=0x7f0a002c;
-    public static final int design_navigation_item_subheader=0x7f0a002d;
-    public static final int design_navigation_menu=0x7f0a002e;
-    public static final int design_navigation_menu_item=0x7f0a002f;
-    public static final int design_text_input_password_icon=0x7f0a0030;
-    public static final int item_replenishment=0x7f0a0031;
-    public static final int item_replenishment_details_layout=0x7f0a0032;
-    public static final int layout_dialog_face_operation=0x7f0a0033;
-    public static final int layout_dialog_sync_groups=0x7f0a0034;
-    public static final int layout_item_face_token=0x7f0a0035;
-    public static final int layout_item_group_name=0x7f0a0036;
-    public static final int notification_action=0x7f0a0037;
-    public static final int notification_action_tombstone=0x7f0a0038;
-    public static final int notification_media_action=0x7f0a0039;
-    public static final int notification_media_cancel_action=0x7f0a003a;
-    public static final int notification_template_big_media=0x7f0a003b;
-    public static final int notification_template_big_media_custom=0x7f0a003c;
-    public static final int notification_template_big_media_narrow=0x7f0a003d;
-    public static final int notification_template_big_media_narrow_custom=0x7f0a003e;
-    public static final int notification_template_custom_big=0x7f0a003f;
-    public static final int notification_template_icon_group=0x7f0a0040;
-    public static final int notification_template_lines_media=0x7f0a0041;
-    public static final int notification_template_media=0x7f0a0042;
-    public static final int notification_template_media_custom=0x7f0a0043;
-    public static final int notification_template_part_chronometer=0x7f0a0044;
-    public static final int notification_template_part_time=0x7f0a0045;
-    public static final int qr_code_layout=0x7f0a0046;
-    public static final int quick_view_load_more=0x7f0a0047;
-    public static final int select_dialog_item_material=0x7f0a0048;
-    public static final int select_dialog_multichoice_material=0x7f0a0049;
-    public static final int select_dialog_singlechoice_material=0x7f0a004a;
-    public static final int setting=0x7f0a004b;
-    public static final int support_simple_spinner_dropdown_item=0x7f0a004c;
-    public static final int test_serialport_layout=0x7f0a004d;
-    public static final int toast=0x7f0a004e;
-    public static final int vending_machine_layout=0x7f0a004f;
-    public static final int xbanner_item_image=0x7f0a0050;
+    public static final int activity_init_config=0x7f0a001d;
+    public static final int activity_main=0x7f0a001e;
+    public static final int activity_replenishment=0x7f0a001f;
+    public static final int activity_replenishment_details=0x7f0a0020;
+    public static final int activity_splash=0x7f0a0021;
+    public static final int activity_vending_machine=0x7f0a0022;
+    public static final int admin_login_dialog=0x7f0a0023;
+    public static final int buy_dialog_layout=0x7f0a0024;
+    public static final int design_bottom_navigation_item=0x7f0a0025;
+    public static final int design_bottom_sheet_dialog=0x7f0a0026;
+    public static final int design_layout_snackbar=0x7f0a0027;
+    public static final int design_layout_snackbar_include=0x7f0a0028;
+    public static final int design_layout_tab_icon=0x7f0a0029;
+    public static final int design_layout_tab_text=0x7f0a002a;
+    public static final int design_menu_item_action_area=0x7f0a002b;
+    public static final int design_navigation_item=0x7f0a002c;
+    public static final int design_navigation_item_header=0x7f0a002d;
+    public static final int design_navigation_item_separator=0x7f0a002e;
+    public static final int design_navigation_item_subheader=0x7f0a002f;
+    public static final int design_navigation_menu=0x7f0a0030;
+    public static final int design_navigation_menu_item=0x7f0a0031;
+    public static final int design_text_input_password_icon=0x7f0a0032;
+    public static final int item_replenishment=0x7f0a0033;
+    public static final int item_replenishment_details_layout=0x7f0a0034;
+    public static final int layout_dialog_face_operation=0x7f0a0035;
+    public static final int layout_dialog_sync_groups=0x7f0a0036;
+    public static final int layout_item_face_token=0x7f0a0037;
+    public static final int layout_item_group_name=0x7f0a0038;
+    public static final int notification_action=0x7f0a0039;
+    public static final int notification_action_tombstone=0x7f0a003a;
+    public static final int notification_media_action=0x7f0a003b;
+    public static final int notification_media_cancel_action=0x7f0a003c;
+    public static final int notification_template_big_media=0x7f0a003d;
+    public static final int notification_template_big_media_custom=0x7f0a003e;
+    public static final int notification_template_big_media_narrow=0x7f0a003f;
+    public static final int notification_template_big_media_narrow_custom=0x7f0a0040;
+    public static final int notification_template_custom_big=0x7f0a0041;
+    public static final int notification_template_icon_group=0x7f0a0042;
+    public static final int notification_template_lines_media=0x7f0a0043;
+    public static final int notification_template_media=0x7f0a0044;
+    public static final int notification_template_media_custom=0x7f0a0045;
+    public static final int notification_template_part_chronometer=0x7f0a0046;
+    public static final int notification_template_part_time=0x7f0a0047;
+    public static final int qr_code_layout=0x7f0a0048;
+    public static final int quick_view_load_more=0x7f0a0049;
+    public static final int select_dialog_item_material=0x7f0a004a;
+    public static final int select_dialog_multichoice_material=0x7f0a004b;
+    public static final int select_dialog_singlechoice_material=0x7f0a004c;
+    public static final int setting=0x7f0a004d;
+    public static final int support_simple_spinner_dropdown_item=0x7f0a004e;
+    public static final int test_serialport_layout=0x7f0a004f;
+    public static final int toast=0x7f0a0050;
+    public static final int vending_machine_layout=0x7f0a0051;
+    public static final int xbanner_item_image=0x7f0a0052;
   }
   public static final class mipmap {
     public static final int chuyu=0x7f0b0000;
-    public static final int ic_launcher=0x7f0b0001;
-    public static final int ic_launcher_round=0x7f0b0002;
-    public static final int kehuishou=0x7f0b0003;
-    public static final int logo=0x7f0b0004;
-    public static final int pinzi=0x7f0b0005;
-    public static final int qita=0x7f0b0006;
-    public static final int shouhuo=0x7f0b0007;
-    public static final int wenzi=0x7f0b0008;
-    public static final int youhai=0x7f0b0009;
+    public static final int ic_empty=0x7f0b0001;
+    public static final int ic_launcher=0x7f0b0002;
+    public static final int ic_launcher_round=0x7f0b0003;
+    public static final int kehuishou=0x7f0b0004;
+    public static final int logo=0x7f0b0005;
+    public static final int pinzi=0x7f0b0006;
+    public static final int qita=0x7f0b0007;
+    public static final int shouhuo=0x7f0b0008;
+    public static final int wenzi=0x7f0b0009;
+    public static final int youhai=0x7f0b000a;
   }
   public static final class string {
     public static final int abc_action_bar_home_description=0x7f0c0000;
@@ -13583,32 +13579,32 @@ public final class R {
      * <colgroup align="left" />
      * <tr><th>Attribute</th><th>Description</th></tr>
      * <tr><td><code>{@link #XBanner_AutoPlayTime megvii.testfacepass:AutoPlayTime}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_clipChildrenLeftRightMargin megvii.testfacepass:clipChildrenLeftRightMargin}</code></td><td>一屏显示多个左右间距</td></tr>
-     * <tr><td><code>{@link #XBanner_clipChildrenTopBottomMargin megvii.testfacepass:clipChildrenTopBottomMargin}</code></td><td>一屏显示多个上下间距</td></tr>
+     * <tr><td><code>{@link #XBanner_clipChildrenLeftRightMargin megvii.testfacepass:clipChildrenLeftRightMargin}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_clipChildrenTopBottomMargin megvii.testfacepass:clipChildrenTopBottomMargin}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_indicatorDrawable megvii.testfacepass:indicatorDrawable}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_isAutoPlay megvii.testfacepass:isAutoPlay}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_isClipChildrenMode megvii.testfacepass:isClipChildrenMode}</code></td><td>是否开启一屏显示多个模式 默认不开启</td></tr>
-     * <tr><td><code>{@link #XBanner_isClipChildrenModeLessThree megvii.testfacepass:isClipChildrenModeLessThree}</code></td><td>少于三张是否支持一屏多显模式</td></tr>
+     * <tr><td><code>{@link #XBanner_isClipChildrenMode megvii.testfacepass:isClipChildrenMode}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_isClipChildrenModeLessThree megvii.testfacepass:isClipChildrenModeLessThree}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_isHandLoop megvii.testfacepass:isHandLoop}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_isShowIndicatorOnlyOne megvii.testfacepass:isShowIndicatorOnlyOne}</code></td><td>当只有一页数据时是否显示指示器，默认值为false</td></tr>
-     * <tr><td><code>{@link #XBanner_isShowNumberIndicator megvii.testfacepass:isShowNumberIndicator}</code></td><td>是否是数字指示器</td></tr>
-     * <tr><td><code>{@link #XBanner_isShowTips megvii.testfacepass:isShowTips}</code></td><td>是否展示提示文案</td></tr>
+     * <tr><td><code>{@link #XBanner_isShowIndicatorOnlyOne megvii.testfacepass:isShowIndicatorOnlyOne}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_isShowNumberIndicator megvii.testfacepass:isShowNumberIndicator}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_isShowTips megvii.testfacepass:isShowTips}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_isTipsMarquee megvii.testfacepass:isTipsMarquee}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_numberIndicatorBacgroud megvii.testfacepass:numberIndicatorBacgroud}</code></td><td>数字指示器背景</td></tr>
-     * <tr><td><code>{@link #XBanner_pageChangeDuration megvii.testfacepass:pageChangeDuration}</code></td><td>图片切换速度</td></tr>
-     * <tr><td><code>{@link #XBanner_placeholderDrawable megvii.testfacepass:placeholderDrawable}</code></td><td>图片轮播框架展占位图</td></tr>
-     * <tr><td><code>{@link #XBanner_pointContainerLeftRightPadding megvii.testfacepass:pointContainerLeftRightPadding}</code></td><td>指示点容器左右内间距</td></tr>
+     * <tr><td><code>{@link #XBanner_numberIndicatorBacgroud megvii.testfacepass:numberIndicatorBacgroud}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_pageChangeDuration megvii.testfacepass:pageChangeDuration}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_placeholderDrawable megvii.testfacepass:placeholderDrawable}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_pointContainerLeftRightPadding megvii.testfacepass:pointContainerLeftRightPadding}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointContainerPosition megvii.testfacepass:pointContainerPosition}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_pointLeftRightPadding megvii.testfacepass:pointLeftRightPadding}</code></td><td>指示点左右内间距</td></tr>
+     * <tr><td><code>{@link #XBanner_pointLeftRightPadding megvii.testfacepass:pointLeftRightPadding}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointNormal megvii.testfacepass:pointNormal}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointSelect megvii.testfacepass:pointSelect}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_pointTopBottomPadding megvii.testfacepass:pointTopBottomPadding}</code></td><td>指示点上下内间距</td></tr>
+     * <tr><td><code>{@link #XBanner_pointTopBottomPadding megvii.testfacepass:pointTopBottomPadding}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointsContainerBackground megvii.testfacepass:pointsContainerBackground}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointsPosition megvii.testfacepass:pointsPosition}</code></td><td></td></tr>
      * <tr><td><code>{@link #XBanner_pointsVisibility megvii.testfacepass:pointsVisibility}</code></td><td></td></tr>
-     * <tr><td><code>{@link #XBanner_tipTextColor megvii.testfacepass:tipTextColor}</code></td><td>提示文案的文字颜色</td></tr>
-     * <tr><td><code>{@link #XBanner_tipTextSize megvii.testfacepass:tipTextSize}</code></td><td>提示文案的文字大小</td></tr>
-     * <tr><td><code>{@link #XBanner_viewpagerMargin megvii.testfacepass:viewpagerMargin}</code></td><td>设置viewpager间距</td></tr>
+     * <tr><td><code>{@link #XBanner_tipTextColor megvii.testfacepass:tipTextColor}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_tipTextSize megvii.testfacepass:tipTextSize}</code></td><td></td></tr>
+     * <tr><td><code>{@link #XBanner_viewpagerMargin megvii.testfacepass:viewpagerMargin}</code></td><td></td></tr>
      * </table>
      * @see #XBanner_AutoPlayTime
      * @see #XBanner_clipChildrenLeftRightMargin
@@ -13661,9 +13657,8 @@ public final class R {
      */
     public static final int XBanner_AutoPlayTime=0;
     /**
-     * <p>
-     * @attr description
-     * 一屏显示多个左右间距
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#clipChildrenLeftRightMargin}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -13675,9 +13670,8 @@ public final class R {
      */
     public static final int XBanner_clipChildrenLeftRightMargin=1;
     /**
-     * <p>
-     * @attr description
-     * 一屏显示多个上下间距
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#clipChildrenTopBottomMargin}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -13711,9 +13705,8 @@ public final class R {
      */
     public static final int XBanner_isAutoPlay=4;
     /**
-     * <p>
-     * @attr description
-     * 是否开启一屏显示多个模式 默认不开启
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isClipChildrenMode}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -13722,9 +13715,8 @@ public final class R {
      */
     public static final int XBanner_isClipChildrenMode=5;
     /**
-     * <p>
-     * @attr description
-     * 少于三张是否支持一屏多显模式
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isClipChildrenModeLessThree}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -13743,9 +13735,8 @@ public final class R {
      */
     public static final int XBanner_isHandLoop=7;
     /**
-     * <p>
-     * @attr description
-     * 当只有一页数据时是否显示指示器，默认值为false
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isShowIndicatorOnlyOne}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -13754,9 +13745,8 @@ public final class R {
      */
     public static final int XBanner_isShowIndicatorOnlyOne=8;
     /**
-     * <p>
-     * @attr description
-     * 是否是数字指示器
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isShowNumberIndicator}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -13765,9 +13755,8 @@ public final class R {
      */
     public static final int XBanner_isShowNumberIndicator=9;
     /**
-     * <p>
-     * @attr description
-     * 是否展示提示文案
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#isShowTips}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a boolean value, such as "<code>true</code>" or
      * "<code>false</code>".
@@ -13786,9 +13775,8 @@ public final class R {
      */
     public static final int XBanner_isTipsMarquee=11;
     /**
-     * <p>
-     * @attr description
-     * 数字指示器背景
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#numberIndicatorBacgroud}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
@@ -13799,9 +13787,8 @@ public final class R {
      */
     public static final int XBanner_numberIndicatorBacgroud=12;
     /**
-     * <p>
-     * @attr description
-     * 图片切换速度
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pageChangeDuration}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be an integer value, such as "<code>100</code>".
      *
@@ -13809,9 +13796,8 @@ public final class R {
      */
     public static final int XBanner_pageChangeDuration=13;
     /**
-     * <p>
-     * @attr description
-     * 图片轮播框架展占位图
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#placeholderDrawable}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
@@ -13822,9 +13808,8 @@ public final class R {
      */
     public static final int XBanner_placeholderDrawable=14;
     /**
-     * <p>
-     * @attr description
-     * 指示点容器左右内间距
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pointContainerLeftRightPadding}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -13853,9 +13838,8 @@ public final class R {
      */
     public static final int XBanner_pointContainerPosition=16;
     /**
-     * <p>
-     * @attr description
-     * 指示点左右内间距
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pointLeftRightPadding}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -13891,9 +13875,8 @@ public final class R {
      */
     public static final int XBanner_pointSelect=19;
     /**
-     * <p>
-     * @attr description
-     * 指示点上下内间距
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#pointTopBottomPadding}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -13948,9 +13931,8 @@ public final class R {
      */
     public static final int XBanner_pointsVisibility=23;
     /**
-     * <p>
-     * @attr description
-     * 提示文案的文字颜色
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#tipTextColor}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a reference to another resource, in the form
      * "<code>@[+][<i>package</i>:]<i>type</i>/<i>name</i></code>" or a theme
@@ -13964,9 +13946,8 @@ public final class R {
      */
     public static final int XBanner_tipTextColor=24;
     /**
-     * <p>
-     * @attr description
-     * 提示文案的文字大小
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#tipTextSize}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".
@@ -13978,9 +13959,8 @@ public final class R {
      */
     public static final int XBanner_tipTextSize=25;
     /**
-     * <p>
-     * @attr description
-     * 设置viewpager间距
+     * <p>This symbol is the offset where the {@link megvii.testfacepass.R.attr#viewpagerMargin}
+     * attribute's value can be found in the {@link #XBanner} array.
      *
      * <p>May be a dimension value, which is a floating point number appended with a
      * unit such as "<code>14.5sp</code>".

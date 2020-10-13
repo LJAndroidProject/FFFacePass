@@ -89,4 +89,11 @@ public class QRCodeUtil {
 
         return createQRCodeBitmap(text, 800, 800,"UTF-8","H", "1", Color.BLACK, Color.WHITE);
     }
+
+
+
+    public static Bitmap getAppletBuyCode(String text){
+
+        return createQRCodeBitmap(text, 300, 300,"UTF-8","H", "1", Color.BLACK, Color.WHITE);
+    }
 }

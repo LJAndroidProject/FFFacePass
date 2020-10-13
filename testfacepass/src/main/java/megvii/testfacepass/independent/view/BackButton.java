@@ -22,7 +22,7 @@ public class BackButton extends AppCompatImageView implements View.OnClickListen
 
         setImageResource(R.drawable.ic_baseline_arrow_back_24);
 
-        setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, android.R.color.darker_gray), PorterDuff.Mode.SRC_IN));
+        setColorFilter(new PorterDuffColorFilter(ContextCompat.getColor(context, android.R.color.white), PorterDuff.Mode.SRC_IN));
 
         setOnClickListener(this);
     }

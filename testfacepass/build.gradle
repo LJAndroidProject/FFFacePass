@@ -115,4 +115,7 @@ dependencies {
 
 
     compile 'com.android.support:design:25.4.0'
+
+
+    compile 'com.github.Liuguihong:AndroidUVCCamera:1.0.0'
 }
