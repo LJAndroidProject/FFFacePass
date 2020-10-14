@@ -26,4 +26,31 @@
         <item name="android:radius">25dp</item>
     </style>
 
+
+    <!--给toolbar单独设置的theme，让toolbar上按钮颜和文字颜色变化的 https://www.jianshu.com/p/81d0bcb282cb  -->
+    <style name="MyDarkToolBarTheme" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!--toolbar图标颜色-->
+        <item name="colorControlNormal">#FFFFFF</item>
+        <!--toolbar的title颜色-->
+        <item name="android:textColorPrimary">#FFFFFF</item>
+        <!--toolbar的subtitle颜色-->
+        <item name="subtitleTextColor">#FFFFFF</item>
+    </style>
+
+    <!--给toolbar的menu内单独设置的theme，让toolbar上按钮颜和文字颜色变化的-->
+    <style name="MyLightPopupTheme" parent="ThemeOverlay.AppCompat.Light">
+        <!--设置背景-->
+        <item name="android:background">@android:color/white</item>
+        <!--设置字体颜色-->
+        <item name="android:textColor">@color/colorAccent</item>
+        <!--设置不覆盖锚点-->
+        <item name="overlapAnchor">false</item>
+    </style>
+
+    <!--主题按钮-->
+    <style name="themeButtonStyle">
+        <item name="android:background">@drawable/control_btn_shape</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
 </resources>

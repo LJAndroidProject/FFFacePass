@@ -1369,7 +1369,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         adminLoginDialog = new AdminLoginDialog(MainActivity.this);
                         adminLoginDialog.setLoginListener(new AdminLoginDialog.LoginListener() {
                             @Override
-                            public void callBack(String editStr,AlertDialog alertDialog) {
+                            public void callBack(String editStr,String password,AlertDialog alertDialog) {
 
                                 if(editStr.equals("123")){
                                     alertDialog.dismiss();

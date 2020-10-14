@@ -29,7 +29,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".InitConfig"></activity>
+        <activity android:name=".DustbinManageActivity">
+
+        </activity>
+        <activity android:name=".InitConfig" >
+
+        </activity>
         <activity android:name=".VendingMachineActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -54,7 +59,6 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask">
-
 
         </activity> <!-- 设置界面 -->
         <activity

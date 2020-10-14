@@ -54,17 +54,17 @@ public final class R {
         public static final int LEFT = 0x7f080006;
         public static final int RIGHT = 0x7f080008;
         public static final int TOP = 0x7f080009;
-        public static final int xbanner_pointId = 0x7f080111;
+        public static final int xbanner_pointId = 0x7f08011e;
     }
     public static final class layout {
         private layout() {}
 
-        public static final int xbanner_item_image = 0x7f0a0052;
+        public static final int xbanner_item_image = 0x7f0a0054;
     }
     public static final class string {
         private string() {}
 
-        public static final int app_name = 0x7f0c001f;
+        public static final int app_name = 0x7f0d001f;
     }
     public static final class styleable {
         private styleable() {}

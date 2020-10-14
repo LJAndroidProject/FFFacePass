@@ -13,6 +13,7 @@ import megvii.testfacepass.independent.bean.DaoMaster;
 import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
+import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.UserMessage;
 import megvii.testfacepass.independent.bean.UserMessageDao;
@@ -175,5 +176,11 @@ public class DataBaseUtil {
     }
 
 
+    /**
+     * 获取设备配置信息
+     * */
+    public DustbinConfig getDeviceDustbinConfig(){
+        return getDaoSession().getDustbinConfigDao().queryBuilder().unique();
+    }
 
 }

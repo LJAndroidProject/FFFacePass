@@ -28,6 +28,7 @@ import java.util.Map;
 
 import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.DustbinBean;
+import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import okhttp3.Call;
 
@@ -38,6 +39,9 @@ public class APP extends Application {
     private String deviceToken;
 
     private static List<DustbinBean> dustbinBeanList;
+
+
+    private DustbinConfig dustbinConfig;
 
     @Override
     public void onCreate() {
@@ -146,6 +150,21 @@ public class APP extends Application {
     }
 
 
+    public DustbinConfig getDustbinConfig() {
+        return dustbinConfig;
+    }
+
+    public void setDustbinConfig(DustbinConfig dustbinConfig) {
+        this.dustbinConfig = dustbinConfig;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 
     public long getUserId() {
         return userId;

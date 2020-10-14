@@ -30,13 +30,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBeanDao;
 import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.util.DataBaseUtil;
-import megvii.testfacepass.independent.util.QRCodeUtil;
 
 public class ReplenishmentDetailsActivity extends AppCompatActivity {
 
@@ -57,17 +55,15 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
 
     private final static String TAG = "补货调试";
 
-
     private int listPosition ;
-
 
     private Button replenishment_details_save_btn,replenishment_details_clear_btn;
 
 
-    Calendar calendar ;
-    int dateInProducedYear;
-    int dateInProducedMonth;
-    int dateInProducedDay;
+    private Calendar calendar ;
+    private int dateInProducedYear;
+    private int dateInProducedMonth;
+    private int dateInProducedDay;
 
 
     private final long DAY_TIME = 86400000;
@@ -77,11 +73,9 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_replenishment_details);
 
         calendar = Calendar.getInstance();
-
-
-         dateInProducedYear = calendar.get(Calendar.YEAR);
-         dateInProducedMonth = calendar.get(Calendar.MONTH) + 1;
-         dateInProducedDay = calendar.get(Calendar.DAY_OF_MONTH);
+        dateInProducedYear = calendar.get(Calendar.YEAR);
+        dateInProducedMonth = calendar.get(Calendar.MONTH) + 1;
+        dateInProducedDay = calendar.get(Calendar.DAY_OF_MONTH);
 
         //  绑定组件
         replenishment_details_image = (ImageView) findViewById(R.id.replenishment_details_image);
@@ -90,7 +84,6 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         replenishment_details_save_btn = (Button) findViewById(R.id.replenishment_details_save_btn);
         replenishment_details_clear_btn = (Button) findViewById(R.id.replenishment_details_clear_btn);
         replenishment_details_title = (TextView)findViewById(R.id.replenishment_details_title);
-
 
 
         //  获取意图对象
@@ -107,12 +100,11 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         //  赋值 货道对象 所承载的 商品
         commodityBean.setCommodityAlternativeBean(DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().where(CommodityAlternativeBeanDao.Properties.CommodityID.eq(commodityBean.getCommodityID())).build().unique());
 
-
-        //  设置货道标题
+        //  设置货道
         replenishment_details_title.setText("A" + commodityBean.getTierChildrenNumber());
 
-        Log.i(TAG,"当前货道商品：" + commodityBean.toString());
 
+        Log.i(TAG,"当前货道商品：" + commodityBean.toString());
 
         //  如果为 0 说明该货道还未指定商品
         if(commodityBean.getCommodityID() == 0){
@@ -121,16 +113,15 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
             Glide.with(this).load(R.mipmap.ic_empty).into(replenishment_details_image);
             replenishment_details_message.setText("点击指定此货道商品类型");
 
-
             //  该货道列表将为 null
             list = null;
         }else{
-            commodityBean.setCommodityAlternativeBean(DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().where(CommodityAlternativeBeanDao.Properties.CommodityID.eq(commodityBean.getCommodityID())).build().unique());
+            commodityAlternativeBean = DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().where(CommodityAlternativeBeanDao.Properties.CommodityID.eq(commodityBean.getCommodityID())).build().unique();
 
+            commodityBean.setCommodityAlternativeBean(commodityAlternativeBean);
 
             //  图片和文字填充
             Glide.with(this).load(commodityBean.getCommodityAlternativeBean().getImageUrl()).into(replenishment_details_image);
-
 
             replenishment_details_message.setText(
                     "商品名称：" +
@@ -158,18 +149,15 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         }
 
 
+        //  清空货道
         replenishment_details_clear_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 if(list != null){
-
                     for(CommodityBean commodityBean : list){
                         commodityBean.setCommodityID(0);
                         commodityBean.setCommodityAlternativeBean(null);
                     }
-
 
                     //  清空库存
                     DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().saveInTx(list);
@@ -187,8 +175,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if(true){
-                    alert();
-
+                    selectVending();
                     return;
                 }
 
@@ -212,7 +199,16 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
 
 
                         Glide.with(ReplenishmentDetailsActivity.this).load(commodityBean.getCommodityAlternativeBean().getImageUrl()).into(replenishment_details_image);
-                        replenishment_details_message.setText(commodityBean.getCommodityAlternativeBean().getCommodityName());
+                        replenishment_details_message.setText(
+                                "商品名称：" +
+                                        commodityBean.getCommodityAlternativeBean().getCommodityName()
+                                        + "\n保质期：" +
+                                        commodityBean.getCommodityAlternativeBean().getExpirationDate()
+                                        + "\n商品价格：" +
+                                        commodityBean.getCommodityAlternativeBean().getCommodityMoney()
+                                        + "\n积分支付：" +
+                                        commodityBean.getCommodityAlternativeBean().getCanUserIntegral()
+                        );
 
                         //  给标题赋值
                         commodityBean.setCommodityAlternativeBean(DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().where(CommodityAlternativeBeanDao.Properties.CommodityID.eq(commodityAlternativeBeans.get(which).getCommodityID())).build().unique());
@@ -247,14 +243,12 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         replenishment_details_recyclerView.setLayoutManager(new LinearLayoutManager(this));
         replenishment_details_recyclerView.setAdapter(replenishmentDetailsAdapter);
 
-
+        //  保存当前添加的货物状态
         replenishment_details_save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
                 if(commodityBean != null && commodityBean.getCommodityAlternativeBean() != null){
-
 
                     DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().insertOrReplaceInTx(list);
 
@@ -272,6 +266,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         });
 
 
+        //  选择生产日期
         replenishmentDetailsAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(final BaseQuickAdapter adapter, View view, final int position) {
@@ -307,6 +302,7 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
             }
         });
 
+        //  添加货道商品
         replenishment_details_add_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -324,8 +320,6 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
                 }
 
                 Log.i("结果","开始循环");
-
-
 
                 for(int i =0 ; i<list.size();i++){
 
@@ -371,12 +365,9 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         super.onDestroy();
 
 
-
         /*for(CommodityBean commodityBean : list){
             Log.i("保存","已有配置：" + commodityBean.toString());
         }*/
-
-
 
     }
 
@@ -468,25 +459,64 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
     }
 
 
-    VendingMachineActivity.VendingMachineAdapter vendingMachineAdapter;
-    private void alert(){
+    VendingMachineDetailsAdapter vendingMachineAdapter;
+    AlertDialog selectVendingDialog;
+    private void selectVending(){
 
         RecyclerView recyclerView = new RecyclerView(this);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,3);
         recyclerView.setLayoutManager(gridLayoutManager);
 
 
-        list = DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().queryBuilder()
-                .where(CommodityBeanDao.Properties.CommodityID.notEq(0))
-                .where(CommodityBeanDao.Properties.TierChildrenCommodityNumber.eq(1))
-                .list();
+        final List<CommodityAlternativeBean> commodityAlternativeBeans = DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().where(CommodityAlternativeBeanDao.Properties.ShelvesOf.eq(true)).build().list();
 
         //  设置适配器
-        vendingMachineAdapter = new VendingMachineActivity.VendingMachineAdapter(R.layout.vending_machine_layout,VendingMachineActivity.removeDuplicateUser(list));
+        vendingMachineAdapter = new VendingMachineDetailsAdapter(R.layout.vending_machine_layout,commodityAlternativeBeans);
         vendingMachineAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(final BaseQuickAdapter adapter, View view, final int position) {
                 if(view.getId() == R.id.item_vendingMachineActivity_layout){
+
+                    Glide.with(ReplenishmentDetailsActivity.this).load(commodityAlternativeBeans.get(position).getImageUrl()).into(replenishment_details_image);
+
+                    replenishment_details_message.setText(
+                            "商品名称：" +
+                                    commodityAlternativeBeans.get(position).getCommodityName()
+                                    + "\n保质期：" +
+                                    commodityAlternativeBeans.get(position).getExpirationDate()
+                                    + "\n商品价格：" +
+                                    commodityAlternativeBeans.get(position).getCommodityMoney()
+                                    + "\n积分支付：" +
+                                    commodityAlternativeBeans.get(position).getCanUserIntegral()
+                    );
+
+
+
+                    commodityBean.setCommodityID(commodityAlternativeBeans.get(position).getCommodityID());
+                    commodityBean.setCommodityAlternativeBean(commodityAlternativeBeans.get(position));
+
+
+                    //  给标题赋值
+                    commodityBean.setCommodityAlternativeBean(DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().where(CommodityAlternativeBeanDao.Properties.CommodityID.eq(commodityAlternativeBeans.get(position).getCommodityID())).build().unique());
+
+                    list = DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder()
+                            //  商品对象不为空
+                            //.where(CommodityBeanDao.Properties.CommodityAlternativeBean.isNotNull())
+                            //  同柜子
+                            .where(CommodityBeanDao.Properties.CupboardNumber.eq(commodityBean.getCupboardNumber()))
+                            //  同层
+                            .where(CommodityBeanDao.Properties.TierNumber.eq(commodityBean.getTierNumber()))
+                            //  同货道
+                            .where(CommodityBeanDao.Properties.TierChildrenNumber.eq(commodityBean.getTierChildrenNumber()))
+                            .build().list();
+
+
+                    replenishmentDetailsAdapter.setNewData(list);
+
+
+                    if(selectVendingDialog != null && selectVendingDialog.isShowing()){
+                        selectVendingDialog.dismiss();
+                    }
 
 
                 }
@@ -499,7 +529,58 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
         alert.setTitle("选择当前货道商品");
         alert.setView(recyclerView);
         alert.create();
-        alert.show();
+        selectVendingDialog = alert.show();
     }
 
+
+    /**
+     * 货道 更新标题头 商品 ，在点击 和进入时触发
+     * */
+    private void updateVendingTitle(CommodityAlternativeBean commodityAlternativeBean){
+        //  更换图片
+        Glide.with(ReplenishmentDetailsActivity.this).load(commodityAlternativeBean.getImageUrl()).into(replenishment_details_image);
+
+        //  设置标题头的商品详情
+        replenishment_details_message.setText(
+                "商品名称：" +
+                        commodityAlternativeBean.getCommodityName()
+                        + "\n保质期：" +
+                        commodityAlternativeBean.getExpirationDate()
+                        + "\n商品价格：" +
+                        commodityAlternativeBean.getCommodityMoney()
+                        + "\n积分支付：" +
+                        commodityAlternativeBean.getCanUserIntegral()
+        );
+
+
+        //  添加商品时需要用到
+        commodityBean.setCommodityID(commodityAlternativeBean.getCommodityID());
+        commodityBean.setCommodityAlternativeBean(commodityAlternativeBean);
+
+    }
+
+
+    public static class VendingMachineDetailsAdapter extends BaseQuickAdapter<CommodityAlternativeBean, BaseViewHolder> {
+
+        public VendingMachineDetailsAdapter(int layoutResId, @Nullable List<CommodityAlternativeBean> data) {
+            super(layoutResId, data);
+        }
+
+        @Override
+        protected void convert(BaseViewHolder helper, CommodityAlternativeBean commodityAlternativeBean) {
+
+            Glide.with(mContext).load(commodityAlternativeBean.getImageUrl()).into((ImageView) helper.getView(R.id.item_vendingMachineActivity_image));
+            helper.setText(R.id.vendingMachineActivity_money,"￥" + commodityAlternativeBean.getCommodityMoney());
+            //  已经下架
+            if(commodityAlternativeBean.getShelvesOf()){
+                //  添加点击事件
+                helper.addOnClickListener(R.id.item_vendingMachineActivity_layout);
+                helper.setText(R.id.vendingMachineActivity_txt,commodityAlternativeBean.getCommodityName() + "\n" + commodityAlternativeBean.getCommodityMoney());
+            }else{
+                helper.setAlpha(R.id.item_vendingMachineActivity_layout,0.4f);
+                helper.setText(R.id.vendingMachineActivity_txt,"( 已下架 ) " + commodityAlternativeBean.getCommodityName());
+            }
+
+        }
+    }
 }

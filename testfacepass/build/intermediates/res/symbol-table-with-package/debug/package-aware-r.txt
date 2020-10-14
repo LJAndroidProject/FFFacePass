@@ -828,6 +828,9 @@ id admin_login_button
 id admin_login_close
 id admin_login_edit
 id admin_login_password
+id admin_login_title
+id admin_verify_button
+id admin_verify_code
 id alertTitle
 id all
 id always
@@ -889,6 +892,12 @@ id design_menu_item_action_area_stub
 id design_menu_item_text
 id design_navigation_view
 id disableHome
+id dustbin_manage_recyclerView
+id dustbin_manage_tabLayout
+id dustbin_menu_check
+id dustbin_menu_clear
+id dustbin_menu_exit
+id edit_dustbin_authorizationCode
 id edit_dustbin_query
 id edit_query
 id end
@@ -968,6 +977,9 @@ id preview
 id progress_circular
 id progress_horizontal
 id radio
+id record_door
+id record_dustbin_weight
+id record_time
 id replenishment_clear_btn
 id replenishment_details_add_btn
 id replenishment_details_clear_btn
@@ -981,7 +993,6 @@ id replenishment_item_name_tv
 id replenishment_item_number_tv
 id replenishment_item_tv
 id replenishment_recyclerview
-id replenishment_tv
 id right
 id right_icon
 id right_side
@@ -1025,6 +1036,7 @@ id submenuarrow
 id submit_area
 id sv_handle_sync_data
 id tabMode
+id tb_toolbar
 id text
 id text2
 id textSpacerNoButtons
@@ -1055,6 +1067,7 @@ id tv_prompt
 id tv_show_sync_data
 id up
 id useLogo
+id user_id
 id vendingMachineActivity_money
 id vendingMachineActivity_recyclerView
 id vendingMachineActivity_title
@@ -1104,6 +1117,7 @@ layout abc_search_view
 layout abc_select_dialog_material
 layout activity_advertising
 layout activity_control
+layout activity_dustbin_manage
 layout activity_init_config
 layout activity_main
 layout activity_replenishment
@@ -1126,6 +1140,7 @@ layout design_navigation_item_subheader
 layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_password_icon
+layout item_record_layout
 layout item_replenishment
 layout item_replenishment_details_layout
 layout layout_dialog_face_operation
@@ -1158,6 +1173,7 @@ layout test_serialport_layout
 layout toast
 layout vending_machine_layout
 layout xbanner_item_image
+menu dustbin_manage_menu
 mipmap chuyu
 mipmap ic_empty
 mipmap ic_launcher
@@ -1374,6 +1390,8 @@ style Base_Widget_AppCompat_Toolbar
 style Base_Widget_AppCompat_Toolbar_Button_Navigation
 style Base_Widget_Design_AppBarLayout
 style Base_Widget_Design_TabLayout
+style MyDarkToolBarTheme
+style MyLightPopupTheme
 style Platform_AppCompat
 style Platform_AppCompat_Light
 style Platform_ThemeOverlay_AppCompat
@@ -1595,6 +1613,7 @@ style Widget_Design_Snackbar
 style Widget_Design_TabLayout
 style Widget_Design_TextInputLayout
 style controlActivityButtonStyle
+style themeButtonStyle
 styleable ActionBar background backgroundSplit backgroundStacked contentInsetEnd contentInsetEndWithActions contentInsetLeft contentInsetRight contentInsetStart contentInsetStartWithNavigation customNavigationLayout displayOptions divider elevation height hideOnContentScroll homeAsUpIndicator homeLayout icon indeterminateProgressStyle itemPadding logo navigationMode popupTheme progressBarPadding progressBarStyle subtitle subtitleTextStyle title titleTextStyle
 styleable ActionBarLayout android_layout_gravity
 styleable ActionMenuItemView android_minWidth

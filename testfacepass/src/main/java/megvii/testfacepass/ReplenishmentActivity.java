@@ -254,9 +254,15 @@ public class ReplenishmentActivity extends AppCompatActivity {
             }
         }
 
-        //  三 至 六层 可存放10个
-        for(; number <= 60; number++){
+        //  三 至 四层 可存放10个
+        for(; number <= 40; number++){
             for(int tierChildrenCommodityNumber = 1 ; tierChildrenCommodityNumber <= 10 ; tierChildrenCommodityNumber++){
+                commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
+            }
+        }
+
+        for(; number <= 60; number++){
+            for(int tierChildrenCommodityNumber = 1 ; tierChildrenCommodityNumber <= 4 ; tierChildrenCommodityNumber++){
                 commodityBeanList.add(new CommodityBean(null,0,null,1,1,number,tierChildrenCommodityNumber,0,0));
             }
         }

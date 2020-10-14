@@ -3,9 +3,6 @@ package megvii.testfacepass;
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Camera;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -24,15 +21,11 @@ import com.lgh.uvccamera.UVCCameraProxy;
 import com.lgh.uvccamera.bean.PicturePath;
 import com.lgh.uvccamera.callback.ConnectCallback;
 import com.lgh.uvccamera.callback.PictureCallback;
-import com.serialportlibrary.service.impl.SerialPortService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,15 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 import megvii.testfacepass.independent.ServerAddress;
-import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
-import megvii.testfacepass.independent.bean.CommodityBean;
-import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
 import megvii.testfacepass.independent.bean.DustbinBean;
-import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
-import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
@@ -65,7 +53,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     //  关门失败次数，5次失败上报错误到服务器
     private int closeDoorFailNumber = 0;
 
-    private TextView control_welcome_textView,replenishment_tv;
+    private TextView control_welcome_textView;
     private ImageView control_image;
 
 
@@ -78,6 +66,8 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     private int mSecretNumber = 0;
     private static final long CLICK_INTERVAL = 600;
     private long mLastClickTime;
+
+    private AdminLoginDialog adminLoginDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,18 +91,10 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
 
 
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
-        replenishment_tv = (TextView)findViewById(R.id.replenishment_tv);
-        replenishment_tv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
-                startActivity(intent);
-            }
-        });
 
         control_image.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 long curTime = System.currentTimeMillis();
                 long durTime = curTime - mLastClickTime;
                 mLastClickTime = curTime;
@@ -120,7 +102,31 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
                     ++mSecretNumber;
                     if (mSecretNumber == 5) {
 
-                        Toast.makeText(ControlActivity.this, "快速", Toast.LENGTH_SHORT).show();
+                        adminLoginDialog = new AdminLoginDialog(ControlActivity.this);
+                        adminLoginDialog.setLoginListener(new AdminLoginDialog.LoginListener() {
+                            @Override
+                            public void callBack(String editStr, String password, android.app.AlertDialog alertDialog) {
+
+                                if(editStr.equals("123")){
+                                    adminLoginDialog.verifyState(new AdminLoginDialog.VerifyListener() {
+                                        @Override
+                                        public void verifyCallBack(String adminPhone, String verifyCode, android.app.AlertDialog alertDialog) {
+                                            if(verifyCode.equals("1")){
+                                                Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
+                                                startActivity(intent);
+                                            }else if(verifyCode.equals("2")){
+                                                Intent intent = new Intent(ControlActivity.this, DustbinManageActivity.class);
+                                                startActivity(intent);
+                                            }
+                                        }
+                                    });
+                                }else{
+                                    Toast.makeText(ControlActivity.this,"登陆失败，密码错误",Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                        adminLoginDialog.create();
+                        adminLoginDialog.show();
 
 
                     }
@@ -236,6 +242,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         btn_leatheroid.setOnTouchListener(this);
         btn_bottle.setOnTouchListener(this);
     }
+
 
 
     /**

@@ -41,6 +41,7 @@ import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.QRCodeUtil;
+import megvii.testfacepass.independent.util.SerialPortUtil;
 import okhttp3.Call;
 
 
@@ -151,11 +152,14 @@ public class VendingMachineActivity extends AppCompatActivity {
                     //  提取没有过期的商品数量
                     normalCommodityBean(result);
 
+                    /**
+                     * ttyS1 115200 adb shell input text "0d2428006000030a0a313233343536373839303132333400000000000000000000000000004E0d0a"
+                     * */
 
                     //  出货之前再次确认有货
                     if(result != null && result.size() > 0){
                         ImageView imageView = new ImageView(VendingMachineActivity.this);
-                        imageView.setImageBitmap(QRCodeUtil.getAppletBuyCode(ServerAddress.LOGIN));
+                        imageView.setImageBitmap(QRCodeUtil.getAppletBuyCode("https://ffadmin.fenfeneco.com/amat?device_id=" /*((APP)getApplication()).getDustbinConfig().getDustbinDeviceId()*/ +"&goods_id=" + result.get(0).getCommodityID()));
 
                         AlertDialog.Builder alert = new AlertDialog.Builder(VendingMachineActivity.this);
                         alert.setTitle("购买" + commodityBean.getCommodityAlternativeBean().getCommodityName() );
@@ -176,8 +180,17 @@ public class VendingMachineActivity extends AppCompatActivity {
                                 DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().save(c);
 
 
+                                //  发送指令
+                                String tierChildrenNumberHEX = Integer.toHexString(c .getTierChildrenNumber());
 
-                                Toast.makeText(VendingMachineActivity.this,"货道：" +c .getTierChildrenNumber() + "," + c.getTierChildrenCommodityNumber(),Toast.LENGTH_LONG).show();
+                                byte[] head = new byte[]{0x0D,0x24};
+                                byte[] order = new byte[]{0x28,0x00,0x60,0x00,0x01,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
+                                byte sum = getXor(order);
+                                byte[] end = new byte[]{0x0D,0x0A};
+
+                                SerialPortUtil.getInstance().sendData("0d 24 28 00 60 00 " + tierChildrenNumberHEX + " 0a 0a 31 32 33 34 35 36 37 38 39 30 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4E 0d 0a");
+
+                                Toast.makeText(VendingMachineActivity.this,"货道：" + c .getTierChildrenNumber() + "," + c.getTierChildrenCommodityNumber(),Toast.LENGTH_LONG).show();
 
 
                                 //  说明是最后一个了直接删除
@@ -249,6 +262,22 @@ public class VendingMachineActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+
+
+    /**
+     * 异或 运算
+     * */
+    public static byte getXor(byte[] datas){
+
+        byte temp=datas[0];
+
+        for (int i = 1; i <datas.length; i++) {
+            temp ^=datas[i];
+        }
+
+        return temp;
     }
 
 

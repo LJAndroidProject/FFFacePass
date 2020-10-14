@@ -24,18 +24,9 @@
         android:id="@+id/control_alert_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-    <TextView
-        android:layout_below="@+id/control_alert_textView"
-        android:id="@+id/replenishment_tv"
-        android:text="售货机补货"
-        android:paddingStart="70dp"
-        android:paddingEnd="70dp"
-        android:textColor="#FF00"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
     <ImageView
         android:id="@+id/control_image"
-        android:layout_below="@+id/replenishment_tv"
+        android:layout_below="@+id/control_welcome_textView"
         android:src="@mipmap/wenzi"
         android:padding="20dp"
         android:scaleType="centerInside"
