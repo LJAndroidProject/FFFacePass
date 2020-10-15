@@ -260,7 +260,7 @@ public class SerialPortResponseManage {
 
             //  每一次得到控制电路的响应，都要更新数据库中的数据，然后再更新 application 中的全局list变量
             //  代表 全局 垃圾桶 list 对象
-            APP.setDustbinBeanList(DataBaseUtil.getInstance(context).getDustbinByType(null));
+            //.setDustbinBeanList(DataBaseUtil.getInstance(context).getDustbinByType(null));
 
         }else{
             Log.i(MY_ORDER,"非法指令");

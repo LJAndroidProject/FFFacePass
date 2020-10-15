@@ -33,14 +33,14 @@
 
         </activity>
         <activity android:name=".InitConfig" >
-
-        </activity>
-        <activity android:name=".VendingMachineActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".VendingMachineActivity">
+
         </activity>
         <activity android:name=".ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
         <activity android:name=".ReplenishmentActivity" /> <!-- 垃圾箱控制台 -->

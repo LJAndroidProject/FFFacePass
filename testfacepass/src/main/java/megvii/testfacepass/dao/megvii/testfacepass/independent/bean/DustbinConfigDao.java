@@ -13,7 +13,7 @@ import org.greenrobot.greendao.database.DatabaseStatement;
 /** 
  * DAO for table "DUSTBIN_CONFIG".
 */
-public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
+public class DustbinConfigDao extends AbstractDao<DustbinConfig, String> {
 
     public static final String TABLENAME = "DUSTBIN_CONFIG";
 
@@ -22,7 +22,7 @@ public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
      * Can be used for QueryBuilder and for referencing column names.
      */
     public static class Properties {
-        public final static Property DustbinDeviceId = new Property(0, Long.class, "dustbinDeviceId", true, "_id");
+        public final static Property DustbinDeviceId = new Property(0, String.class, "dustbinDeviceId", true, "DUSTBIN_DEVICE_ID");
         public final static Property DustbinDeviceName = new Property(1, String.class, "dustbinDeviceName", false, "DUSTBIN_DEVICE_NAME");
         public final static Property DustbinDeviceRemark = new Property(2, String.class, "dustbinDeviceRemark", false, "DUSTBIN_DEVICE_REMARK");
         public final static Property Longitude = new Property(3, double.class, "longitude", false, "LONGITUDE");
@@ -43,7 +43,7 @@ public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
         db.execSQL("CREATE TABLE " + constraint + "\"DUSTBIN_CONFIG\" (" + //
-                "\"_id\" INTEGER PRIMARY KEY ," + // 0: dustbinDeviceId
+                "\"DUSTBIN_DEVICE_ID\" TEXT PRIMARY KEY NOT NULL ," + // 0: dustbinDeviceId
                 "\"DUSTBIN_DEVICE_NAME\" TEXT," + // 1: dustbinDeviceName
                 "\"DUSTBIN_DEVICE_REMARK\" TEXT," + // 2: dustbinDeviceRemark
                 "\"LONGITUDE\" REAL NOT NULL ," + // 3: longitude
@@ -61,9 +61,9 @@ public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
     protected final void bindValues(DatabaseStatement stmt, DustbinConfig entity) {
         stmt.clearBindings();
  
-        Long dustbinDeviceId = entity.getDustbinDeviceId();
+        String dustbinDeviceId = entity.getDustbinDeviceId();
         if (dustbinDeviceId != null) {
-            stmt.bindLong(1, dustbinDeviceId);
+            stmt.bindString(1, dustbinDeviceId);
         }
  
         String dustbinDeviceName = entity.getDustbinDeviceName();
@@ -84,9 +84,9 @@ public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
     protected final void bindValues(SQLiteStatement stmt, DustbinConfig entity) {
         stmt.clearBindings();
  
-        Long dustbinDeviceId = entity.getDustbinDeviceId();
+        String dustbinDeviceId = entity.getDustbinDeviceId();
         if (dustbinDeviceId != null) {
-            stmt.bindLong(1, dustbinDeviceId);
+            stmt.bindString(1, dustbinDeviceId);
         }
  
         String dustbinDeviceName = entity.getDustbinDeviceName();
@@ -104,14 +104,14 @@ public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
     }
 
     @Override
-    public Long readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0);
+    public String readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0);
     }    
 
     @Override
     public DustbinConfig readEntity(Cursor cursor, int offset) {
         DustbinConfig entity = new DustbinConfig( //
-            cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // dustbinDeviceId
+            cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0), // dustbinDeviceId
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // dustbinDeviceName
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // dustbinDeviceRemark
             cursor.getDouble(offset + 3), // longitude
@@ -123,7 +123,7 @@ public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
      
     @Override
     public void readEntity(Cursor cursor, DustbinConfig entity, int offset) {
-        entity.setDustbinDeviceId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
+        entity.setDustbinDeviceId(cursor.isNull(offset + 0) ? null : cursor.getString(offset + 0));
         entity.setDustbinDeviceName(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
         entity.setDustbinDeviceRemark(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setLongitude(cursor.getDouble(offset + 3));
@@ -132,13 +132,12 @@ public class DustbinConfigDao extends AbstractDao<DustbinConfig, Long> {
      }
     
     @Override
-    protected final Long updateKeyAfterInsert(DustbinConfig entity, long rowId) {
-        entity.setDustbinDeviceId(rowId);
-        return rowId;
+    protected final String updateKeyAfterInsert(DustbinConfig entity, long rowId) {
+        return entity.getDustbinDeviceId();
     }
     
     @Override
-    public Long getKey(DustbinConfig entity) {
+    public String getKey(DustbinConfig entity) {
         if(entity != null) {
             return entity.getDustbinDeviceId();
         } else {

@@ -31,7 +31,7 @@ public class SerialPortUtil {
                     serialPortService = new SerialPortBuilder()
                             .setTimeOut(100L)
                             .setBaudrate(115200)
-                            .setDevicePath("dev/ttyS2")
+                            .setDevicePath("dev/ttyS1") //  售卖机的 232是 ttyS1 、 垃圾箱的ttl 是 ttyS2
                             .createService();
                     serialPortService.isOutputLog(true);
                 }

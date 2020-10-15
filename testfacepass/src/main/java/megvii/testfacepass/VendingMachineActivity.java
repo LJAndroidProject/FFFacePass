@@ -22,6 +22,8 @@ import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
+import com.serialportlibrary.service.impl.SerialPortService;
+import com.serialportlibrary.util.ByteStringUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
 import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.bean.GetServerGoods;
+import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.QRCodeUtil;
@@ -109,6 +112,16 @@ public class VendingMachineActivity extends AppCompatActivity {
             }
         },5000);*/
 
+        SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
+            @Override
+            public void response(String response) {
+                //  通过事件总线发送出去
+                Log.i("串口","串口接收" + response);
+
+                //SerialPortResponseManage.inOrderString(MainActivity.this,response);
+            }
+        });
+
 
 
         //  设置适配器
@@ -179,17 +192,6 @@ public class VendingMachineActivity extends AppCompatActivity {
                                 //  修改货道信息
                                 DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().save(c);
 
-
-                                //  发送指令
-                                String tierChildrenNumberHEX = Integer.toHexString(c .getTierChildrenNumber());
-
-                                byte[] head = new byte[]{0x0D,0x24};
-                                byte[] order = new byte[]{0x28,0x00,0x60,0x00,0x01,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
-                                byte sum = getXor(order);
-                                byte[] end = new byte[]{0x0D,0x0A};
-
-                                SerialPortUtil.getInstance().sendData("0d 24 28 00 60 00 " + tierChildrenNumberHEX + " 0a 0a 31 32 33 34 35 36 37 38 39 30 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4E 0d 0a");
-
                                 Toast.makeText(VendingMachineActivity.this,"货道：" + c .getTierChildrenNumber() + "," + c.getTierChildrenCommodityNumber(),Toast.LENGTH_LONG).show();
 
 
@@ -197,6 +199,38 @@ public class VendingMachineActivity extends AppCompatActivity {
                                 if(result.size() == 1){
                                     vendingMachineAdapter.remove(position);
                                 }
+
+
+                                //  发送指令
+                                //String tierChildrenNumberHEX = Integer.toHexString(c .getTierChildrenNumber());
+
+                                //  货道
+                                //byte[] number = ByteStringUtil.hexStrToByteArray(Integer.toHexString(c .getTierChildrenNumber()));
+
+                                //Log.i("串口",Integer.toHexString(c .getTierChildrenNumber()));
+
+                                byte[] headBytes = new byte[]{0x0D,0x24};
+                                byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (c .getTierChildrenNumber() & 0xff)/*,number[0]*/,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
+                                byte[] sumBytes = new byte[]{getXor(order)};
+                                byte[] endBytes = new byte[]{0x0D,0x0A};
+
+
+                                byte[] newBytes = new byte[headBytes.length + order.length + sumBytes.length + endBytes.length];
+
+
+                                //  需要复制的数组、复制源的起始位置，目标数组，目标数组的起始位置，复制的长度
+                                //  首先添加帧头
+                                System.arraycopy(headBytes,0,newBytes,0,headBytes.length);
+                                //  添加中间
+                                System.arraycopy(order,0,newBytes,headBytes.length,order.length);
+                                //  添加校验位
+                                System.arraycopy(sumBytes,0,newBytes,headBytes.length + order.length,sumBytes.length);
+                                //  添加帧尾部
+                                System.arraycopy(endBytes,0,newBytes,headBytes.length + order.length + sumBytes.length,endBytes.length);
+
+                                SerialPortUtil.getInstance().sendData(newBytes);
+
+                                Log.i("结果","串口发送:" + ByteStringUtil.byteArrayToHexStr(newBytes));
 
                             }
                         });

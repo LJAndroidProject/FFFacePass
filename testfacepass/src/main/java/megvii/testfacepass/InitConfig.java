@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.alibaba.sdk.android.beacon.Beacon;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -27,6 +28,7 @@ import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinENUM;
+import megvii.testfacepass.independent.bean.GetDustbinConfig;
 import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
@@ -45,10 +47,8 @@ public class InitConfig extends AppCompatActivity {
 
         //  查看是否存在配置，有配置则直接跳刀人脸识别界面
         if(DataBaseUtil.getInstance(InitConfig.this).hasDustBinConfig()){
-            Intent intent = new Intent(InitConfig.this,MainActivity.class);
-            startActivity(intent);
 
-            this.finish();
+            goMainActivity();
 
             return;
         }
@@ -88,35 +88,47 @@ public class InitConfig extends AppCompatActivity {
                 progressDialog.show();
 
                 Map<String,String> map = new HashMap<>();
-                map.put("deviceId",edit_dustbin_query.getText().toString());
-                map.put("deviceCode",edit_dustbin_authorizationCode.getText().toString());
-                NetWorkUtil.getInstance().doGet(ServerAddress.GET_DUSTBIN_CONFIG, map, new NetWorkUtil.NetWorkListener() {
+                map.put("device_id",edit_dustbin_query.getText().toString());
+                map.put("mange_code",edit_dustbin_authorizationCode.getText().toString());
+                NetWorkUtil.getInstance().doPost(ServerAddress.GET_DUSTBIN_CONFIG, map, new NetWorkUtil.NetWorkListener() {
                     @Override
                     public void success(String response) {
 
+                        Log.i("结果",response);
+
+                        GetDustbinConfig getDustbinConfig = new Gson().fromJson(response,GetDustbinConfig.class);
+
+                        if(getDustbinConfig.getCode() == 1){
+                            List<DustbinBean> list = new ArrayList<>();
+
+                            List<GetDustbinConfig.DataBean.ListBean> listBeans = getDustbinConfig.getData().getList();
+                            for(GetDustbinConfig.DataBean.ListBean listBean : listBeans){
+                                list.add(new DustbinBean(Integer.parseInt(listBean.getBin_code()), getDustbinType(listBean.getBin_type()),false,0));
+                            }
+
+                            //  保存箱体配置
+                            DataBaseUtil.getInstance(InitConfig.this).setDustBinConfig(list);
 
 
-                        List<DustbinBean> list = new ArrayList<>();
-                        list.add(new DustbinBean(1, DustbinENUM.KITCHEN.toString(),false,0));
-                        list.add(new DustbinBean(2,DustbinENUM.KITCHEN.toString(),false,0));
-                        list.add(new DustbinBean(3,DustbinENUM.HARMFUL.toString(),false,0));
-                        list.add(new DustbinBean(4,DustbinENUM.OTHER.toString(),false,0));
-                        list.add(new DustbinBean(5,DustbinENUM.OTHER.toString(),false,0));
-                        list.add(new DustbinBean(6,DustbinENUM.OTHER.toString(),false,0));
-                        list.add(new DustbinBean(7,DustbinENUM.WASTE_PAPER.toString(),false,0));
-                        list.add(new DustbinBean(8,DustbinENUM.BOTTLE.toString(),false,0));
-                        DataBaseUtil.getInstance(InitConfig.this).setDustBinConfig(list);
+                            /*
+                             * 保存垃圾箱配置
+                             * */
+                            DustbinConfig dustbinConfig = new DustbinConfig();
+                            dustbinConfig.setDustbinDeviceId(listBeans.get(0).getDevice_id());  //  deviceID
+                            dustbinConfig.setDustbinDeviceName(getDustbinConfig.getData().getDevice_name());    //  deviceName 部署在哪一个小区
+                            dustbinConfig.setHasVendingMachine(getDustbinConfig.getData().getHas_amat() == 1);  //  是否有售卖机
+                            //  如果存在售卖机则创建售卖机货道
+                            if(getDustbinConfig.getData().getHas_amat() == 1){
+                                initReplenishment();
+                            }
+                            DataBaseUtil.getInstance(InitConfig.this).getDaoSession().getDustbinConfigDao().insertOrReplace(dustbinConfig);    //  保存配置
 
-
-                        //alertMessage();
-
-                        //  有售货机则显示获取售货机配置
-                        if(true){
-                            btn_getGoodsPos.setVisibility(View.VISIBLE);
+                            goMainActivity();
                         }
 
-                        Toast.makeText(InitConfig.this, "获取垃圾箱配置成功", Toast.LENGTH_SHORT).show();
+
                         progressDialog.dismiss();
+                        Toast.makeText(InitConfig.this, getDustbinConfig.getMsg(), Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -148,6 +160,41 @@ public class InitConfig extends AppCompatActivity {
         });
 
     }
+
+
+    /**
+     * 跳转到首页
+     * */
+    private void goMainActivity(){
+        Intent intent = new Intent(InitConfig.this,MainActivity.class);
+        startActivity(intent);
+
+        this.finish();
+    }
+
+
+    /**
+     * A：厨余垃圾，B：其他垃圾，C：可回收垃圾，D：有害垃圾
+     * */
+    private String getDustbinType(String text){
+        if(text.equals("A")){
+            return DustbinENUM.KITCHEN.toString();
+        }else if(text.equals("B")){
+            return DustbinENUM.OTHER.toString();
+        }else if(text.equals("C")){
+            return DustbinENUM.RECYCLABLES.toString();
+        }else if(text.equals("D")){
+            return DustbinENUM.HARMFUL.toString();
+        }else if(text.equals("E")){
+            return DustbinENUM.WASTE_PAPER.toString();
+        }else if(text.equals("F")){
+            return DustbinENUM.BOTTLE.toString();
+        }else{
+            return null;
+        }
+    }
+
+
 
     /**
      * 获取商品列表，不管有没有售卖机 都将备选列表下载下来

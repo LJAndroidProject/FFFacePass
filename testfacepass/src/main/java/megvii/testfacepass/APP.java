@@ -40,8 +40,7 @@ public class APP extends Application {
 
     private static List<DustbinBean> dustbinBeanList;
 
-
-    private DustbinConfig dustbinConfig;
+    private static DustbinConfig dustbinConfig;
 
     @Override
     public void onCreate() {
@@ -174,14 +173,21 @@ public class APP extends Application {
         this.userId = userId;
     }
 
-    public static List<DustbinBean> getDustbinBeanList() {
+    public List<DustbinBean> getDustbinBeanList() {
         return dustbinBeanList;
     }
 
-    public static void setDustbinBeanList(List<DustbinBean> dustbinBeanList) {
-        APP.dustbinBeanList = dustbinBeanList;
+    public void setDustbinBeanList(List<DustbinBean> dustbinBeanListPara) {
+        dustbinBeanList = dustbinBeanListPara;
     }
 
+    public static String getDeviceId(){
+        if(dustbinConfig == null){
+            return null;
+        }
+
+        return dustbinConfig.getDustbinDeviceId();
+    }
 
     public String getDeviceToken() {
         return deviceToken;

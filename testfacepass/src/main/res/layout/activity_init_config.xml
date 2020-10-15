@@ -16,6 +16,7 @@
         android:textSize="20sp" />
 
     <EditText
+        android:text="TB123456"
         android:id="@+id/edit_dustbin_query"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,6 +24,7 @@
         android:inputType="number"
         android:padding="20dp" />
     <EditText
+        android:text="SPYOA0"
         android:id="@+id/edit_dustbin_authorizationCode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

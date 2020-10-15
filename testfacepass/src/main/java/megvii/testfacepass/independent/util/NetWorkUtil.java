@@ -2,12 +2,17 @@ package megvii.testfacepass.independent.util;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 
+import megvii.testfacepass.APP;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -46,6 +51,18 @@ public class NetWorkUtil {
         if(map != null && map.size() > 0){
             for(Map.Entry<String,String> e : map.entrySet()){
                 formBody.add(e.getKey(),e.getValue());
+            }
+
+
+            //  当前时间
+            long nowTime = System.currentTimeMillis() / 1000 ;
+            formBody.add("sign",md5(nowTime + key).toUpperCase());
+            formBody.add("timestamp",String.valueOf(nowTime));
+
+
+            //  如果设备id 不为 null 自动添加设备id到请求头
+            if(APP.getDeviceId() != null){
+                formBody.add("device_id",APP.getDeviceId());
             }
         }
 
@@ -151,6 +168,31 @@ public class NetWorkUtil {
             }
         });
 
+    }
+
+    private final static String key = "e0e9061d403f1898a501b8d7a840b949";
+    @NonNull
+    public static String md5(String string) {
+        if (TextUtils.isEmpty(string)) {
+            return "";
+        }
+        MessageDigest md5 = null;
+        try {
+            md5 = MessageDigest.getInstance("MD5");
+            byte[] bytes = md5.digest(string.getBytes());
+            StringBuilder result = new StringBuilder();
+            for (byte b : bytes) {
+                String temp = Integer.toHexString(b & 0xff);
+                if (temp.length() == 1) {
+                    temp = "0" + temp;
+                }
+                result.append(temp);
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public interface NetWorkListener{

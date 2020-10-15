@@ -7,7 +7,7 @@ import org.greenrobot.greendao.annotation.Generated;
 @Entity
 public class DustbinConfig {
     @Id
-    private Long dustbinDeviceId;
+    private String dustbinDeviceId;
 
     //  设备名称
     private String dustbinDeviceName;
@@ -24,8 +24,8 @@ public class DustbinConfig {
     //  是否有售卖机
     private boolean hasVendingMachine;
 
-    @Generated(hash = 1479570448)
-    public DustbinConfig(Long dustbinDeviceId, String dustbinDeviceName,
+    @Generated(hash = 489081554)
+    public DustbinConfig(String dustbinDeviceId, String dustbinDeviceName,
             String dustbinDeviceRemark, double longitude, double latitude,
             boolean hasVendingMachine) {
         this.dustbinDeviceId = dustbinDeviceId;
@@ -40,11 +40,11 @@ public class DustbinConfig {
     public DustbinConfig() {
     }
 
-    public Long getDustbinDeviceId() {
+    public String getDustbinDeviceId() {
         return this.dustbinDeviceId;
     }
 
-    public void setDustbinDeviceId(Long dustbinDeviceId) {
+    public void setDustbinDeviceId(String dustbinDeviceId) {
         this.dustbinDeviceId = dustbinDeviceId;
     }
 
@@ -89,15 +89,4 @@ public class DustbinConfig {
     }
 
 
-    @Override
-    public String toString() {
-        return "DustbinConfig{" +
-                "dustbinDeviceId=" + dustbinDeviceId +
-                ", dustbinDeviceName='" + dustbinDeviceName + '\'' +
-                ", dustbinDeviceRemark='" + dustbinDeviceRemark + '\'' +
-                ", longitude=" + longitude +
-                ", latitude=" + latitude +
-                ", hasVendingMachine=" + hasVendingMachine +
-                '}';
-    }
 }

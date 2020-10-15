@@ -90,6 +90,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -123,9 +124,11 @@ import megvii.testfacepass.adapter.GroupNameAdapter;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
 import megvii.testfacepass.camera.CameraPreviewData;
+import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.ImageUploadResult;
-import megvii.testfacepass.independent.bean.JsonMould;
 import megvii.testfacepass.independent.bean.ResultMould;
+import megvii.testfacepass.independent.bean.TCPVerify;
+import megvii.testfacepass.independent.bean.TCPVerifyResponse;
 import megvii.testfacepass.independent.bean.VXLoginCall;
 import megvii.testfacepass.independent.bean.VXLoginResult;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
@@ -307,6 +310,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     private Handler mainHandler;
 
+
+    private Gson gson = new Gson();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -318,6 +324,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         app = (APP) getApplication();
         mainHandler = new Handler(Looper.getMainLooper());
 
+        //  设置垃圾箱配置
+        DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
+        app.setDustbinConfig(dustbinConfig);
+        //  代表 全局 垃圾桶 list 对象
+        app.setDustbinBeanList(DataBaseUtil.getInstance(MainActivity.this).getDustbinByType(null));
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -388,9 +399,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
         //  初始化 greenDao 数据库，以及数据库操作对象
         userMessageDao = DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao();
-
-        //  代表 全局 垃圾桶 list 对象
-        APP.setDustbinBeanList(DataBaseUtil.getInstance(MainActivity.this).getDustbinByType(null));
 
         //  注册串口监听,与硬件进行通信
         SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
@@ -700,25 +708,117 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         TCPConnectUtil.getInstance().setListener(new NettyClientListener() {
             @Override
             public void onMessageResponseClient(byte[] bytes, int i) {
-                StringBuilder getdata = new StringBuilder();
+                /*StringBuilder getdata = new StringBuilder();
                 for (byte b :bytes) {
                     getdata.append(String.format("%02x", b));
-                }
+                }*/
 
                 //  TCPConnectUtil.getInstance().sendData("{\"source\":\"test\"}");
 
-                Log.i("响应结果","bytes:" + getdata + "\n i:" + i);
+                final String response = new String(bytes, StandardCharsets.UTF_8);
 
-                Log.i("响应结果",new String(bytes));
+                Log.i("响应结果", response + "，状态:" + i);
+
+                if(response.contains("client_id")){
+                    long nowTime = System.currentTimeMillis() / 1000;
+                    TCPVerify verify = new TCPVerify();
+                    verify.setType("login");
+                    TCPVerify.DataBean dataBean = new TCPVerify.DataBean();
+                    dataBean.setSign(md5(nowTime + key).toUpperCase());
+                    dataBean.setTimestamp(String.valueOf(nowTime));
+                    verify.setData(dataBean);
+
+                    Log.i("结果","发送" + gson.toJson(verify));
+
+                    TCPConnectUtil.getInstance().sendData(gson.toJson(verify));
+
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            TCPVerifyResponse tcpVerify = gson.fromJson(response, TCPVerifyResponse.class);
+                            Map<String,String> map = new HashMap<>();
+                            map.put("tcp_client_id",tcpVerify.getClient_id());
+                            NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
+                                @Override
+                                public void success(String response) {
+                                    Log.i("结果","绑定:"+response);
+                                }
+
+                                @Override
+                                public void fail(Call call, IOException e) {
+
+                                }
+
+                                @Override
+                                public void error(Exception e) {
+
+                                }
+                            });
+
+                        }
+                    });
+
+                }
+
+                /*String response = new String(bytes, StandardCharsets.UTF_8);
+
+                Log.i("响应结果","bytes:" + response + "\n i:" + i);
+
+                if(response.contains("client_id")) {
+
+                    TCPVerifyResponse tcpVerify = gson.fromJson(new String(bytes), TCPVerifyResponse.class);
+
+                    if(tcpVerify.getClient_id() != null){
+                        long nowTime = System.currentTimeMillis() / 1000;
+                        TCPVerify verify = new TCPVerify();
+                        verify.setType("login");
+                        TCPVerify.DataBean dataBean = new TCPVerify.DataBean();
+                        dataBean.setSign(md5(nowTime + key).toUpperCase());
+                        dataBean.setTimestamp(String.valueOf(nowTime));
+                        verify.setData(dataBean);
+
+                        //  发送
+                        TCPConnectUtil.getInstance().sendData(gson.toJson(verify));
+
+                        Log.i("结果","发送" + gson.toJson(verify));
+
+
+
+                        Map<String,String> map = new HashMap<>();
+                        map.put("tcp_client_id",tcpVerify.getClient_id());
+                        NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
+                            @Override
+                            public void success(String response) {
+                                Log.i("结果","绑定:"+response);
+                            }
+
+                            @Override
+                            public void fail(Call call, IOException e) {
+
+                            }
+
+                            @Override
+                            public void error(Exception e) {
+
+                            }
+                        });
+                    }
+
+                }*/
+
             }
 
             @Override
             public void onClientStatusConnectChanged(int i, int i1) {
                 if(i == 1){
 
-                    TCPConnectUtil.getInstance().sendData("{\"source\":\"test\"}");
+                    //TCPConnectUtil.getInstance().sendData("{\"source\":\"test\"}");
 
                     Log.i("连接结果","i : " + i + " , " + i1);
+
+
                 }
             }
         });

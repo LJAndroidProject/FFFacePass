@@ -29,8 +29,11 @@ public class ServerAddress {
     public final static String GET_GOODS_POS = IP + "api/other/getGoodsPos";
 
 
-    //  获取商品备选列表
-    public final static String GET_DUSTBIN_CONFIG = IP + "api/other/getDustbinConfig";
+    //  获取垃圾箱配置
+    public final static String GET_DUSTBIN_CONFIG = IP + "api/Android/equipmentActivity";
+
+    //  注册TCP
+    public final static String REGISTER_TCP = IP + "api/Android/equipmentTcpBind";
 
 
 
