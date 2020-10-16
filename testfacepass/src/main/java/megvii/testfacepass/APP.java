@@ -189,6 +189,14 @@ public class APP extends Application {
         return dustbinConfig.getDustbinDeviceId();
     }
 
+
+    /**
+     * 是否是 debug 模式
+     * */
+    public static boolean isDebugMode(){
+        return true;
+    }
+
     public String getDeviceToken() {
         return deviceToken;
     }

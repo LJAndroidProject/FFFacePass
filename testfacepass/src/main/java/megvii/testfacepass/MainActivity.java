@@ -124,6 +124,7 @@ import megvii.testfacepass.adapter.GroupNameAdapter;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
 import megvii.testfacepass.camera.CameraPreviewData;
+import megvii.testfacepass.independent.bean.BuySuccessMsg;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.ImageUploadResult;
 import megvii.testfacepass.independent.bean.ResultMould;
@@ -453,6 +454,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             visible.setVisibility(View.GONE);
             mSDKModeBtn.setVisibility(View.GONE);
         }
+
+        startActivity(new Intent(MainActivity.this,VendingMachineActivity.class));
     }
 
 
@@ -708,14 +711,145 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         TCPConnectUtil.getInstance().setListener(new NettyClientListener() {
             @Override
             public void onMessageResponseClient(byte[] bytes, int i) {
-                /*StringBuilder getdata = new StringBuilder();
-                for (byte b :bytes) {
-                    getdata.append(String.format("%02x", b));
-                }*/
-
-                //  TCPConnectUtil.getInstance().sendData("{\"source\":\"test\"}");
-
+                //  来自服务器的响应
                 final String response = new String(bytes, StandardCharsets.UTF_8);
+
+                //  首先判定 响应中是否存在 type 和 data
+                if(response.contains("type") && response.contains("data")){
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        String type = jsonObject.getString("type");
+                        final String data = jsonObject.getString("data");
+
+                        //  连接认证
+                        if(type.equals("connect_rz_msg")){
+
+                        }else if(type.equals("client_connect_msgect_msg")){
+                            //  连接成功注册 与 绑定
+
+                            long nowTime = System.currentTimeMillis() / 1000;
+                            TCPVerify verify = new TCPVerify();
+                            verify.setType("login");
+                            TCPVerify.DataBean dataBean = new TCPVerify.DataBean();
+                            dataBean.setSign(md5(nowTime + key).toUpperCase());
+                            dataBean.setTimestamp(String.valueOf(nowTime));
+                            verify.setData(dataBean);
+
+                            Log.i("结果","发送" + gson.toJson(verify));
+
+                            TCPConnectUtil.getInstance().sendData(gson.toJson(verify));
+
+
+
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
+
+                                    TCPVerifyResponse tcpVerify = gson.fromJson(data, TCPVerifyResponse.class);
+                                    Map<String,String> map = new HashMap<>();
+                                    map.put("tcp_client_id",tcpVerify.getClient_id());
+                                    NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
+                                        @Override
+                                        public void success(String response) {
+                                            Log.i("结果","绑定:"+response);
+
+                                        }
+
+                                        @Override
+                                        public void fail(Call call, IOException e) {
+
+                                        }
+
+                                        @Override
+                                        public void error(Exception e) {
+
+                                        }
+                                    });
+
+                                }
+                            });
+
+                        }else if(type.equals("buy_success_msg")){
+                            //  购买 成功反馈
+                            BuySuccessMsg buySuccessMsg = gson.fromJson(data,BuySuccessMsg.class);
+                            Log.i("结果",buySuccessMsg.toString());
+
+                            EventBus.getDefault().post(buySuccessMsg);
+                        }else if(type.equals("QrReturn")){
+
+                            VXLoginCall vxLoginCall = gson.fromJson(data,VXLoginCall.class);
+                            Log.i(NOW_TAG,"list 内容 : " + vxLoginCall.toString());
+                            Log.i(NOW_TAG,"设置用户 id 之前的用户 id " + app.getUserId());
+                            //  修改当前设置的用户id
+                            app.setUserId(vxLoginCall.getInfo().getUser_id());
+                            Log.i(NOW_TAG,"设置用户 id 之后 的用户 id" + app.getUserId());
+
+
+                            mainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //  隐藏二维码扫码
+                                    if(qrCodeDialog != null && qrCodeDialog.isShowing()){
+                                        Log.i(NOW_TAG,"隐藏二维码弹窗");
+                                        qrCodeDialog.dismiss();
+                                    }
+                                }
+                            });
+
+                            //  云端有该人的人脸特征，则将特征保存到本地
+                            if(vxLoginCall.isFeatrue_state() && vxLoginCall.isFace_image_state()){
+                                Log.i(NOW_TAG,"当前用户 含有人脸特征值 和 人脸图片");
+                                //  获取来自服务器人脸特征 ( 字符串之前是 Base64 形式 )
+                                byte[] feature = Base64.decode(vxLoginCall.getInfo().getFeatrue(),Base64.DEFAULT);
+
+                                FacePassFeatureAppendInfo facePassFeatureAppendInfo = new FacePassFeatureAppendInfo();
+                                //  插入人脸特征值，返回faceToken ，如果特征值不可用会抛出异常
+                                String faceToken = mFacePassHandler.insertFeature(feature,facePassFeatureAppendInfo);
+                                //  facetoken 绑定底库
+                                boolean bindResult = mFacePassHandler.bindGroup(group_name, faceToken.getBytes());
+                                //  绑定成功就可以 将 facetoken 和 id 进行绑定了
+
+                                if(bindResult){
+                                    Log.i(NOW_TAG,"绑定成功，将跳转控制台");
+                                    //  facetoken 和用户id 绑定
+                                    DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(app.getUserId(),faceToken);
+
+                                    //  跳转到垃圾箱控制台
+                                    Intent intent = new Intent(MainActivity.this,ControlActivity.class);
+                                    intent.putExtra("userId",app.getUserId());
+                                    startActivity(intent);
+
+
+                                    //  将用户id和特征、图片上传至服务器   ===========================================
+
+
+                                }else{
+                                    Log.i(NOW_TAG,"绑定失败，删除人脸");
+                                    //  如果没有则删除之前的绑定
+                                    mFacePassHandler.deleteFace(faceToken.getBytes());
+                                }
+                            }else{
+                                //   云端 没有该用户的 人脸 特征值，则提示需要人脸注册
+                                Log.i(NOW_TAG,"云端没有该人脸图片和特征值，显示人脸注册");
+
+
+                                mainHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showVerifyFail();
+                                    }
+                                });
+
+                            }
+
+                        }
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+
+
 
                 Log.i("响应结果", response + "，状态:" + i);
 
@@ -733,7 +867,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     TCPConnectUtil.getInstance().sendData(gson.toJson(verify));
 
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
 
@@ -758,7 +892,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             });
 
                         }
-                    });
+                    },2000);*/
 
                 }
 
@@ -812,13 +946,14 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
             @Override
             public void onClientStatusConnectChanged(int i, int i1) {
+
+                Log.i("Netty","i : " + i + " , " + i1);
                 if(i == 1){
-
-                    //TCPConnectUtil.getInstance().sendData("{\"source\":\"test\"}");
-
-                    Log.i("连接结果","i : " + i + " , " + i1);
-
-
+                    Log.i("Netty","连接成功");
+                }else{
+                    //  重新连接
+                    TCPConnectUtil.getInstance().reconnect();
+                    Log.i("Netty","重新连接");
                 }
             }
         });
@@ -2031,7 +2166,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         Log.i(PUSH,loginToken);
 
         //  拼接地址 传递 token
-        qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + androidID));
+        qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId()));
 
         Log.i(NOW_TAG,"二维码显示的内容 : " + ServerAddress.LOGIN + androidID);
 
@@ -2194,7 +2329,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     map.put("featrue",Base64.encodeToString(feature,Base64.DEFAULT));
                     map.put("face_image",imageUploadResult.getData());
                     map.put("sign",md5(androidID + nowTime + key).toUpperCase());
-                    map.put("device_id",androidID);
+                    //map.put("device_id",androidID);
                     map.put("timestamp",String.valueOf(nowTime));
                     NetWorkUtil.getInstance().doPost(ServerAddress.FACE_AND_USER_ID_UPLOAD, map, new NetWorkUtil.NetWorkListener() {
                         @Override

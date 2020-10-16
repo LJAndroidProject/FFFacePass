@@ -3,6 +3,8 @@ package megvii.testfacepass.independent.util;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
+import android.util.Log;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
@@ -94,6 +96,7 @@ public class QRCodeUtil {
 
     public static Bitmap getAppletBuyCode(String text){
 
+        Log.i("结果",text);
         return createQRCodeBitmap(text, 300, 300,"UTF-8","H", "1", Color.BLACK, Color.WHITE);
     }
 }

@@ -25,6 +25,10 @@ import com.google.gson.Gson;
 import com.serialportlibrary.service.impl.SerialPortService;
 import com.serialportlibrary.util.ByteStringUtil;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,6 +40,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import megvii.testfacepass.independent.ServerAddress;
+import megvii.testfacepass.independent.bean.BuySuccessMsg;
+import megvii.testfacepass.independent.bean.BuySuccessToServer;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
 import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
@@ -45,6 +51,8 @@ import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.QRCodeUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
+import megvii.testfacepass.independent.util.TCPConnectUtil;
+import megvii.testfacepass.independent.util.VendingUtil;
 import okhttp3.Call;
 
 
@@ -62,10 +70,21 @@ public class VendingMachineActivity extends AppCompatActivity {
     private VendingMachineAdapter vendingMachineAdapter ;
     private TextView vendingMachineActivity_title;
     private List<CommodityBean> list;
+
+    private List<CommodityBean> buyResult;
+
+    private int buyPosition;
+
+    //  购买弹窗
+    private AlertDialog alertDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_vending_machine);
+
+        //  时间总线注册
+        EventBus.getDefault().register(this);
 
         //  初始化组件
         vendingMachineActivity_recyclerView = (RecyclerView) findViewById(R.id.vendingMachineActivity_recyclerView);
@@ -112,22 +131,22 @@ public class VendingMachineActivity extends AppCompatActivity {
             }
         },5000);*/
 
-        SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
-            @Override
-            public void response(String response) {
-                //  通过事件总线发送出去
-                Log.i("串口","串口接收" + response);
+        if(APP.isDebugMode()){
+            SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
+                @Override
+                public void response(String response) {
+                    //  通过事件总线发送出去
+                    Log.i("串口","串口接收" + response);
 
-                //SerialPortResponseManage.inOrderString(MainActivity.this,response);
-            }
-        });
+                    //SerialPortResponseManage.inOrderString(MainActivity.this,response);
+                }
+            });
+        }
 
 
 
         //  设置适配器
         vendingMachineAdapter = new VendingMachineAdapter(R.layout.vending_machine_layout,removeDuplicateUser(list));
-
-
         //  商品为 0 的空布局
         TextView textView = new TextView(this);
         textView.setTextSize(30);
@@ -137,7 +156,6 @@ public class VendingMachineActivity extends AppCompatActivity {
         textView.setText("商品卖完了哦");
         vendingMachineAdapter.setEmptyView(textView);
 
-
         //  设置适配器
         vendingMachineActivity_recyclerView.setAdapter(vendingMachineAdapter);
 
@@ -146,6 +164,8 @@ public class VendingMachineActivity extends AppCompatActivity {
             @Override
             public void onItemChildClick(final BaseQuickAdapter adapter, View view, final int position) {
                 if(view.getId() == R.id.item_vendingMachineActivity_layout){
+
+                    buyPosition = position;
 
                     //  获取当前商品选择页的容器集合
                     final CommodityBean commodityBean = vendingMachineAdapter.getData().get(position);
@@ -159,83 +179,33 @@ public class VendingMachineActivity extends AppCompatActivity {
 
 
                     //  查询该商品id数量
-                    final List<CommodityBean> result = DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.CommodityID.eq(commodityBean.getCommodityID())).list();
+                    buyResult = DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.CommodityID.eq(commodityBean.getCommodityID())).list();
 
 
                     //  提取没有过期的商品数量
-                    normalCommodityBean(result);
+                    normalCommodityBean(buyResult);
 
                     /**
                      * ttyS1 115200 adb shell input text "0d2428006000030a0a313233343536373839303132333400000000000000000000000000004E0d0a"
                      * */
 
                     //  出货之前再次确认有货
-                    if(result != null && result.size() > 0){
+                    if(buyResult != null && buyResult.size() > 0){
                         ImageView imageView = new ImageView(VendingMachineActivity.this);
-                        imageView.setImageBitmap(QRCodeUtil.getAppletBuyCode("https://ffadmin.fenfeneco.com/amat?device_id=" /*((APP)getApplication()).getDustbinConfig().getDustbinDeviceId()*/ +"&goods_id=" + result.get(0).getCommodityID()));
+                        imageView.setImageBitmap(QRCodeUtil.getAppletBuyCode("https://ffadmin.fenfeneco.com/amat?device_id=" + APP.getDeviceId() + "&goods_id=" + buyResult.get(0).getCommodityID()));
 
                         AlertDialog.Builder alert = new AlertDialog.Builder(VendingMachineActivity.this);
                         alert.setTitle("购买" + commodityBean.getCommodityAlternativeBean().getCommodityName() );
                         alert.setView(imageView);
-                        alert.setMessage("\n 现在还剩" + result.size() + "个，请使用微信扫码该二维码下单。");
-                        alert.setPositiveButton("购买", new DialogInterface.OnClickListener() {
+                        alert.setMessage("\n 现在还剩" + buyResult.size() + "个，请使用微信扫码该二维码下单。");
+                        alert.setPositiveButton("取消", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-
-                                //  清空货道，从后向前减 商品
-                                CommodityBean c = result.get(result.size()-1);
-
-                                c.setCommodityID(0);
-                                c.setCommodityAlternativeBean(null);
-
-                                //  修改货道信息
-                                DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().save(c);
-
-                                Toast.makeText(VendingMachineActivity.this,"货道：" + c .getTierChildrenNumber() + "," + c.getTierChildrenCommodityNumber(),Toast.LENGTH_LONG).show();
-
-
-                                //  说明是最后一个了直接删除
-                                if(result.size() == 1){
-                                    vendingMachineAdapter.remove(position);
-                                }
-
-
-                                //  发送指令
-                                //String tierChildrenNumberHEX = Integer.toHexString(c .getTierChildrenNumber());
-
-                                //  货道
-                                //byte[] number = ByteStringUtil.hexStrToByteArray(Integer.toHexString(c .getTierChildrenNumber()));
-
-                                //Log.i("串口",Integer.toHexString(c .getTierChildrenNumber()));
-
-                                byte[] headBytes = new byte[]{0x0D,0x24};
-                                byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (c .getTierChildrenNumber() & 0xff)/*,number[0]*/,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
-                                byte[] sumBytes = new byte[]{getXor(order)};
-                                byte[] endBytes = new byte[]{0x0D,0x0A};
-
-
-                                byte[] newBytes = new byte[headBytes.length + order.length + sumBytes.length + endBytes.length];
-
-
-                                //  需要复制的数组、复制源的起始位置，目标数组，目标数组的起始位置，复制的长度
-                                //  首先添加帧头
-                                System.arraycopy(headBytes,0,newBytes,0,headBytes.length);
-                                //  添加中间
-                                System.arraycopy(order,0,newBytes,headBytes.length,order.length);
-                                //  添加校验位
-                                System.arraycopy(sumBytes,0,newBytes,headBytes.length + order.length,sumBytes.length);
-                                //  添加帧尾部
-                                System.arraycopy(endBytes,0,newBytes,headBytes.length + order.length + sumBytes.length,endBytes.length);
-
-                                SerialPortUtil.getInstance().sendData(newBytes);
-
-                                Log.i("结果","串口发送:" + ByteStringUtil.byteArrayToHexStr(newBytes));
-
+                                dialog.dismiss();
                             }
                         });
                         alert.create();
-                        alert.show();
+                        alertDialog = alert.show();
                     }else{
 
                         //  如果没货了则移除掉
@@ -301,7 +271,7 @@ public class VendingMachineActivity extends AppCompatActivity {
 
 
     /**
-     * 异或 运算
+     * 售卖机校验位 异或 运算
      * */
     public static byte getXor(byte[] datas){
 
@@ -315,10 +285,15 @@ public class VendingMachineActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        EventBus.getDefault().unregister(this);
+    }
 
     /**
      * 提取列表里面没有过期的商品
-     * @return 没有过期的商品
      * */
     private final long DAY_TIME = 86400000; //  一天的毫秒数
     private void normalCommodityBean(List<CommodityBean> list){
@@ -400,6 +375,108 @@ public class VendingMachineActivity extends AppCompatActivity {
         vendingMachineAdapter.setNewData(removeDuplicateUser(list));
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void buy(BuySuccessMsg buySuccessMsg){
+
+        /*
+         * 如果到这里就停了，说明没有显示二维码
+         * */
+        Log.i("结果","进入下单");
+
+
+
+        //  查询该商品id数量
+        buyResult = DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.CommodityID.eq(buySuccessMsg.getGoods_id())).list();
+
+        //  提取没有过期的商品数量
+        normalCommodityBean(buyResult);
+
+
+        //  如果购买列表为 空
+        if(buyResult == null || buyResult.size() == 0){
+
+            Toast.makeText(this, "出货失败,没有显示二维码弹窗。", Toast.LENGTH_SHORT).show();
+
+            return;
+        }
+
+        Log.i("结果","不为空");
+
+        //  清空货道，从后向前减 商品
+        CommodityBean c = buyResult.get(buyResult.size()-1);
+        c.setCommodityID(0);
+        c.setCommodityAlternativeBean(null);
+
+
+        //  修改货道信息
+        DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().save(c);
+
+        Toast.makeText(VendingMachineActivity.this,"货道：" + c .getTierChildrenNumber() + "," + c.getTierChildrenCommodityNumber(),Toast.LENGTH_LONG).show();
+
+
+        //  说明是最后一个了直接删除
+        if(buyResult.size() == 1){
+            vendingMachineAdapter.remove(buyPosition);
+        }
+        Log.i("结果","开始指令");
+
+        //  发送指令
+        //String tierChildrenNumberHEX = Integer.toHexString(c .getTierChildrenNumber());
+
+        //  货道
+        //byte[] number = ByteStringUtil.hexStrToByteArray(Integer.toHexString(c .getTierChildrenNumber()));
+
+        //Log.i("串口",Integer.toHexString(c .getTierChildrenNumber()));
+
+        byte[] headBytes = new byte[]{0x0D,0x24};
+        byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (c .getTierChildrenNumber() & 0xff)/*,number[0]*/,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
+        byte[] sumBytes = new byte[]{getXor(order)};
+        byte[] endBytes = new byte[]{0x0D,0x0A};
+
+        //VendingUtil.delivery(buySuccessMsg.getGoods_id());
+
+        byte[] newBytes = new byte[headBytes.length + order.length + sumBytes.length + endBytes.length];
+
+
+        //  需要复制的数组、复制源的起始位置，目标数组，目标数组的起始位置，复制的长度
+        //  首先添加帧头
+        System.arraycopy(headBytes,0,newBytes,0,headBytes.length);
+        //  添加中间
+        System.arraycopy(order,0,newBytes,headBytes.length,order.length);
+        //  添加校验位
+        System.arraycopy(sumBytes,0,newBytes,headBytes.length + order.length,sumBytes.length);
+        //  添加帧尾部
+        System.arraycopy(endBytes,0,newBytes,headBytes.length + order.length + sumBytes.length,endBytes.length);
+
+        SerialPortUtil.getInstance().sendData(newBytes);
+
+        Log.i("结果","串口发送:" + ByteStringUtil.byteArrayToHexStr(newBytes));
+
+
+        BuySuccessToServer.DataBean dataBean = new BuySuccessToServer.DataBean();
+        dataBean.setOrder_id(buySuccessMsg.getOut_trade_no());
+        BuySuccessToServer buySuccessToServer = new BuySuccessToServer();
+        buySuccessToServer.setData(dataBean);
+        buySuccessToServer.setType("product_complete_msg");
+
+        Log.i("结果","订单完毕:" + new Gson().toJson(buySuccessToServer));
+        TCPConnectUtil.getInstance().sendData(new Gson().toJson(buySuccessToServer));
+
+
+        if(alertDialog != null && alertDialog.isShowing()){
+            alertDialog.dismiss();
+        }
+    }
+
+
+    /**
+     * 拼接指令
+     * */
+    /*private void joint(int target){
+        byte[] head = new byte[]{0xf,0x1,0x1,0xf};
+        byte[] version = new byte[]{0x00,0x01};
+        byte[] version = new byte[]{0x00,0x01};
+    }*/
 
     /**
      * 售货机选购界面 适配器
