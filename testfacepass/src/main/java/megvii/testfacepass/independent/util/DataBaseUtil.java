@@ -1,20 +1,18 @@
 package megvii.testfacepass.independent.util;
 
-import android.app.Application;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.List;
 
-import megvii.testfacepass.APP;
-import megvii.testfacepass.ControlActivity;
-import megvii.testfacepass.MainActivity;
 import megvii.testfacepass.independent.bean.DaoMaster;
 import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinENUM;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.DustbinStateBeanDao;
 import megvii.testfacepass.independent.bean.UserMessage;
 import megvii.testfacepass.independent.bean.UserMessageDao;
 
@@ -72,8 +70,8 @@ public class DataBaseUtil {
      * */
     public boolean hasDustBinConfig(){
         //  查询数据库中是否有垃圾箱配置
-        DustbinBeanDao dustbinBeanDao = getDaoSession().getDustbinBeanDao();
-        List<DustbinBean> dustbinBeanList = dustbinBeanDao.queryBuilder().build().list();
+        DustbinStateBeanDao dustbinBeanDao = getDaoSession().getDustbinStateBeanDao();
+        List<DustbinStateBean> dustbinBeanList = dustbinBeanDao.queryBuilder().build().list();
 
         if(dustbinBeanList == null || dustbinBeanList.size() == 0){
             return false;
@@ -84,6 +82,7 @@ public class DataBaseUtil {
     }
 
     /**
+     * @deprecated
      * 设置垃圾箱配置
      * @param list 垃圾箱配置
      * */
@@ -99,17 +98,32 @@ public class DataBaseUtil {
 
 
     /**
+     * 设置垃圾箱配置
+     * @param list 垃圾箱配置
+     * */
+    public void setDustBinStateConfig(List<DustbinStateBean> list){
+        DustbinStateBeanDao dustbinBeanDao = getDaoSession().getDustbinStateBeanDao();
+
+        //  删除之前所有配置信息
+        dustbinBeanDao.deleteAll();
+
+        //  插入新的配置
+        dustbinBeanDao.insertOrReplaceInTx(list);
+    }
+
+
+    /**
      * 传入需要的垃圾箱类型，返回垃圾类型对应的 门板 列表   如果为 null 则 返回所有
      * @param dustbinENUM 传入垃圾箱类型
      * */
-    public List<DustbinBean> getDustbinByType(DustbinENUM dustbinENUM){
+    public List<DustbinStateBean> getDustbinByType(DustbinENUM dustbinENUM){
 
-        DustbinBeanDao dustbinBeanDao = getDaoSession().getDustbinBeanDao();
+        DustbinStateBeanDao dustbinBeanDao = getDaoSession().getDustbinStateBeanDao();
 
         if(dustbinENUM == null){
             return dustbinBeanDao.queryBuilder().build().list();
         }else{
-            return dustbinBeanDao.queryBuilder().where(DustbinBeanDao.Properties.DustbinBoxType.eq(dustbinENUM)).build().list();
+            return dustbinBeanDao.queryBuilder().where(DustbinStateBeanDao.Properties.DustbinBoxType.eq(dustbinENUM)).build().list();
         }
     }
 
@@ -118,20 +132,20 @@ public class DataBaseUtil {
     /**
      * @param number 获取门板为 number 的对象
      * */
-    public DustbinBean getDustbinByNumber(int number){
+    public DustbinStateBean getDustbinByNumber(int number){
 
-        DustbinBeanDao dustbinBeanDao = getDaoSession().getDustbinBeanDao();
+        DustbinStateBeanDao dustbinBeanDao = getDaoSession().getDustbinStateBeanDao();
 
-        return dustbinBeanDao.queryBuilder().where(DustbinBeanDao.Properties.DoorNumber.eq(number)).build().unique();
+        return dustbinBeanDao.queryBuilder().where(DustbinStateBeanDao.Properties.DoorNumber.eq(number)).build().unique();
     }
 
 
     /**
      * @param dustbinBean 门板对象
      * */
-    public void setDustbinByNumber(DustbinBean dustbinBean){
+    public void setDustbinByNumber(DustbinStateBean dustbinBean){
 
-        DustbinBeanDao dustbinBeanDao = getDaoSession().getDustbinBeanDao();
+        DustbinStateBeanDao dustbinBeanDao = getDaoSession().getDustbinStateBeanDao();
 
         dustbinBeanDao.insertOrReplaceInTx(dustbinBean);
     }

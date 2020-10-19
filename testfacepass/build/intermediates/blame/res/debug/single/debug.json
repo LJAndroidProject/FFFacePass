@@ -488,6 +488,10 @@
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\anim\\abc_slide_out_bottom.xml"
     },
     {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\layout_activity_weight_calibration.xml.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\layout\\activity_weight_calibration.xml"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\drawable-hdpi-v4_abc_ic_menu_cut_mtrl_alpha.png.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\drawable-hdpi-v4\\abc_ic_menu_cut_mtrl_alpha.png"
     },
@@ -586,6 +590,10 @@
     {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\color-v23_abc_tint_edittext.xml.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\color-v23\\abc_tint_edittext.xml"
+    },
+    {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\layout_control_item_layout.xml.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\layout\\control_item_layout.xml"
     },
     {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\drawable-xxhdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",

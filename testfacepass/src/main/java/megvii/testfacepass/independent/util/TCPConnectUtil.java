@@ -56,6 +56,10 @@ public class TCPConnectUtil {
         mNettyTcpClient.reconnect();//重连接服务器
     }
 
+    public void disconnect(){
+        mNettyTcpClient.disconnect();//断开连接
+    }
+
 
     public boolean sendData(String b){
         boolean ret = mNettyTcpClient.sendMsgToServer(b.getBytes());

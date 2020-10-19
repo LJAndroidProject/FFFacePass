@@ -38,23 +38,21 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/AppTheme" >
-        <activity android:name="megvii.testfacepass.DustbinManageActivity" >
-        </activity>
+        <activity android:name="megvii.testfacepass.WeightCalibrationActivity" />
+        <activity android:name="megvii.testfacepass.DustbinManageActivity" />
         <activity android:name="megvii.testfacepass.InitConfig" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
-        <activity android:name="megvii.testfacepass.VendingMachineActivity" >
-        </activity>
+        <activity android:name="megvii.testfacepass.VendingMachineActivity" />
         <activity android:name="megvii.testfacepass.ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
         <activity android:name="megvii.testfacepass.ReplenishmentActivity" /> <!-- 垃圾箱控制台 -->
         <activity
             android:name="megvii.testfacepass.ControlActivity"
             android:launchMode="singleTask" > <!-- 广告界面 -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="megvii.testfacepass.AdvertisingActivity"
@@ -65,8 +63,7 @@
             android:label="facepass" /> <!-- 扫脸界面 -->
         <activity
             android:name="megvii.testfacepass.MainActivity"
-            android:launchMode="singleTask" >
-        </activity> <!-- 设置界面 -->
+            android:launchMode="singleTask" /> <!-- 设置界面 -->
         <activity
             android:name="megvii.testfacepass.SettingActivity"
             android:launchMode="singleTask"

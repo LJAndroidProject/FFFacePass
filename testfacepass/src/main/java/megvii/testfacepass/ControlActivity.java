@@ -1,73 +1,75 @@
 package megvii.testfacepass;
 
-import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.bumptech.glide.Glide;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.lgh.uvccamera.UVCCameraProxy;
 import com.lgh.uvccamera.bean.PicturePath;
 import com.lgh.uvccamera.callback.ConnectCallback;
 import com.lgh.uvccamera.callback.PictureCallback;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
+import java.util.TreeSet;
 import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.DeliveryResult;
-import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinENUM;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.independent.util.OrderUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
 import okhttp3.Call;
 
-public class ControlActivity extends AppCompatActivity implements View.OnClickListener,View.OnTouchListener{
-    private Button btn_kitchen_garbage,btn_other_rubbish,btn_harmful_waste,btn_leatheroid,btn_vending_machine,btn_bottle;
+public class ControlActivity extends AppCompatActivity{
     private Intent intent;
 
     //  这个id 是服务器传过来的用户id，绑定接下来的所有操作
     public static long userId;
 
-    //  关门失败次数，5次失败上报错误到服务器
-    private int closeDoorFailNumber = 0;
-
     private TextView control_welcome_textView;
     private ImageView control_image;
-
 
     //  摄像头
     private TextureView textTueView;
     private UVCCameraProxy mUVCCamera;
     private UsbDevice mUsbDevice;
 
-
     private int mSecretNumber = 0;
     private static final long CLICK_INTERVAL = 600;
     private long mLastClickTime;
 
     private AdminLoginDialog adminLoginDialog;
+
+    private RecyclerView control_recyclerview;
+
+    private TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +78,8 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
 
         textTueView = (TextureView) findViewById(R.id.textTueView);
         control_image = (ImageView) findViewById(R.id.control_image);
+        control_recyclerview = (RecyclerView)findViewById(R.id.control_recyclerview);
+        textView = (TextView) findViewById(R.id.textView);
 
         mUVCCamera = new UVCCameraProxy(this);
         mUVCCamera.getConfig()
@@ -87,7 +91,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
 
         mUVCCamera.setPreviewTexture(textTueView); // TextureView
 
-        mUsbDevice = getUsbCameraDevice();
+        mUsbDevice = getUsbCameraDevice(hexToInt(1));
 
 
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
@@ -137,36 +141,83 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         });
 
 
-         /*int i = 0x00 + 0x01 + 0x01 + 0x01 + 0x01 + 0x11;
-        Log.i("结果",  String.valueOf(i));*/
-
         intent = getIntent();
         userId = intent.getLongExtra("userId",1);
 
         if(userId == 0){
             Toast.makeText(ControlActivity.this,"特殊用户",Toast.LENGTH_LONG).show();
-            finish();
+            //finish();
         }else{
             control_welcome_textView.setText("欢迎用户 " + userId + " 进入操作界面");
         }
 
-        initView();
 
         EventBus.getDefault().register(this);
-
-        //  如果没有垃圾箱配置信息，则应该弹出弹窗 并将情况上报
-        if(!DataBaseUtil.getInstance(ControlActivity.this).hasDustBinConfig()){
-            alertDialog = alertNoDustBinConfig();
-            alertDialog.show();
-        }
 
 
 
         //  进入范围，打开其它和厨余垃圾
-        List<DustbinBean> list = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.OTHER);
+        List<DustbinStateBean> list = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.OTHER);
         list.addAll(DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.KITCHEN));
         //openDoor(list);
 
+
+        //  获取所有垃圾箱配置
+        final List<DustbinStateBean> dustbinStateBeans = DataBaseUtil.getInstance(this).getDaoSession().getDustbinStateBeanDao().queryBuilder().list();
+
+        DustbinStateBean dustbinStateBean = new DustbinStateBean();
+        dustbinStateBean.setDustbinBoxType("自动售卖机");
+        dustbinStateBeans.add(dustbinStateBean);
+
+        final ControlItemAdapter controlItemAdapter = new ControlItemAdapter(R.layout.control_item_layout,removeDuplicateUser(dustbinStateBeans));
+        controlItemAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
+            @Override
+            public void onItemChildClick(final BaseQuickAdapter adapter, View view, final int position) {
+                if(view.getId() == R.id.control_item_iv){
+
+                    final DustbinStateBean data = controlItemAdapter.getData().get(position);
+
+                    if("自动售卖机".equals(data.getDustbinBoxType())){
+                        startActivity(new Intent(ControlActivity.this,VendingMachineActivity.class));
+                    }else{
+                        mUVCCamera.closeCamera(); // 关闭相机
+
+                        if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
+
+                        }else if(DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())){
+
+                        }else if(DustbinENUM.RECYCLABLES.toString().equals(data.getDustbinBoxType())){
+
+                        }else if(DustbinENUM.KITCHEN.toString().equals(data.getDustbinBoxType())){
+
+                        }else if(DustbinENUM.HARMFUL.toString().equals(data.getDustbinBoxType())){
+
+                        }else if(DustbinENUM.OTHER.toString().equals(data.getDustbinBoxType())){
+
+                        }
+
+                        //  开启闪关灯
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().openLight(data.getDoorNumber()));
+
+                        mUsbDevice = getUsbCameraDevice(hexToInt(data.getDoorNumber()));
+                        mUVCCamera.requestPermission(mUsbDevice);
+
+
+                        //  10 s 后 关闭闪关灯
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().closeLight(data.getDoorNumber()));
+                            }
+                        },10 * 1000);
+                    }
+
+
+                }
+            }
+        });
+        control_recyclerview.setLayoutManager(new GridLayoutManager(this,3));
+        control_recyclerview.setAdapter(controlItemAdapter);
 
 
         mUVCCamera.setPictureTakenCallback(new PictureCallback() {
@@ -220,136 +271,39 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    @SuppressLint("ClickableViewAccessibility")
-    private void initView(){
-        btn_kitchen_garbage = (Button)findViewById(R.id.btn_kitchen_garbage);
-        btn_other_rubbish = (Button)findViewById(R.id.btn_other_rubbish);
-        btn_harmful_waste = (Button)findViewById(R.id.btn_harmful_waste);
-        btn_leatheroid = (Button)findViewById(R.id.btn_leatheroid);
-        btn_vending_machine = (Button)findViewById(R.id.btn_vending_machine);   //  自动售货机
-        btn_bottle = (Button)findViewById(R.id.btn_bottle);
+    /**
+     * 筛选合适的垃圾箱
+     * */
+    private void e(){
+        List<DustbinStateBean> list = ((APP)getApplication()).getDustbinBeanList();
 
-        btn_kitchen_garbage.setOnClickListener(this);
-        btn_other_rubbish.setOnClickListener(this);
-        btn_harmful_waste.setOnClickListener(this);
-        btn_leatheroid.setOnClickListener(this);
-        btn_vending_machine.setOnClickListener(this);
-        btn_bottle.setOnClickListener(this);
-
-        btn_kitchen_garbage.setOnTouchListener(this);
-        btn_other_rubbish.setOnTouchListener(this);
-        btn_harmful_waste.setOnTouchListener(this);
-        btn_leatheroid.setOnTouchListener(this);
-        btn_bottle.setOnTouchListener(this);
     }
-
 
 
     /**
-     *
-     * 显示无垃圾箱配置的警告弹窗
+     * 根据桶位获取pid
      * */
-    private AlertDialog alertDialog;
-    private AlertDialog alertNoDustBinConfig(){
-        AlertDialog.Builder alert = new AlertDialog.Builder(ControlActivity.this);
-        alert.setCancelable(false);
-        alert.setTitle("警告");
-        alert.setMessage("获取垃圾箱配置失败，无法进行操作。");
-        alert.setPositiveButton("退出界面", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-            }
-        });
-        alert.setNegativeButton("创建配置", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                List<DustbinBean> list = new ArrayList<>();
-                list.add(new DustbinBean(1,DustbinENUM.KITCHEN.toString(),false,0));
-                list.add(new DustbinBean(2,DustbinENUM.KITCHEN.toString(),false,0));
-                list.add(new DustbinBean(3,DustbinENUM.HARMFUL.toString(),false,0));
-                list.add(new DustbinBean(4,DustbinENUM.OTHER.toString(),false,0));
-                list.add(new DustbinBean(5,DustbinENUM.OTHER.toString(),false,0));
-                list.add(new DustbinBean(6,DustbinENUM.OTHER.toString(),false,0));
-                list.add(new DustbinBean(7,DustbinENUM.WASTE_PAPER.toString(),false,0));
-                list.add(new DustbinBean(8,DustbinENUM.BOTTLE.toString(),false,0));
+    private int hexToInt(int numb){
 
-                Log.i("结果","添加配置" + DustbinENUM.KITCHEN.toString());
+        int target = numb * 1111;
 
-                DataBaseUtil.getInstance(ControlActivity.this).setDustBinConfig(list);
-
-                finish();
-            }
-        });
-        return alert.create();
-    }
-
-    @Override
-    public void onClick(View view) {
-        List<DustbinBean> list = null ;
-        switch (view.getId()){
-            case R.id.btn_kitchen_garbage:
-                list = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByType(DustbinENUM.KITCHEN);
-                break;
-            case R.id.btn_leatheroid:
-                list = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByType(DustbinENUM.WASTE_PAPER);
-                break;
-            case R.id.btn_bottle:
-                list = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByType(DustbinENUM.BOTTLE);
-                break;
-            case R.id.btn_other_rubbish:
-                list = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByType(DustbinENUM.OTHER);
-                break;
-            case R.id.btn_harmful_waste:
-                list = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByType(DustbinENUM.HARMFUL);
-                break;
-            case R.id.btn_vending_machine:
-                SerialPortUtil.getInstance().sendData("0d 24 28 00 60 00 03 0a 0a 31 32 33 34 35 36 37 38 39 30 31 32 33 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 4E 0d 0a");
-                break;
-        }
+        String string = new BigInteger(String.valueOf(target), 16).toString();
 
 
-        if(list != null && list.size() > 0){
+        Log.i("结果",string);
 
-            Log.i("结果",list.toString());
-
-            DustbinBean result = openDoor(list);
-
-            if(result == null){
-                Toast.makeText(ControlActivity.this,"没有合适的垃圾箱",Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(ControlActivity.this,"已为你开启" +  result.getDoorNumber() + "号垃圾箱",Toast.LENGTH_LONG).show();
-            }
-        }else{
-            Toast.makeText(ControlActivity.this,"此垃圾箱不支持当前类型",Toast.LENGTH_LONG).show();
-        }
-
-
+        return Integer.parseInt(string);
     }
 
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
 
-        //  点击效果，调整透明度
-        switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                v.setAlpha(0.8f);
-                break;
-            case MotionEvent.ACTION_UP:
-                v.setAlpha(1f);
-                break;
-        }
-
-        return false;
-    }
 
     /**
      * 将遍历各个门，直到匹配,可用为止
      * @param dustbinTypeChildList 传入需要开启的门编号
      * @return 返回打开成功的门
      * */
-    private DustbinBean openDoor(List<DustbinBean> dustbinTypeChildList){
+    private DustbinStateBean openDoor(List<DustbinStateBean> dustbinTypeChildList){
 
         if(dustbinTypeChildList == null){
             return null;
@@ -387,7 +341,7 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
     public void addUserScore(DeliveryResult deliveryResult){
 
         //  传入门板号，获取垃圾箱类型
-        DustbinBean dustbinBean = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByNumber(deliveryResult.getDoorNumber());
+        DustbinStateBean dustbinBean = DataBaseUtil.getInstance(ControlActivity.this).getDustbinByNumber(deliveryResult.getDoorNumber());
         String dustbinBoxType = dustbinBean.getDustbinBoxType();
 
         Map<String,String> map = new HashMap<>();
@@ -418,19 +372,19 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
 
 
 
-    public UsbDevice getUsbCameraDevice() {
+    public UsbDevice getUsbCameraDevice(int pid) {
         UsbManager mUsbManager = (UsbManager) getSystemService(USB_SERVICE);
 
         HashMap<String, UsbDevice> deviceMap = mUsbManager.getDeviceList();
         if (deviceMap != null) {
-            //  textView.append("摄像头数量:" + deviceMap.size() + "\n");
+            textView.append("摄像头数量:" + deviceMap.size() + "\n");
             for (UsbDevice usbDevice : deviceMap.values()) {
-                /*textView.append("摄像头名称:" + usbDevice.getDeviceName() + "\n");
+                textView.append("摄像头名称:" + usbDevice.getDeviceName() + "\n");
                 textView.append("摄像头ProductId:" + usbDevice.getProductId() + "\n");
                 textView.append("摄像头DeviceId:" + usbDevice.getDeviceId() + "\n");
                 textView.append("摄像头VendorId:" + usbDevice.getVendorId() + "\n");
-                textView.append("\n");*/
-                if (usbDevice.getVendorId() == 1443) {
+                textView.append("\n");
+                if (usbDevice.getProductId() == pid) {
                     return usbDevice;
                 }
             }
@@ -442,6 +396,79 @@ public class ControlActivity extends AppCompatActivity implements View.OnClickLi
         return usbDevice != null && 239 == usbDevice.getDeviceClass() && 2 == usbDevice.getDeviceSubclass();
     }
 
+
+    /**
+     * 去重
+     * */
+    public static ArrayList<DustbinStateBean> removeDuplicateUser(List<DustbinStateBean> list) {
+        Set<DustbinStateBean> set = new TreeSet<>(new Comparator<DustbinStateBean>() {
+            @Override
+            public int compare(DustbinStateBean o1, DustbinStateBean o2) {
+
+                return String.valueOf(o1.getDustbinBoxType()).compareTo(String.valueOf(o2.getDustbinBoxType()));
+            }
+        });
+        set.addAll(list);
+        return new ArrayList<>(set);
+    }
+
+
+
+    public static class ControlItemAdapter extends BaseQuickAdapter<DustbinStateBean, BaseViewHolder> implements View.OnTouchListener{
+
+        public ControlItemAdapter(int layoutResId, @Nullable List<DustbinStateBean> data) {
+            super(layoutResId, data);
+        }
+
+        @Override
+        protected void convert(BaseViewHolder helper, DustbinStateBean data) {
+
+            //  点击效果
+            helper.getView(R.id.control_item_iv).setOnTouchListener(this);
+
+            //  图片资源
+            int image_resource = 0;
+
+            //  厨余
+            if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.chuyu;
+            }else if(DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.pinzi;
+            }else if(DustbinENUM.RECYCLABLES.toString().equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.kehuishou;
+            }else if(DustbinENUM.KITCHEN.toString().equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.chuyu;
+            }else if(DustbinENUM.HARMFUL.toString().equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.youhai;
+            }else if(DustbinENUM.OTHER.toString().equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.qita;
+            }else if("自动售卖机".equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.shouhuo;
+            }
+
+            //  加载图片
+            Glide.with(mContext).load(image_resource).into((ImageView) helper.getView(R.id.control_item_iv));
+            helper.addOnClickListener(R.id.control_item_iv);
+
+        }
+
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            //  点击效果，调整透明度
+            switch (event.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    v.setAlpha(0.8f);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    v.setAlpha(1f);
+                    break;
+            }
+
+            return false;
+        }
+    }
 
 
 }

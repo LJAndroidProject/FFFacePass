@@ -105,16 +105,16 @@ public class GetDustbinConfig {
              * bin_code : A01
              */
 
-            private int id;
+            private long id;
             private String device_id;
             private String bin_type;
             private String bin_code;
 
-            public int getId() {
+            public long getId() {
                 return id;
             }
 
-            public void setId(int id) {
+            public void setId(long id) {
                 this.id = id;
             }
 

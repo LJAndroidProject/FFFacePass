@@ -12,14 +12,12 @@ import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.List;
 
-import megvii.testfacepass.APP;
 import megvii.testfacepass.AdvertisingActivity;
 import megvii.testfacepass.ControlActivity;
 import megvii.testfacepass.MainActivity;
 import megvii.testfacepass.independent.bean.DeliveryRecord;
 import megvii.testfacepass.independent.bean.DeliveryRecordDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
-import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.OrderUtil;

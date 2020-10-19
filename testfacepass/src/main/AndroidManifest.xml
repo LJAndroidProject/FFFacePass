@@ -29,25 +29,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DustbinManageActivity">
+        <activity android:name=".WeightCalibrationActivity"></activity>
+        <activity android:name=".DustbinManageActivity"></activity>
+        <activity android:name=".InitConfig">
 
         </activity>
-        <activity android:name=".InitConfig" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".VendingMachineActivity">
-
-        </activity>
+        <activity android:name=".VendingMachineActivity"></activity>
         <activity android:name=".ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
         <activity android:name=".ReplenishmentActivity" /> <!-- 垃圾箱控制台 -->
         <activity
             android:name=".ControlActivity"
             android:launchMode="singleTask"> <!-- 广告界面 -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".AdvertisingActivity"
@@ -58,9 +55,7 @@
             android:label="facepass" /> <!-- 扫脸界面 -->
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask">
-
-        </activity> <!-- 设置界面 -->
+            android:launchMode="singleTask"></activity> <!-- 设置界面 -->
         <activity
             android:name=".SettingActivity"
             android:launchMode="singleTask"

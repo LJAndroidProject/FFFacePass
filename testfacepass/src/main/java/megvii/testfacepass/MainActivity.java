@@ -741,7 +741,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
-                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            //  延迟执行 ，避免 连接池未找到改连接ID,或者 在 connect_rz_msg 中执行
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
 
@@ -751,7 +752,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                     NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
                                         @Override
                                         public void success(String response) {
-                                            Log.i("结果","绑定:"+response);
+                                            Log.i("结果","绑定:" + response);
+                                            if(response.contains("设备已绑定tcp连接")){
+                                                //AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                                            }else if(response.contains("连接池未找到改连接ID")){
+
+                                            }
 
                                         }
 
@@ -767,7 +773,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                     });
 
                                 }
-                            });
+                            },1000);
 
                         }else if(type.equals("buy_success_msg")){
                             //  购买 成功反馈
@@ -1746,6 +1752,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
         EventBus.getDefault().unregister(this);
 
+        TCPConnectUtil.getInstance().disconnect();
+
+
+
         super.onDestroy();
     }
 
@@ -2433,6 +2443,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         });
 
     }
+
+
 
 
     /**

@@ -100,4 +100,34 @@ public interface ImlSerialPortRequest {
      * @param doorNumber 第几扇门
      * */
     String closeBlender(int doorNumber);
+
+
+
+    /**
+     * 打开电磁投料口
+     * @param doorNumber 第几扇门
+     * */
+    String openDogHouse(int doorNumber);
+
+
+
+    /**
+     * 关闭电磁投料口
+     * @param doorNumber 第几扇门
+     * */
+    String closeDogHouse(int doorNumber);
+
+
+    /**
+     * 打开照明灯
+     * @param doorNumber 第几扇门
+     * */
+    String openLight(int doorNumber);
+
+
+    /**
+     * 关闭照明灯
+     * @param doorNumber 第几扇门
+     * */
+    String closeLight(int doorNumber);
 }

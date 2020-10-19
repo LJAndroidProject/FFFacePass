@@ -48,4 +48,13 @@
         android:layout_marginTop="20dp"
         android:text="此设备"
         android:visibility="gone" />
+
+    <TextView
+        android:onClick="goWeightCalibration"
+        android:padding="20dp"
+        android:text="重量校准"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
 </LinearLayout>

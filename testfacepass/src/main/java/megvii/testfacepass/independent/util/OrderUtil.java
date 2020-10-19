@@ -42,28 +42,47 @@ public class OrderUtil {
     public final static String DOOR = "01";
 
     //  红外感应上报
+    /**
+     * @deprecated
+     * 红外感应变成了 60 ms 轮询
+     * */
     public final static String INFRARED_SENSE = "02";
 
+
     //  称重上报
+    /**
+     * @deprecated
+     * 红外感应变成了 60 ms 轮询
+     * */
     public final static String WEIGHING = "03";
 
     //  测距、测满
+    /**
+     * @deprecated
+     * 红外感应变成了 60 ms 轮询
+     * */
     public final static String RANGING = "04";
 
     //  杀菌、消毒
     public final static String STERILIZE = "05";
 
+    //  照明灯
+    public final static String LIGHT = "06";
+
     //  排气扇
-    public final static String EXHAUST_FAN = "06";
+    public final static String EXHAUST_FAN = "07";
 
     //  电磁开关
-    public final static String ELECTROMAGNETIC_SWITCH = "07";
+    public final static String ELECTROMAGNETIC_SWITCH = "08";
 
     //  加热
-    public final static String WARM = "08";
+    public final static String WARM = "09";
 
     //  搅拌机
-    public final static String BLENDER = "09";
+    public final static String BLENDER = "0A";
+
+    //  电磁投料口
+    public final static String DOG_HOUSE= "0C";
 
     /**
      * @param oldString 旧的字符串

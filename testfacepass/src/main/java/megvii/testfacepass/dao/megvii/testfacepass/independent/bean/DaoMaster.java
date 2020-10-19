@@ -28,6 +28,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CommodityBeanDao.createTable(db, ifNotExists);
         DustbinConfigDao.createTable(db, ifNotExists);
         ErrorMessageDao.createTable(db, ifNotExists);
+        DustbinStateBeanDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
@@ -39,6 +40,7 @@ public class DaoMaster extends AbstractDaoMaster {
         CommodityBeanDao.dropTable(db, ifExists);
         DustbinConfigDao.dropTable(db, ifExists);
         ErrorMessageDao.dropTable(db, ifExists);
+        DustbinStateBeanDao.dropTable(db, ifExists);
     }
 
     /**
@@ -64,6 +66,7 @@ public class DaoMaster extends AbstractDaoMaster {
         registerDaoClass(CommodityBeanDao.class);
         registerDaoClass(DustbinConfigDao.class);
         registerDaoClass(ErrorMessageDao.class);
+        registerDaoClass(DustbinStateBeanDao.class);
     }
 
     public DaoSession newSession() {

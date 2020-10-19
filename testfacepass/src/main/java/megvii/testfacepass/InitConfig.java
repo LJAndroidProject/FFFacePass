@@ -4,8 +4,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.alibaba.sdk.android.beacon.Beacon;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -25,9 +24,9 @@ import java.util.Map;
 import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
 import megvii.testfacepass.independent.bean.CommodityBean;
-import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinENUM;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.GetDustbinConfig;
 import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.util.DataBaseUtil;
@@ -99,15 +98,26 @@ public class InitConfig extends AppCompatActivity {
                         GetDustbinConfig getDustbinConfig = new Gson().fromJson(response,GetDustbinConfig.class);
 
                         if(getDustbinConfig.getCode() == 1){
-                            List<DustbinBean> list = new ArrayList<>();
+                            List<DustbinStateBean> list = new ArrayList<>();
 
                             List<GetDustbinConfig.DataBean.ListBean> listBeans = getDustbinConfig.getData().getList();
                             for(GetDustbinConfig.DataBean.ListBean listBean : listBeans){
-                                list.add(new DustbinBean(Integer.parseInt(listBean.getBin_code()), getDustbinType(listBean.getBin_type()),false,0));
+
+                                //  垃圾箱id   服务器分配
+                                long id = listBean.getId();
+                                //  门板编号    也就是第几个垃圾箱
+                                int number = Integer.parseInt(listBean.getBin_code());
+                                //  垃圾箱类型 例如 可回收垃圾、有害垃圾、厨余垃圾
+                                String typeString = getDustbinType(listBean.getBin_type());
+                                //  垃圾箱类型 例如A1 A2 B3 B5 C5 D6 D7 D8
+                                String typeNumber = listBean.getBin_type() + id;
+
+
+                                list.add(new DustbinStateBean(id,number,typeString,typeNumber,0,0,0,false,false,false,false,false,false,false));
                             }
 
                             //  保存箱体配置
-                            DataBaseUtil.getInstance(InitConfig.this).setDustBinConfig(list);
+                            DataBaseUtil.getInstance(InitConfig.this).setDustBinStateConfig(list);
 
 
                             /*
@@ -249,7 +259,7 @@ public class InitConfig extends AppCompatActivity {
     /**
      * 查询到对应的垃圾箱
      * */
-    private void alertMessage(String positionName,final List<DustbinBean> list){
+    /*private void alertMessage(String positionName,final List<DustbinBean> list){
         StringBuilder stringBuilder = new StringBuilder();
        for(DustbinBean dustbinBean : list){
            stringBuilder.append(dustbinBean.getDustbinBoxType());
@@ -278,7 +288,7 @@ public class InitConfig extends AppCompatActivity {
         });
         alert.create();
         alert.show();
-    }
+    }*/
 
     /**
      * 创建售货机货道
@@ -320,6 +330,13 @@ public class InitConfig extends AppCompatActivity {
 
         DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().insertInTx(commodityBeanList);
 
+    }
+
+    /**
+     * 跳转到校准界面
+     * */
+    public void goWeightCalibration(View view){
+        startActivity(new Intent(InitConfig.this,WeightCalibrationActivity.class));
     }
 
 }

@@ -459,6 +459,8 @@ public class VendingMachineActivity extends AppCompatActivity {
         buySuccessToServer.setData(dataBean);
         buySuccessToServer.setType("product_complete_msg");
 
+        //  出货失败  setType
+        /*product_fail_msg*/
         Log.i("结果","订单完毕:" + new Gson().toJson(buySuccessToServer));
         TCPConnectUtil.getInstance().sendData(new Gson().toJson(buySuccessToServer));
 

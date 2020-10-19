@@ -29,6 +29,8 @@ import java.util.Map;
 import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinConfig;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import okhttp3.Call;
 
@@ -38,7 +40,7 @@ public class APP extends Application {
 
     private String deviceToken;
 
-    private static List<DustbinBean> dustbinBeanList;
+    private static List<DustbinStateBean> dustbinBeanList;
 
     private static DustbinConfig dustbinConfig;
 
@@ -173,11 +175,11 @@ public class APP extends Application {
         this.userId = userId;
     }
 
-    public List<DustbinBean> getDustbinBeanList() {
+    public List<DustbinStateBean> getDustbinBeanList() {
         return dustbinBeanList;
     }
 
-    public void setDustbinBeanList(List<DustbinBean> dustbinBeanListPara) {
+    public void setDustbinBeanList(List<DustbinStateBean> dustbinBeanListPara) {
         dustbinBeanList = dustbinBeanListPara;
     }
 
@@ -187,6 +189,22 @@ public class APP extends Application {
         }
 
         return dustbinConfig.getDustbinDeviceId();
+    }
+
+
+    /**
+     * 修改垃圾箱
+     * */
+    public static void setDustbinState(DustbinStateBean dustbinStateBean){
+        for(int i = 0 ; i < dustbinBeanList.size(); i++){
+            if(dustbinBeanList.get(i).getDoorNumber() == dustbinStateBean.getDoorNumber()){
+                dustbinBeanList.set(i,dustbinStateBean);
+            }
+        }
+    }
+
+    public static void getDustbinState(){
+
     }
 
 

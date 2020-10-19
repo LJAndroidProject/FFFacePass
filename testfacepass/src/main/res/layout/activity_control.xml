@@ -32,49 +32,21 @@
         android:scaleType="centerInside"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
-    <TableLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/control_recyclerview"
         android:layout_below="@+id/control_image"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TableRow
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
-            <Button
-                style="@style/controlActivityButtonStyle"
-                android:background="@mipmap/chuyu"
-                android:id="@+id/btn_kitchen_garbage"/>
-            <Button
-                style="@style/controlActivityButtonStyle"
-                android:background="@mipmap/kehuishou"
-                android:id="@+id/btn_leatheroid"/>
-            <Button
-                style="@style/controlActivityButtonStyle"
-                android:background="@mipmap/shouhuo"
-                android:id="@+id/btn_vending_machine"/>
-        </TableRow>
-        <TableRow
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
-            <Button
-                style="@style/controlActivityButtonStyle"
-                android:background="@mipmap/qita"
-                android:id="@+id/btn_other_rubbish"/>
-            <Button
-                style="@style/controlActivityButtonStyle"
-                android:background="@mipmap/pinzi"
-                android:id="@+id/btn_bottle"/>
-            <Button
-                style="@style/controlActivityButtonStyle"
-                android:background="@mipmap/youhai"
-                android:id="@+id/btn_harmful_waste"/>
-        </TableRow>
-    </TableLayout>
+        android:layout_height="match_parent"/>
     <TextureView
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:id="@+id/textTueView"
         android:layout_width="200dp"
         android:layout_height="200dp"/>
+    <TextView
+        android:textSize="20sp"
+        android:id="@+id/textView"
+        android:textColor="#FF00"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 </RelativeLayout>
