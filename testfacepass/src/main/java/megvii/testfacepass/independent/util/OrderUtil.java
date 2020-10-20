@@ -41,27 +41,15 @@ public class OrderUtil {
     //  开门
     public final static String DOOR = "01";
 
-    //  红外感应上报
-    /**
-     * @deprecated
-     * 红外感应变成了 60 ms 轮询
-     * */
-    public final static String INFRARED_SENSE = "02";
+    //  获取数据
+    public final static String GET_DATA = "02";
 
 
-    //  称重上报
-    /**
-     * @deprecated
-     * 红外感应变成了 60 ms 轮询
-     * */
+    //  称重校准
     public final static String WEIGHING = "03";
 
-    //  测距、测满
-    /**
-     * @deprecated
-     * 红外感应变成了 60 ms 轮询
-     * */
-    public final static String RANGING = "04";
+    //  称重校准 第二次
+    public final static String WEIGHING_2 = "04";
 
     //  杀菌、消毒
     public final static String STERILIZE = "05";

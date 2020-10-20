@@ -43,7 +43,7 @@ public class SerialPortRequestManage implements ImlSerialPortRequest {
      * */
     @Override
     public String measureTheDistance(int doorNumber) {
-        return OrderUtil.generateOrder(OrderUtil.RANGING,doorNumber,"01");
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_2,doorNumber,"01");
     }
 
 
@@ -53,7 +53,7 @@ public class SerialPortRequestManage implements ImlSerialPortRequest {
      * */
     @Override
     public String measureTheWeight(int doorNumber) {
-        return OrderUtil.generateOrder(OrderUtil.RANGING,doorNumber,CLOSE_PARAMETER);
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_2,doorNumber,CLOSE_PARAMETER);
     }
 
     @Override

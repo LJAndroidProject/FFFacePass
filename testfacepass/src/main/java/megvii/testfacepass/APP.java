@@ -36,7 +36,7 @@ import okhttp3.Call;
 
 public class APP extends Application {
 
-    private long userId;
+    public static long userId;
 
     private String deviceToken;
 

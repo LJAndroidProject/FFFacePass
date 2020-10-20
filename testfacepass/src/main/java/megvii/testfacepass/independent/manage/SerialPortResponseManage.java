@@ -12,6 +12,7 @@ import org.greenrobot.greendao.query.QueryBuilder;
 
 import java.util.List;
 
+import megvii.testfacepass.APP;
 import megvii.testfacepass.AdvertisingActivity;
 import megvii.testfacepass.ControlActivity;
 import megvii.testfacepass.MainActivity;
@@ -55,7 +56,7 @@ public class SerialPortResponseManage {
             Log.i(MY_ORDER,"orderCutString ： " + order + ",order :" + data);
 
             if(orderCutString.equals(OrderUtil.DOOR)){
-                //  与开关门有关的指令
+                //  与关门有关的指令
 
                 //  第几扇门
 
@@ -98,8 +99,8 @@ public class SerialPortResponseManage {
                 }
 
 
-            }else if(orderCutString.equals(OrderUtil.INFRARED_SENSE)){
-                //  红外感应上报
+            }else if(orderCutString.equals(OrderUtil.GET_DATA)){
+                //  数据读取，返回
 
                 /*
                  *数据位
@@ -123,7 +124,7 @@ public class SerialPortResponseManage {
 
 
             }else if(orderCutString.equals(OrderUtil.WEIGHING)){
-                //  称重上报,关门后自动上报
+                //  第一次 称重校准
 
                 //  因为数据位长度为 2  ( 一般的数据位长度为 1 ) 所以还需要拼接后面两个字符，建议以实体类的形式解析指令，而不是 每两个 拼接
                 data += OrderUtil.cutOrderByIndex(order,8);
@@ -131,8 +132,8 @@ public class SerialPortResponseManage {
 
                 toast(context,"第 " + doorNumber + "扇门，当前重量为 ( 16 进制 )：" + data);
 
-            }else if(orderCutString.equals(OrderUtil.RANGING)){
-                //  测距
+            }else if(orderCutString.equals(OrderUtil.WEIGHING_2)){
+                //  第二次 称重校准
 
 
                 if(data.equals("00")){
@@ -140,13 +141,13 @@ public class SerialPortResponseManage {
 
 
                     //  如果是小于或等于 0，说明非普通用户，可能是通过NFC 和其它途径进入设置界面的 ，则不做投递记录
-                    if(ControlActivity.userId > 0){
+                    if(APP.userId > 0){
                         double deliveryRecordWeight = 0.0;
 
                         DeliveryRecord deliveryRecord = new DeliveryRecord();
                         deliveryRecord.setDeliveryTime(System.currentTimeMillis());
                         deliveryRecord.setDoorNumber(Integer.parseInt(doorNumber));
-                        deliveryRecord.setUserId(ControlActivity.userId);
+                        deliveryRecord.setUserId(APP.userId);
                         deliveryRecord.setWeight(deliveryRecordWeight);
 
                         //  增加投递记录，之后通知计算该用户与上一次投递后的结果差
@@ -273,6 +274,13 @@ public class SerialPortResponseManage {
                 Toast.makeText(context,text,Toast.LENGTH_LONG).show();
             }
         });
+
+    }
+
+    /**
+     * 错误上传
+     * */
+    private void errorUpload(){
 
     }
 

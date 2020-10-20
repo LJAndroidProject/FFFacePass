@@ -41,12 +41,13 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:id="@+id/textTueView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"/>
+        android:layout_width="320dp"
+        android:layout_height="240dp"/>
     <TextView
-        android:textSize="20sp"
+        android:visibility="gone"
+        android:background="#A1FFFFFF"
         android:id="@+id/textView"
         android:textColor="#FF00"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
 </RelativeLayout>

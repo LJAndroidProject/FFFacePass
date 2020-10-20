@@ -1,11 +1,14 @@
 package megvii.testfacepass;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -115,13 +118,50 @@ public class ControlActivity extends AppCompatActivity{
                                     adminLoginDialog.verifyState(new AdminLoginDialog.VerifyListener() {
                                         @Override
                                         public void verifyCallBack(String adminPhone, String verifyCode, android.app.AlertDialog alertDialog) {
-                                            if(verifyCode.equals("1")){
-                                                Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
-                                                startActivity(intent);
-                                            }else if(verifyCode.equals("2")){
-                                                Intent intent = new Intent(ControlActivity.this, DustbinManageActivity.class);
-                                                startActivity(intent);
+
+                                            alertDialog.dismiss();
+
+
+                                            List<String> list = new ArrayList<>();
+                                            list.add("回收箱管理");
+                                            list.add("故障维修管理管理");
+                                            list.add("售卖机补货");
+
+
+                                            final String[] strings = new String[list.size()];
+                                            for(int i = 0 ; i < list.size() ; i++){
+                                                strings[i] = list.get(i);
                                             }
+
+                                            AlertDialog.Builder alert = new AlertDialog.Builder(ControlActivity.this);
+                                            alert.setTitle("选择你要做的操作:");
+                                            alert.setSingleChoiceItems(strings,-1, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                    String item = strings[which];
+
+                                                    if("回收箱管理".equals(item)){
+
+                                                    }else if("故障维修管理管理".equals(item)){
+                                                        Intent intent = new Intent(ControlActivity.this, DustbinManageActivity.class);
+                                                        startActivity(intent);
+                                                    }else if( "售卖机补货".equals(item)){
+                                                        Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
+                                                        startActivity(intent);
+                                                    }
+                                                }
+                                            });
+                                            alert.setPositiveButton("取消", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                            alert.setCancelable(false);
+                                            alert.create();
+                                            alert.show();
+
                                         }
                                     });
                                 }else{
@@ -165,9 +205,12 @@ public class ControlActivity extends AppCompatActivity{
         //  获取所有垃圾箱配置
         final List<DustbinStateBean> dustbinStateBeans = DataBaseUtil.getInstance(this).getDaoSession().getDustbinStateBeanDao().queryBuilder().list();
 
-        DustbinStateBean dustbinStateBean = new DustbinStateBean();
-        dustbinStateBean.setDustbinBoxType("自动售卖机");
-        dustbinStateBeans.add(dustbinStateBean);
+
+        if(DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique().getHasVendingMachine()){
+            DustbinStateBean dustbinStateBean = new DustbinStateBean();
+            dustbinStateBean.setDustbinBoxType("自动售卖机");
+            dustbinStateBeans.add(dustbinStateBean);
+        }
 
         final ControlItemAdapter controlItemAdapter = new ControlItemAdapter(R.layout.control_item_layout,removeDuplicateUser(dustbinStateBeans));
         controlItemAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
@@ -203,8 +246,17 @@ public class ControlActivity extends AppCompatActivity{
                         mUVCCamera.requestPermission(mUsbDevice);
 
 
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ControlActivity.this, "拍照", Toast.LENGTH_SHORT).show();
+                                mUVCCamera.takePicture();
+                            }
+                        },2000);
+
+
                         //  10 s 后 关闭闪关灯
-                        new Handler().postDelayed(new Runnable() {
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().closeLight(data.getDoorNumber()));
@@ -223,8 +275,8 @@ public class ControlActivity extends AppCompatActivity{
         mUVCCamera.setPictureTakenCallback(new PictureCallback() {
             @Override
             public void onPictureTaken(String path) {
-                /*textView.append("图片路径" + path);
-                textView.append("\n");*/
+                textView.append("图片路径" + path);
+                textView.append("\n");
             }
         });
 
@@ -259,6 +311,7 @@ public class ControlActivity extends AppCompatActivity{
 
             @Override
             public void onCameraOpened() {
+                //  拍出来的1图片大小
                 mUVCCamera.setPreviewSize(640, 480); // 设置预览尺寸
                 mUVCCamera.startPreview(); // 开始预览
             }
@@ -268,6 +321,11 @@ public class ControlActivity extends AppCompatActivity{
                 mUVCCamera.closeCamera(); // 关闭相机
             }
         });
+    }
+
+
+    private void camera(){
+
     }
 
 

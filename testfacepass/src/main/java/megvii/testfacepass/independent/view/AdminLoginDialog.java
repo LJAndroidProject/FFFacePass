@@ -62,6 +62,8 @@ public class AdminLoginDialog extends AlertDialog {
                     if(TextUtils.isEmpty(editStr)){
                         Toast.makeText(context,"你还没有输入密码呢",Toast.LENGTH_LONG).show();
                     }else{
+                        admin_login_edit.clearFocus();
+                        admin_login_password.clearFocus();
                         loginListener.callBack(editStr,password,AdminLoginDialog.this);
                     }
                 }
@@ -107,6 +109,7 @@ public class AdminLoginDialog extends AlertDialog {
                 if(TextUtils.isEmpty(adminVerifyCode)){
                     Toast.makeText(context,"请输入验证码",Toast.LENGTH_LONG).show();
                 }else{
+                    admin_verify_code.clearFocus();
                     verifyListener.verifyCallBack(adminPhone,adminVerifyCode,AdminLoginDialog.this);
                 }
 
