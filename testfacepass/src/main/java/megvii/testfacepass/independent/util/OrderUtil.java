@@ -21,15 +21,19 @@ public class OrderUtil {
 
     //  上位机到控制电路模块头
     public final static String ANDROID_TO_HARDWARE_HEAD = "F11F";
+    public final static byte[] ANDROID_TO_HARDWARE_HEAD_BYTES = new byte[]{(byte) (0xf1),(byte) (0x1f)};
 
     //  上位机到控制电路模块尾
     public final static String ANDROID_TO_HARDWARE_END = "F22F";
+    public final static byte[] ANDROID_TO_HARDWARE_END_BYTES = new byte[]{(byte) (0xf2),(byte) (0x2f)};
 
     //  控制模块到上位机头
     public final static String HARDWARE_TO_ANDROID_HEAD = "F33F";
+    public final static byte[] HARDWARE_TO_ANDROID_HEAD_BYTES = new byte[]{(byte) (0xf3),(byte) (0x3f)};
 
     //  控制模块到上位机尾
     public final static String HARDWARE_TO_ANDROID_END = "F44F";
+    public final static byte[] HARDWARE_TO_ANDROID_END_BYTES = new byte[]{(byte) (0xf4),(byte) (0x4f)};
 
     //  数据长度
     public final static String  DATA_LENGTH = "01";
@@ -40,37 +44,52 @@ public class OrderUtil {
 
     //  开门
     public final static String DOOR = "01";
+    public final static byte DOOR_BYTE = 0x01;
 
     //  获取数据
     public final static String GET_DATA = "02";
+    public final static byte GET_DATA_BYTE = 0x02;
 
 
     //  称重校准
     public final static String WEIGHING = "03";
+    public final static byte WEIGHING_BYTE = 0x03;
 
     //  称重校准 第二次
     public final static String WEIGHING_2 = "04";
+    public final static byte WEIGHING_2_BYTE = 0x04;
 
     //  杀菌、消毒
     public final static String STERILIZE = "05";
+    public final static byte STERILIZE_BYTE = 0x05;
 
     //  照明灯
     public final static String LIGHT = "06";
+    public final static byte LIGHT_BYTE = 0x06;
 
     //  排气扇
     public final static String EXHAUST_FAN = "07";
+    public final static byte EXHAUST_FAN_BYTE = 0x07;
 
     //  电磁开关
     public final static String ELECTROMAGNETIC_SWITCH = "08";
+    public final static byte ELECTROMAGNETIC_SWITCH_BYTE = 0x08;
 
     //  加热
     public final static String WARM = "09";
+    public final static byte WARM_BYTE = 0x09;
 
     //  搅拌机
     public final static String BLENDER = "0A";
+    public final static byte BLENDER_BYTE = 0x0A;
 
     //  电磁投料口
     public final static String DOG_HOUSE= "0C";
+    public final static byte DOG_HOUSE_BYTE = 0x0C;
+
+    //  售卖机指令转发
+    public final static String VENDING = "0B";
+    public final static byte VENDING_BYTE = 0x0B;
 
     /**
      * @param oldString 旧的字符串
@@ -135,6 +154,43 @@ public class OrderUtil {
         stringBuilder.append(ANDROID_TO_HARDWARE_END);
 
         return stringBuilder.toString();
+    }
+
+
+
+
+    public static byte[] generateOrder(byte function,int targetDoor,byte[] parameter){
+
+        byte[] head = ANDROID_TO_HARDWARE_HEAD_BYTES;
+        byte[] version = new byte[]{0x00,0x01};
+        byte[] order = new byte[]{function,(byte) (targetDoor & 0xff)};
+        byte[] dataLength = new byte[]{(byte) (parameter.length & 0xff)};
+
+
+        byte[] newBytes = new byte[version.length + order.length + dataLength.length + parameter.length];
+        System.arraycopy(version,0,newBytes,0,version.length);
+        System.arraycopy(order,0,newBytes,version.length,order.length);
+        System.arraycopy(dataLength,0,newBytes,version.length + order.length,dataLength.length);
+        System.arraycopy(parameter,0,newBytes,version.length + order.length + dataLength.length,parameter.length);
+
+        int result = 0;
+        for(byte b : newBytes){
+            result += b;
+        }
+        //  得到中间数据的校验位
+        byte[] sum = new byte[]{(byte)(result & 0xff)};
+
+        byte[] end = ANDROID_TO_HARDWARE_END_BYTES;
+
+
+        //  拼接最后的指令
+        byte[] bytes = new byte[head.length+newBytes.length+sum.length+end.length];
+        System.arraycopy(head,0,bytes,0,head.length);
+        System.arraycopy(newBytes,0,bytes,head.length,newBytes.length);
+        System.arraycopy(sum,0,bytes,head.length + newBytes.length,dataLength.length);
+        System.arraycopy(end,0,bytes,head.length + newBytes.length + dataLength.length,end.length);
+
+        return bytes;
     }
 
     /**
@@ -274,6 +330,35 @@ public class OrderUtil {
 
     }*/
 
+
+    /**
+     * 指令分解
+     * */
+
+    public static OrderMessage orderAnalysis(byte[] bytes){
+        OrderMessage orderMessage = new OrderMessage();
+        //  帧头
+        orderMessage.setHead(new byte[]{bytes[0],bytes[1]});
+        //  设备版本号
+        orderMessage.setVersion(new byte[]{bytes[2],bytes[3]});
+        //  命令
+        orderMessage.setOrder(new byte[]{bytes[4],bytes[5]});
+        //  数据长度
+        orderMessage.setDataLength(new byte[]{bytes[6]});
+        //  数据参数
+        byte[] datas = new byte[orderMessage.getDataLength()[0]];
+        System.arraycopy(bytes, 7, datas, 0, datas.length);
+        orderMessage.setDataContent(datas);
+
+        //orderMessage.setChecksum(new byte[]{bytes[2 + 2 + 2 + 1 + datas.length]});
+        //  校验和
+        orderMessage.setChecksum(new byte[bytes[bytes.length - 3]]);
+
+        //  帧率尾
+        orderMessage.setEnd(new byte[]{bytes[bytes.length-2],bytes[bytes.length-1]});
+
+        return orderMessage;
+    }
 
 
     /**

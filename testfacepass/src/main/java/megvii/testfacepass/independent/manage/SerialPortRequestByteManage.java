@@ -1,0 +1,129 @@
+package megvii.testfacepass.independent.manage;
+
+import megvii.testfacepass.independent.iml.ImlSerialPortRequest;
+import megvii.testfacepass.independent.util.OrderUtil;
+
+public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX {
+
+    private static SerialPortRequestByteManage serialPortRequestManage;
+
+    private static byte[] OPEN_PARAMETER = new byte[]{0x11};
+
+    private static byte[] CLOSE_PARAMETER = new byte[]{0x00};
+
+    private SerialPortRequestByteManage(){
+
+    }
+
+    public static SerialPortRequestByteManage getInstance(){
+        if(serialPortRequestManage == null){
+            synchronized (SerialPortRequestManage.class){
+                if(serialPortRequestManage == null){
+                    serialPortRequestManage = new SerialPortRequestByteManage();
+                }
+            }
+        }
+
+        return serialPortRequestManage;
+    }
+
+    @Override
+    public byte[] openDoor(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.DOOR_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeDoor(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.DOOR_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+    /**
+     * 此方法已弃用
+     * @deprecated
+     * */
+    @Override
+    public byte[] measureTheDistance(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_2_BYTE,doorNumber,new byte[]{0x01});
+    }
+
+
+    /**
+     * 此方法已弃用
+     * @deprecated
+     * */
+    @Override
+    public byte[] measureTheWeight(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_2_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+    @Override
+    public byte[] openTheDisinfection(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.STERILIZE_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeTheDisinfection(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.STERILIZE_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+    @Override
+    public byte[] openExhaustFan(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.EXHAUST_FAN_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeExhaustFan(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.EXHAUST_FAN_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+    @Override
+    public byte[] openElectromagnetism(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.ELECTROMAGNETIC_SWITCH_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeElectromagnetism(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.ELECTROMAGNETIC_SWITCH_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+    @Override
+    public byte[] openTheHeating(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.WARM_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeTheHeating(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.WARM_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+    @Override
+    public byte[] openBlender(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.BLENDER_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeBlender(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.BLENDER_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+
+    @Override
+    public byte[] openDogHouse(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.DOG_HOUSE_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeDogHouse(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.DOG_HOUSE_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+    @Override
+    public byte[] openLight(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.LIGHT_BYTE,doorNumber,OPEN_PARAMETER);
+    }
+
+    @Override
+    public byte[] closeLight(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.LIGHT_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+}

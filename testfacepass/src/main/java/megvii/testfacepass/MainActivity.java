@@ -706,6 +706,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     }
 
+
+    private String tcp_client_id;
+
     private void initTCP(){
         TCPConnectUtil.getInstance().connect();
         TCPConnectUtil.getInstance().setListener(new NettyClientListener() {
@@ -723,7 +726,37 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                         //  连接认证
                         if(type.equals("connect_rz_msg")){
+                            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                @Override
+                                public void run() {
 
+                                    Map<String,String> map = new HashMap<>();
+                                    map.put("tcp_client_id",tcp_client_id);
+                                    NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
+                                        @Override
+                                        public void success(String response) {
+                                            Log.i("结果","绑定:" + response);
+                                            if(response.contains("设备已绑定tcp连接")){
+                                                //AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                                            }else if(response.contains("连接池未找到改连接ID")){
+
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void fail(Call call, IOException e) {
+
+                                        }
+
+                                        @Override
+                                        public void error(Exception e) {
+
+                                        }
+                                    });
+
+                                }
+                            });
                         }else if(type.equals("client_connect_msgect_msg")){
                             //  连接成功注册 与 绑定
 
@@ -740,9 +773,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             TCPConnectUtil.getInstance().sendData(gson.toJson(verify));
 
 
+                            TCPVerifyResponse tcpVerify = gson.fromJson(data, TCPVerifyResponse.class);
+                            tcp_client_id = tcpVerify.getClient_id();
 
                             //  延迟执行 ，避免 连接池未找到改连接ID,或者 在 connect_rz_msg 中执行
-                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
 
@@ -773,7 +808,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                     });
 
                                 }
-                            },1000);
+                            },1000);*/
 
                         }else if(type.equals("buy_success_msg")){
                             //  购买 成功反馈
@@ -3438,6 +3473,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             return result;
         }
     }
+
 
 
 

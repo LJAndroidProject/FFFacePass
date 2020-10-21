@@ -17,6 +17,9 @@
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 end -->
+
+    <!--安装安装包-->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <permission
         android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
         android:protectionLevel="signature" />
@@ -32,7 +35,11 @@
         <activity android:name=".WeightCalibrationActivity"></activity>
         <activity android:name=".DustbinManageActivity"></activity>
         <activity android:name=".InitConfig">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".VendingMachineActivity"></activity>
         <activity android:name=".ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
@@ -40,11 +47,7 @@
         <activity
             android:name=".ControlActivity"
             android:launchMode="singleTask"> <!-- 广告界面 -->
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".AdvertisingActivity"

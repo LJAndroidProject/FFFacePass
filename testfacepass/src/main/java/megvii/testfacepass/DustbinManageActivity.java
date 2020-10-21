@@ -103,6 +103,8 @@ public class DustbinManageActivity extends AppCompatActivity {
             case R.id.dustbin_menu_check:
                 break;
             case R.id.dustbin_menu_clear:
+                DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().deleteAll();
+
                 break;
             case R.id.dustbin_menu_exit:
                 break;

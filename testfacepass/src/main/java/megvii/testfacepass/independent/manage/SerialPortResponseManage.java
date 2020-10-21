@@ -7,9 +7,12 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.serialportlibrary.util.ByteStringUtil;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.greendao.query.QueryBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 
 import megvii.testfacepass.APP;
@@ -20,6 +23,7 @@ import megvii.testfacepass.independent.bean.DeliveryRecord;
 import megvii.testfacepass.independent.bean.DeliveryRecordDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
+import megvii.testfacepass.independent.bean.OrderMessage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.OrderUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
@@ -48,9 +52,11 @@ public class SerialPortResponseManage {
             //  获取命令类型  4 是功能，5 是第几扇门，6 是数据长度，7是数据位
             String orderCutString = OrderUtil.cutOrderByIndex(order,4);
 
-            String data = OrderUtil.cutOrderByIndex(order,7);
-
             String doorNumber = OrderUtil.cutOrderByIndex(order,5);
+
+            String length = OrderUtil.cutOrderByIndex(order,6);
+
+            String data = OrderUtil.cutOrderByIndex(order,7);
 
 
             Log.i(MY_ORDER,"orderCutString ： " + order + ",order :" + data);
@@ -92,7 +98,46 @@ public class SerialPortResponseManage {
                     toast(context,"第 " + doorNumber + "扇门，关门成功。");
 
                     //  关门之后开启消毒
-                    SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().openTheDisinfection(1));
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().openTheDisinfection(Integer.parseInt(doorNumber)));
+
+
+                    /*if(APP.userId > 0){
+                        double deliveryRecordWeight = 0.0;
+
+                        DeliveryRecord deliveryRecord = new DeliveryRecord();
+                        deliveryRecord.setDeliveryTime(System.currentTimeMillis());
+                        deliveryRecord.setDoorNumber(Integer.parseInt(doorNumber));
+                        deliveryRecord.setUserId(APP.userId);
+                        deliveryRecord.setWeight(deliveryRecordWeight);
+
+                        //  增加投递记录，之后通知计算该用户与上一次投递后的结果差
+                        DataBaseUtil.getInstance(context).getDaoSession().getDeliveryRecordDao().insert(deliveryRecord);
+
+
+                        QueryBuilder<DeliveryRecord> queryBuilder =  DataBaseUtil.getInstance(context).getDaoSession().getDeliveryRecordDao().queryBuilder();
+                        queryBuilder.where(DustbinBeanDao.Properties.DustbinBoxType.eq(Integer.parseInt(doorNumber)));
+                        queryBuilder.orderDesc(DeliveryRecordDao.Properties.Id);
+                        queryBuilder.limit(2);
+
+
+                        //  查询该门板 下最后两条数据
+                        List<DeliveryRecord> result = queryBuilder.list();
+
+                        //  没有投递记录，那肯定是不正常的
+                        if(result != null && result.size() != 0 ){
+                            DeliveryResult deliveryResult = new DeliveryResult();
+                            //  说明之前没有投递记录，第一条记录即是本次投递记录
+                            if(result.size() == 1){
+                                EventBus.getDefault().post(deliveryRecord);
+                            }else if(result.size() == 2){
+                                EventBus.getDefault().post(deliveryRecord);
+                            }
+                        }else{
+                            toast(context,"记录为0");
+                        }
+
+                    }*/
+
 
                 }else if("01".equals(data)){
                     toast(context,"第 " + doorNumber + "扇门，关门失败。");
@@ -252,6 +297,10 @@ public class SerialPortResponseManage {
                 }else if(data.equals("01")){
                     toast(context,"第 " + doorNumber + "扇门的搅拌机关闭失败。");
                 }
+            }else if(orderCutString.equals(OrderUtil.VENDING)){
+                //  售卖机指令转发
+                //OrderMessage orderMessage = OrderUtil.orderAnalysis(ByteStringUtil.hexStrToByteArray(order));
+
             }else{
                 Log.i(MY_ORDER,"未知功能");
             }
@@ -265,6 +314,72 @@ public class SerialPortResponseManage {
             Log.i(MY_ORDER,"非法指令");
         }
     }
+
+
+
+
+    public static void inOrderString(Context context , byte[] order){
+
+        OrderMessage orderMessage = OrderUtil.orderAnalysis(order);
+
+        //  先判定指令 帧头 帧尾 是否符合标准
+        if(Arrays.equals(orderMessage.getHead(), OrderUtil.HARDWARE_TO_ANDROID_HEAD_BYTES) && Arrays.equals(orderMessage.getEnd(), OrderUtil.HARDWARE_TO_ANDROID_END_BYTES)){
+
+
+            if(orderMessage.getOrder()[0] == OrderUtil.DOOR_BYTE){
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.GET_DATA_BYTE){
+
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_BYTE){
+
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_2_BYTE){
+
+
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.STERILIZE_BYTE){
+                //  杀菌、消毒
+
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.LIGHT_BYTE){
+                //  照明灯
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.EXHAUST_FAN_BYTE){
+
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.ELECTROMAGNETIC_SWITCH_BYTE){
+                //  加热
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.WARM_BYTE){
+                //  加热
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.BLENDER_BYTE){
+
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.DOG_HOUSE_BYTE){
+
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.VENDING_BYTE){
+                //  售卖机指令转发
+                //OrderMessage orderMessage = OrderUtil.orderAnalysis(ByteStringUtil.hexStrToByteArray(order));
+
+            }else{
+                Log.i(MY_ORDER,"未知功能");
+            }
+
+
+            //  每一次得到控制电路的响应，都要更新数据库中的数据，然后再更新 application 中的全局list变量
+            //  代表 全局 垃圾桶 list 对象
+            //.setDustbinBeanList(DataBaseUtil.getInstance(context).getDustbinByType(null));
+
+        }else{
+            Log.i(MY_ORDER,"非法指令");
+        }
+    }
+
+
+
 
 
     public static void toast(final Context context,final String text){

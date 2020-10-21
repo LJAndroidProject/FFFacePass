@@ -18,7 +18,7 @@ public class VendingUtil {
      * */
     public static void delivery(int number){
         byte[] headBytes = new byte[]{0x0D,0x24};
-        byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (number & 0xff),0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
+        byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (number & 0xff),0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
         byte[] sumBytes = new byte[]{getXor(order)};
         byte[] endBytes = new byte[]{0x0D,0x0A};
 
@@ -41,18 +41,79 @@ public class VendingUtil {
     }
 
     /**
-     * 订单完毕通知服务器端
-     * {"data":{"order_id":"AMAT_20201016229985f89171d3c3e9"},"type":"product_complete_msg"}
-     * @param orderNumber 订单号
+     * 转发拼接
+     * @param defaultBytes 原有的售卖机指令
+     * @param vendingNumber 第几台售卖机
+     * @return 返回经过转发协议处理过后的指令
      * */
-    private void theOrderFinished(String orderNumber){
+    public static byte[] transmitJoint(byte[] defaultBytes,int vendingNumber){
+        //  主板指令拼接
+        byte[] head = new byte[]{(byte)(0xf1),(byte)(0x1f)};
+
+        byte[] version = new byte[]{0x00,0x01};
+        byte[] order = new byte[]{0x0B,(byte) (vendingNumber & 0xff)};
+        byte[] dataLength = new byte[]{(byte) (defaultBytes.length & 0xff)};
+
+        //  中间数据
+        byte[] newBytes = new byte[version.length + order.length + dataLength.length + defaultBytes.length];
+        System.arraycopy(version,0,newBytes,0,version.length);
+        System.arraycopy(order,0,newBytes,version.length,order.length);
+        System.arraycopy(dataLength,0,newBytes,version.length + order.length,dataLength.length);
+        System.arraycopy(defaultBytes,0,newBytes,version.length + order.length + dataLength.length,defaultBytes.length);
+
+
+        int result = 0;
+        for(byte b : newBytes){
+            result += b;
+        }
+        //  得到中间数据的校验位
+        byte[] sum = new byte[]{(byte)(result & 0xff)};
+        byte[] end = new byte[]{(byte)(0xf2),(byte)(0x2f)};
+
+        //  拼接最后售卖机转发的指令
+        byte[] bytes = new byte[head.length+newBytes.length+sum.length+end.length];
+        System.arraycopy(head,0,bytes,0,head.length);
+        System.arraycopy(newBytes,0,bytes,head.length,newBytes.length);
+        System.arraycopy(sum,0,bytes,head.length + newBytes.length,dataLength.length);
+        System.arraycopy(end,0,bytes,head.length + newBytes.length + dataLength.length,end.length);
+
+        return bytes;
+    }
+
+
+    /**
+     * 支付成功与失败
+     * */
+    public enum VENDING_RESULT{
+        SUCCESS("product_complete_msg"),FAIL("product_fail_msg");
+
+        private String type;
+
+        VENDING_RESULT(String dustbinType) {
+            this.type = dustbinType;
+        }
+
+        @Override
+        public String toString() {
+            return type;
+        }
+    }
+
+    /**
+     * 订单回调 出货结果 服务器
+     * @param vending_result 出货结果 成功或者失败
+     * @param Out_trade_no 订单编号
+     * */
+    public static void theOrderCall(String Out_trade_no,VENDING_RESULT vending_result){
         BuySuccessToServer.DataBean dataBean = new BuySuccessToServer.DataBean();
-        dataBean.setOrder_id(orderNumber);
+        dataBean.setOrder_id(Out_trade_no);
         BuySuccessToServer buySuccessToServer = new BuySuccessToServer();
         buySuccessToServer.setData(dataBean);
-        buySuccessToServer.setType("product_complete_msg");
+        buySuccessToServer.setType(vending_result.toString());
 
-        Log.i(TAG,"通知服务器端出货完毕:" + new Gson().toJson(buySuccessToServer));
+        //  出货失败  setType
+        /*product_fail_msg*/
+        Log.i("结果","订单完毕:" + new Gson().toJson(buySuccessToServer));
         TCPConnectUtil.getInstance().sendData(new Gson().toJson(buySuccessToServer));
     }
 

@@ -5,63 +5,73 @@ package megvii.testfacepass.independent.bean;
  * */
 public class OrderMessage{
 
-    private String head;
+    private byte[] head;
 
-    private String version;
+    private byte[] version;
 
-    private String order;
+    private byte[] order;
 
-    private String dataLength;
+    private byte[] dataLength;
 
-    private String checksum;
+    private byte[] dataContent;
 
-    private String end;
+    private byte[] checksum;
 
-    public String getHead() {
+    private byte[] end;
+
+    public byte[] getHead() {
         return head;
     }
 
-    public void setHead(String head) {
+    public void setHead(byte[] head) {
         this.head = head;
     }
 
-    public String getVersion() {
+    public byte[] getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(byte[] version) {
         this.version = version;
     }
 
-    public String getOrder() {
+    public byte[] getOrder() {
         return order;
     }
 
-    public void setOrder(String order) {
+    public void setOrder(byte[] order) {
         this.order = order;
     }
 
-    public String getDataLength() {
+    public byte[] getDataLength() {
         return dataLength;
     }
 
-    public void setDataLength(String dataLength) {
+    public void setDataLength(byte[] dataLength) {
         this.dataLength = dataLength;
     }
 
-    public String getChecksum() {
+    public byte[] getDataContent() {
+        return dataContent;
+    }
+
+    public void setDataContent(byte[] dataContent) {
+        this.dataContent = dataContent;
+    }
+
+    public byte[] getChecksum() {
         return checksum;
     }
 
-    public void setChecksum(String checksum) {
+    public void setChecksum(byte[] checksum) {
         this.checksum = checksum;
     }
 
-    public String getEnd() {
+    public byte[] getEnd() {
         return end;
     }
 
-    public void setEnd(String end) {
+    public void setEnd(byte[] end) {
         this.end = end;
     }
 }

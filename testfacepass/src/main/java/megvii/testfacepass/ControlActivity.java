@@ -47,6 +47,7 @@ import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.OrderUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
+import megvii.testfacepass.independent.util.VendingUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
 import okhttp3.Call;
 
@@ -95,6 +96,7 @@ public class ControlActivity extends AppCompatActivity{
         mUVCCamera.setPreviewTexture(textTueView); // TextureView
 
         mUsbDevice = getUsbCameraDevice(hexToInt(1));
+
 
 
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);

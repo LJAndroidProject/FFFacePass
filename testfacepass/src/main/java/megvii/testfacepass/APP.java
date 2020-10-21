@@ -32,6 +32,7 @@ import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.independent.util.TCPConnectUtil;
 import okhttp3.Call;
 
 public class APP extends Application {
@@ -40,7 +41,7 @@ public class APP extends Application {
 
     private String deviceToken;
 
-    private static List<DustbinStateBean> dustbinBeanList;
+    public static List<DustbinStateBean> dustbinBeanList;
 
     private static DustbinConfig dustbinConfig;
 
@@ -221,5 +222,20 @@ public class APP extends Application {
 
     public void setDeviceToken(String deviceToken) {
         this.deviceToken = deviceToken;
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+
+        TCPConnectUtil.getInstance().disconnect();
+    }
+
+
+    @Override
+    public void onTrimMemory(int level) {
+        // 程序在内存清理的时候执行
+        TCPConnectUtil.getInstance().disconnect();
+        super.onTrimMemory(level);
     }
 }

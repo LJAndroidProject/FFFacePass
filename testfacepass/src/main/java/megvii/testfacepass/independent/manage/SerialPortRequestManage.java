@@ -3,7 +3,7 @@ package megvii.testfacepass.independent.manage;
 import megvii.testfacepass.independent.iml.ImlSerialPortRequest;
 import megvii.testfacepass.independent.util.OrderUtil;
 
-public class SerialPortRequestManage implements ImlSerialPortRequest {
+public class SerialPortRequestManage implements ImlSerialPortRequest.StrHEX {
 
     private static SerialPortRequestManage serialPortRequestManage;
 

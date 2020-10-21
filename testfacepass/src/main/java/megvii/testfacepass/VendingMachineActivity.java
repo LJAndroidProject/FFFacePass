@@ -397,6 +397,8 @@ public class VendingMachineActivity extends AppCompatActivity {
 
             Toast.makeText(this, "出货失败,没有显示二维码弹窗。", Toast.LENGTH_SHORT).show();
 
+            VendingUtil.theOrderCall(buySuccessMsg.getOut_trade_no(), VendingUtil.VENDING_RESULT.FAIL);
+
             return;
         }
 
@@ -428,8 +430,10 @@ public class VendingMachineActivity extends AppCompatActivity {
 
         //Log.i("串口",Integer.toHexString(c .getTierChildrenNumber()));
 
-        byte[] headBytes = new byte[]{0x0D,0x24};
-        byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (c .getTierChildrenNumber() & 0xff)/*,number[0]*/,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
+        VendingUtil.delivery(c .getTierChildrenNumber());
+
+        /*byte[] headBytes = new byte[]{0x0D,0x24};
+        byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (c .getTierChildrenNumber() & 0xff)*//*,number[0]*//*,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
         byte[] sumBytes = new byte[]{getXor(order)};
         byte[] endBytes = new byte[]{0x0D,0x0A};
 
@@ -450,19 +454,10 @@ public class VendingMachineActivity extends AppCompatActivity {
 
         SerialPortUtil.getInstance().sendData(newBytes);
 
-        Log.i("结果","串口发送:" + ByteStringUtil.byteArrayToHexStr(newBytes));
+        Log.i("结果","串口发送:" + ByteStringUtil.byteArrayToHexStr(newBytes));*/
 
 
-        BuySuccessToServer.DataBean dataBean = new BuySuccessToServer.DataBean();
-        dataBean.setOrder_id(buySuccessMsg.getOut_trade_no());
-        BuySuccessToServer buySuccessToServer = new BuySuccessToServer();
-        buySuccessToServer.setData(dataBean);
-        buySuccessToServer.setType("product_complete_msg");
-
-        //  出货失败  setType
-        /*product_fail_msg*/
-        Log.i("结果","订单完毕:" + new Gson().toJson(buySuccessToServer));
-        TCPConnectUtil.getInstance().sendData(new Gson().toJson(buySuccessToServer));
+        VendingUtil.theOrderCall(buySuccessMsg.getOut_trade_no(), VendingUtil.VENDING_RESULT.SUCCESS);
 
 
         if(alertDialog != null && alertDialog.isShowing()){

@@ -137,11 +137,47 @@ public class SerialPortService implements ISerialPortService {
     }
 
 
+    public void receiveThread(final SerialResponseByteListener serialResponseByteListener) {
+        final InputStream inputStream = mSerialPort.getInputStream();
+
+        /* 开启一个线程进行读取 */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+                        byte[] buffer = new byte[1024];
+                        int size = inputStream.read(buffer);
+                        byte[] readBytes = new byte[size];
+                        System.arraycopy(buffer, 0, readBytes, 0, size);
+
+
+                        serialResponseByteListener.response(readBytes);
+
+                        Thread.sleep(10);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+
+
+
+
     /**
      * 响应串口的一个监听
      * */
     public interface SerialResponseListener{
         void response(String response);
+    }
+
+
+    public interface SerialResponseByteListener{
+        void response(byte[] response);
     }
 
     @Override
