@@ -170,4 +170,23 @@ public class DustbinStateBean {
         this.artificialDoorLock = artificialDoorLock;
     }
 
+    @Override
+    public String toString() {
+        return "DustbinStateBean{" +
+                "id=" + id +
+                ", doorNumber=" + doorNumber +
+                ", dustbinBoxType='" + dustbinBoxType + '\'' +
+                ", dustbinBoxNumber='" + dustbinBoxNumber + '\'' +
+                ", dustbinWeight=" + dustbinWeight +
+                ", temperature=" + temperature +
+                ", humidity=" + humidity +
+                ", proximitySwitch=" + proximitySwitch +
+                ", artificialDoor=" + artificialDoor +
+                ", isFull=" + isFull +
+                ", pushRod=" + pushRod +
+                ", abnormalCommunication=" + abnormalCommunication +
+                ", deliverLock=" + deliverLock +
+                ", artificialDoorLock=" + artificialDoorLock +
+                '}';
+    }
 }

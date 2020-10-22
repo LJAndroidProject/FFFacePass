@@ -23,6 +23,7 @@ import megvii.testfacepass.independent.bean.DeliveryRecord;
 import megvii.testfacepass.independent.bean.DeliveryRecordDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.OrderMessage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.OrderUtil;
@@ -318,6 +319,8 @@ public class SerialPortResponseManage {
 
 
 
+    private final static byte ORDER_SUCCESS = 0x10;
+    private final static byte ORDER_FAIL = 0x11;
     public static void inOrderString(Context context , byte[] order){
 
         OrderMessage orderMessage = OrderUtil.orderAnalysis(order);
@@ -328,11 +331,73 @@ public class SerialPortResponseManage {
 
             if(orderMessage.getOrder()[0] == OrderUtil.DOOR_BYTE){
 
+                //  数据位
+                if(orderMessage.getDataContent()[0] == 0x10){
+                    //开成功
+                    toast(context,"开成功");
+                }else if(orderMessage.getDataContent()[0] == 0x11){
+                    //  开失败，未知原因
+                    toast(context,"开失败，未知原因");
+                }else if(orderMessage.getDataContent()[0] == 0x12){
+                    //  开失败，电机过载
+                    toast(context,"开失败，电机过载");
+                }else if(orderMessage.getDataContent()[0] == 0x00){
+                    //  关成功
+                    toast(context,"关成功");
+                }else if(orderMessage.getDataContent()[0] == 0x01){
+                    //  关失败
+                    toast(context,"关失败");
+                }
+
             }else if(orderMessage.getOrder()[0] == OrderUtil.GET_DATA_BYTE){
+
+                DustbinStateBean dustbinStateBean = new DustbinStateBean();
+                //  重量 0-25000 * 10g
+                dustbinStateBean.setDustbinWeight(orderMessage.getDataContent()[0] * 10);
+                //  温度0-200°C
+                dustbinStateBean.setTemperature(orderMessage.getDataContent()[1]);
+                //  湿度 0-100%
+                dustbinStateBean.setHumidity(orderMessage.getDataContent()[2]);
+
+                //  其它
+                //  1.空	2.接近开关	3.人工门开关	 4.测满	5.推杆过流	6.通信异常	7.投料锁	8.人工门锁
+                byte other = orderMessage.getDataContent()[3];
+
+
+                String tString = Integer.toBinaryString((other & 0xFF) + 0x100).substring(1);
+                char[] chars = tString.toCharArray();
+
+                //  接近开关
+                dustbinStateBean.setProximitySwitch(chars[1] == '1');
+                //  人工门开关
+                dustbinStateBean.setArtificialDoor(chars[2] == '0');
+                //  侧满
+                dustbinStateBean.setIsFull(chars[3] == '1');
+                //  推杆过流
+                dustbinStateBean.setPushRod(chars[4] == '1');
+                //  通信异常
+                dustbinStateBean.setAbnormalCommunication(chars[5] == '1');
+                //  投料锁
+                dustbinStateBean.setDeliverLock(chars[6] == '1');
+                //  人工锁
+                dustbinStateBean.setArtificialDoorLock(chars[7] == '1');
+
+                Log.i("状态",tString);
+                Log.i("状态",dustbinStateBean.toString());
 
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_BYTE){
 
+                //  数据位
+                if(orderMessage.getDataContent()[0] == 0x01){
+
+                    toast(context,"进入校准");
+                }else if(orderMessage.getDataContent()[0] == 0x00){
+                    toast(context,"校准完成");
+
+                }else if(orderMessage.getDataContent()[0] == (byte)(0xff)){
+                    toast(context,"校准失败");
+                }
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_2_BYTE){
 
@@ -340,6 +405,7 @@ public class SerialPortResponseManage {
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.STERILIZE_BYTE){
                 //  杀菌、消毒
+
 
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.LIGHT_BYTE){

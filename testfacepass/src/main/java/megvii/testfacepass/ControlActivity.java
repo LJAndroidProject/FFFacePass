@@ -1,5 +1,6 @@
 package megvii.testfacepass;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
@@ -8,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.google.gson.Gson;
 import com.lgh.uvccamera.UVCCameraProxy;
 import com.lgh.uvccamera.bean.PicturePath;
 import com.lgh.uvccamera.callback.ConnectCallback;
@@ -39,15 +40,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import megvii.testfacepass.independent.ServerAddress;
+import megvii.testfacepass.independent.bean.AdminLoginResult;
 import megvii.testfacepass.independent.bean.DeliveryResult;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.GeneralBean;
+import megvii.testfacepass.independent.bean.PhoneCodeVerifyBean;
+import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.DustbinUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
-import megvii.testfacepass.independent.util.OrderUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
-import megvii.testfacepass.independent.util.VendingUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
 import okhttp3.Call;
 
@@ -95,8 +99,8 @@ public class ControlActivity extends AppCompatActivity{
 
         mUVCCamera.setPreviewTexture(textTueView); // TextureView
 
+        //  默认摄像头
         mUsbDevice = getUsbCameraDevice(hexToInt(1));
-
 
 
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
@@ -114,61 +118,112 @@ public class ControlActivity extends AppCompatActivity{
                         adminLoginDialog = new AdminLoginDialog(ControlActivity.this);
                         adminLoginDialog.setLoginListener(new AdminLoginDialog.LoginListener() {
                             @Override
-                            public void callBack(String editStr, String password, android.app.AlertDialog alertDialog) {
-
-                                if(editStr.equals("123")){
-                                    adminLoginDialog.verifyState(new AdminLoginDialog.VerifyListener() {
-                                        @Override
-                                        public void verifyCallBack(String adminPhone, String verifyCode, android.app.AlertDialog alertDialog) {
-
-                                            alertDialog.dismiss();
+                            public void callBack(final String editStr, final String password, android.app.AlertDialog alertDialog) {
 
 
-                                            List<String> list = new ArrayList<>();
-                                            list.add("回收箱管理");
-                                            list.add("故障维修管理管理");
-                                            list.add("售卖机补货");
+                                //  传参手机号码 和 密码 开始登陆
+                                Map<String,String> map = new HashMap<>();
+                                map.put("phone",editStr);
+                                map.put("pwd",password);
+                                NetWorkUtil.getInstance().doPost(ServerAddress.ADMIN_LOGIN, map, new NetWorkUtil.NetWorkListener() {
+                                    @Override
+                                    public void success(String response) {
+                                        //  登陆结果
+                                        AdminLoginResult adminLoginResult = new Gson().fromJson(response,AdminLoginResult.class);
 
+                                        //  手机号码 + 密码 登陆成功
+                                        if(adminLoginResult.getCode() == 1){
+                                            Toast.makeText(ControlActivity.this, "登陆成功，正在发送验证码。", Toast.LENGTH_SHORT).show();
 
-                                            final String[] strings = new String[list.size()];
-                                            for(int i = 0 ; i < list.size() ; i++){
-                                                strings[i] = list.get(i);
-                                            }
-
-                                            AlertDialog.Builder alert = new AlertDialog.Builder(ControlActivity.this);
-                                            alert.setTitle("选择你要做的操作:");
-                                            alert.setSingleChoiceItems(strings,-1, new DialogInterface.OnClickListener() {
+                                            //  登陆成功，发送验证码
+                                            Map<String,String> m = new HashMap<>();
+                                            m.put("phone",editStr);
+                                            m.put("type","2");
+                                            NetWorkUtil.getInstance().doPost(ServerAddress.SEND_SMS, m, new NetWorkUtil.NetWorkListener() {
                                                 @Override
-                                                public void onClick(DialogInterface dialog, int which) {
+                                                public void success(String response) {
 
-                                                    String item = strings[which];
+                                                    //  验证码发送回调
+                                                    GeneralBean generalBean = new Gson().fromJson(response,GeneralBean.class);
+                                                    if(generalBean.getCode() == 1){
+                                                        //  验证码发送成功
+                                                        Toast.makeText(ControlActivity.this, "已发送验证码到手机。", Toast.LENGTH_SHORT).show();
+                                                        //  弹窗跳转至 验证码输入
+                                                        adminLoginDialog.verifyState(new AdminLoginDialog.VerifyListener() {
+                                                            @Override
+                                                            public void verifyCallBack(String adminPhone, String verifyCode,final AlertDialog alertDialog) {
+                                                                //  点击验证码 验证 ，传输手机号码、 密码 、以及输入的验证码进行验证
 
-                                                    if("回收箱管理".equals(item)){
+                                                                Map<String,String> ma = new HashMap<>();
+                                                                ma.put("phone",adminPhone);
+                                                                ma.put("pwd",password);
+                                                                ma.put("code",verifyCode);
+                                                                NetWorkUtil.getInstance().doPost(ServerAddress.PHONE_CODE_VERIFY, ma, new NetWorkUtil.NetWorkListener() {
+                                                                    @Override
+                                                                    public void success(String response) {
+                                                                        PhoneCodeVerifyBean phoneCodeVerifyBean = new Gson().fromJson(response,PhoneCodeVerifyBean.class);
+                                                                        if(phoneCodeVerifyBean.getCode() == 1){
+                                                                            Log.i("结果",phoneCodeVerifyBean.toString());
+                                                                            showAdminManage(alertDialog,phoneCodeVerifyBean);
+                                                                        }else{
+                                                                            Toast.makeText(ControlActivity.this, "验证码错误", Toast.LENGTH_SHORT).show();
+                                                                        }
+                                                                    }
 
-                                                    }else if("故障维修管理管理".equals(item)){
-                                                        Intent intent = new Intent(ControlActivity.this, DustbinManageActivity.class);
-                                                        startActivity(intent);
-                                                    }else if( "售卖机补货".equals(item)){
-                                                        Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
-                                                        startActivity(intent);
+                                                                    @Override
+                                                                    public void fail(Call call, IOException e) {
+                                                                        Toast.makeText(ControlActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                    }
+
+                                                                    @Override
+                                                                    public void error(Exception e) {
+                                                                        Toast.makeText(ControlActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+
+
+                                                            }
+                                                        });
+                                                    }else{
+                                                        Toast.makeText(ControlActivity.this, "验证码发送失败。", Toast.LENGTH_SHORT).show();
                                                     }
-                                                }
-                                            });
-                                            alert.setPositiveButton("取消", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.dismiss();
-                                                }
-                                            });
-                                            alert.setCancelable(false);
-                                            alert.create();
-                                            alert.show();
 
+
+
+
+                                                }
+
+                                                @Override
+                                                public void fail(Call call, IOException e) {
+                                                    Toast.makeText(ControlActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+
+                                                @Override
+                                                public void error(Exception e) {
+                                                    Toast.makeText(ControlActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+
+
+
+                                        }else{
+                                            //  手机号码 + 验证码 登陆失败
+                                            Toast.makeText(ControlActivity.this, "账户或密码错误，登陆失败", Toast.LENGTH_SHORT).show();
                                         }
-                                    });
-                                }else{
-                                    Toast.makeText(ControlActivity.this,"登陆失败，密码错误",Toast.LENGTH_LONG).show();
-                                }
+                                    }
+
+                                    @Override
+                                    public void fail(Call call, IOException e) {
+                                        Toast.makeText(ControlActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    @Override
+                                    public void error(Exception e) {
+                                        Toast.makeText(ControlActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+
                             }
                         });
                         adminLoginDialog.create();
@@ -227,7 +282,14 @@ public class ControlActivity extends AppCompatActivity{
                     }else{
                         mUVCCamera.closeCamera(); // 关闭相机
 
-                        if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
+
+                        DustbinStateBean dustbinStateBean = openDoorByType(data.getDustbinBoxType());
+                        if(dustbinStateBean == null){
+                            return;
+                        }
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+
+                        /*if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
 
                         }else if(DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())){
 
@@ -239,10 +301,10 @@ public class ControlActivity extends AppCompatActivity{
 
                         }else if(DustbinENUM.OTHER.toString().equals(data.getDustbinBoxType())){
 
-                        }
+                        }*/
 
                         //  开启闪关灯
-                        SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().openLight(data.getDoorNumber()));
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(data.getDoorNumber()));
 
                         mUsbDevice = getUsbCameraDevice(hexToInt(data.getDoorNumber()));
                         mUVCCamera.requestPermission(mUsbDevice);
@@ -261,7 +323,7 @@ public class ControlActivity extends AppCompatActivity{
                         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                SerialPortUtil.getInstance().sendData(SerialPortRequestManage.getInstance().closeLight(data.getDoorNumber()));
+                                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeLight(data.getDoorNumber()));
                             }
                         },10 * 1000);
                     }
@@ -330,13 +392,77 @@ public class ControlActivity extends AppCompatActivity{
 
     }
 
+    // 显示管理员
+    String [] finalStrings = new String[]{"回收箱管理","故障维修管理","售卖机补货"};
+    String [] strings = new String[]{"回收箱管理","故障维修管理","售卖机补货"};
+    /**
+     *
+     * 1：回收员，2维修员，3：补货员，99：超级管理员
+     * */
+    private void showAdminManage(AlertDialog alertDialog,PhoneCodeVerifyBean phoneCodeVerifyBean){
+        alertDialog.dismiss();
+
+
+        //  如果不是超级管理员
+        if(!phoneCodeVerifyBean.getData().getAdmin_types().contains("99")){
+            String typeStr = phoneCodeVerifyBean.getData().getAdmin_types().replace("1", finalStrings[0]);
+            typeStr = typeStr.replace("2", finalStrings[1]);
+            typeStr = typeStr.replace("3", finalStrings[2]);
+
+            strings = typeStr.split(",");
+        }
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(ControlActivity.this);
+        alert.setTitle("选择你要做的操作:");
+        alert.setSingleChoiceItems(strings,-1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                String item = strings[which];
+
+                if(finalStrings[0].equals(item)){
+
+                }else if(finalStrings[1].equals(item)){
+                    Intent intent = new Intent(ControlActivity.this, DustbinManageActivity.class);
+                    startActivity(intent);
+                }else if( finalStrings[2].equals(item)){
+                    Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+        alert.setPositiveButton("关闭", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        alert.setCancelable(false);
+        alert.create();
+        alert.show();
+    }
+
 
     /**
      * 筛选合适的垃圾箱
      * */
-    private void e(){
+    private DustbinStateBean openDoorByType(String type){
         List<DustbinStateBean> list = ((APP)getApplication()).getDustbinBeanList();
+        for(DustbinStateBean dustbinStateBean : list){
+            if(dustbinStateBean.getDustbinBoxType() .equals(type)){
+                
+                if(dustbinStateBean.getIsFull()){
+                    return dustbinStateBean;
+                }else{
+                    Toast.makeText(this, "垃圾箱已满或没有合适的垃圾箱", Toast.LENGTH_SHORT).show();
+                    return null;
+                }
+            }
+        }
 
+        Toast.makeText(this, "垃圾箱已满", Toast.LENGTH_SHORT).show();
+        return null;
     }
 
 

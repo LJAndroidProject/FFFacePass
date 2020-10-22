@@ -7,9 +7,9 @@ public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX
 
     private static SerialPortRequestByteManage serialPortRequestManage;
 
-    private static byte[] OPEN_PARAMETER = new byte[]{0x11};
+    public static byte[] OPEN_PARAMETER = new byte[]{0x11};
 
-    private static byte[] CLOSE_PARAMETER = new byte[]{0x00};
+    public static byte[] CLOSE_PARAMETER = new byte[]{0x00};
 
     private SerialPortRequestByteManage(){
 

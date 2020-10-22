@@ -35,6 +35,15 @@ public class ServerAddress {
     //  注册TCP
     public final static String REGISTER_TCP = IP + "api/Android/equipmentTcpBind";
 
+    //  管理员登陆
+    public final static String ADMIN_LOGIN = IP + "api/Android/equipmentMangerLogin";
+
+    //  发送手机验证码
+    public final static String SEND_SMS = IP + "api/Other/sendSms";
+
+    //  验证验证码是否正确
+    public final static String PHONE_CODE_VERIFY = IP + "api/Android/phoneCodeVerify";
+
 
 
 }

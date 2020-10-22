@@ -22,6 +22,7 @@ import java.util.List;
 import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.bean.DeliveryRecord;
+import megvii.testfacepass.independent.bean.ErrorMessage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 
 /**
@@ -61,7 +62,11 @@ public class DustbinManageActivity extends AppCompatActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 if(tab.getText().equals("错误记录")){
+                    List<ErrorMessage> errorMessageList = DataBaseUtil.getInstance(DustbinManageActivity.this).getDaoSession().getErrorMessageDao().queryBuilder().list();
 
+                    dustbin_manage_recyclerView.setLayoutManager(new LinearLayoutManager(DustbinManageActivity.this));
+                    DustbinManageErrorRecordAdapter dustbinManageRecordAdapter = new DustbinManageErrorRecordAdapter(R.layout.item_record_layout,errorMessageList);
+                    dustbin_manage_recyclerView.setAdapter(dustbinManageRecordAdapter);
                 }else if(tab.getText().equals("投递记录")){
                     List<DeliveryRecord> deliveryRecords = DataBaseUtil.getInstance(DustbinManageActivity.this).getDaoSession().getDeliveryRecordDao().queryBuilder().list();
 
@@ -124,6 +129,23 @@ public class DustbinManageActivity extends AppCompatActivity {
             helper.setText(R.id.record_time, String.valueOf(deliveryRecord.getDeliveryTime()));
             helper.setText(R.id.record_door, String.valueOf(deliveryRecord.getDoorNumber()));
             helper.setText(R.id.record_dustbin_weight,  String.valueOf(deliveryRecord.getWeight()));
+        }
+    }
+
+
+
+    public class DustbinManageErrorRecordAdapter extends BaseQuickAdapter<ErrorMessage, BaseViewHolder> {
+
+        public DustbinManageErrorRecordAdapter(int layoutResId, @Nullable List<ErrorMessage> errorMessages) {
+            super(layoutResId, errorMessages);
+        }
+
+        @Override
+        protected void convert(BaseViewHolder helper, ErrorMessage errorMessage) {
+            helper.setText(R.id.user_id, String.valueOf(errorMessage.getErrorType()));
+            helper.setText(R.id.record_time, String.valueOf(errorMessage.getErrorTime()));
+            helper.setText(R.id.record_door, String.valueOf(errorMessage.getErrorDoor()));
+            helper.setText(R.id.record_dustbin_weight,  String.valueOf(errorMessage.getErrorDescribe()));
         }
     }
 

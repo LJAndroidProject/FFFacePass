@@ -70,6 +70,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.serialportlibrary.service.impl.SerialPortService;
+import com.serialportlibrary.util.ByteStringUtil;
 import com.umeng.message.PushAgent;
 import com.umeng.message.entity.UMessage;
 
@@ -324,6 +325,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
         app = (APP) getApplication();
         mainHandler = new Handler(Looper.getMainLooper());
+
+
+        //                                   |
+        //String order = "F3 3F 00 01 02 01 01 11 00 F4 4F".replace(" ","");
+        String order = "F3 3F 00 01 02 01 04 32 1A 1B 1C 00 F4 4F".replace(" ","");
+        SerialPortResponseManage.inOrderString(this, ByteStringUtil.hexStrToByteArray(order));
 
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
@@ -729,7 +736,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-
+                                    
                                     Map<String,String> map = new HashMap<>();
                                     map.put("tcp_client_id",tcp_client_id);
                                     NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
