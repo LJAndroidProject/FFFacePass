@@ -73,4 +73,13 @@ public class SerialPortUtil {
     }
 
 
+    /**
+     * 添加监听2
+     * */
+    public void receiveListener(SerialPortService.SerialResponseByteListener serialResponseByteListener){
+        //  串口监听
+        serialPortService.receiveThread(serialResponseByteListener);
+    }
+
+
 }

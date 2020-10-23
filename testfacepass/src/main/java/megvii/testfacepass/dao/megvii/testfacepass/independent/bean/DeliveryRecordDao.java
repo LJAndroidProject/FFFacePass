@@ -27,6 +27,7 @@ public class DeliveryRecordDao extends AbstractDao<DeliveryRecord, Long> {
         public final static Property UserId = new Property(2, long.class, "userId", false, "USER_ID");
         public final static Property DeliveryTime = new Property(3, long.class, "deliveryTime", false, "DELIVERY_TIME");
         public final static Property Weight = new Property(4, double.class, "weight", false, "WEIGHT");
+        public final static Property TakePath = new Property(5, String.class, "takePath", false, "TAKE_PATH");
     }
 
 
@@ -46,7 +47,8 @@ public class DeliveryRecordDao extends AbstractDao<DeliveryRecord, Long> {
                 "\"DOOR_NUMBER\" INTEGER NOT NULL ," + // 1: doorNumber
                 "\"USER_ID\" INTEGER NOT NULL ," + // 2: userId
                 "\"DELIVERY_TIME\" INTEGER NOT NULL ," + // 3: deliveryTime
-                "\"WEIGHT\" REAL NOT NULL );"); // 4: weight
+                "\"WEIGHT\" REAL NOT NULL ," + // 4: weight
+                "\"TAKE_PATH\" TEXT);"); // 5: takePath
     }
 
     /** Drops the underlying database table. */
@@ -67,6 +69,11 @@ public class DeliveryRecordDao extends AbstractDao<DeliveryRecord, Long> {
         stmt.bindLong(3, entity.getUserId());
         stmt.bindLong(4, entity.getDeliveryTime());
         stmt.bindDouble(5, entity.getWeight());
+ 
+        String takePath = entity.getTakePath();
+        if (takePath != null) {
+            stmt.bindString(6, takePath);
+        }
     }
 
     @Override
@@ -81,6 +88,11 @@ public class DeliveryRecordDao extends AbstractDao<DeliveryRecord, Long> {
         stmt.bindLong(3, entity.getUserId());
         stmt.bindLong(4, entity.getDeliveryTime());
         stmt.bindDouble(5, entity.getWeight());
+ 
+        String takePath = entity.getTakePath();
+        if (takePath != null) {
+            stmt.bindString(6, takePath);
+        }
     }
 
     @Override
@@ -95,7 +107,8 @@ public class DeliveryRecordDao extends AbstractDao<DeliveryRecord, Long> {
             cursor.getInt(offset + 1), // doorNumber
             cursor.getLong(offset + 2), // userId
             cursor.getLong(offset + 3), // deliveryTime
-            cursor.getDouble(offset + 4) // weight
+            cursor.getDouble(offset + 4), // weight
+            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5) // takePath
         );
         return entity;
     }
@@ -107,6 +120,7 @@ public class DeliveryRecordDao extends AbstractDao<DeliveryRecord, Long> {
         entity.setUserId(cursor.getLong(offset + 2));
         entity.setDeliveryTime(cursor.getLong(offset + 3));
         entity.setWeight(cursor.getDouble(offset + 4));
+        entity.setTakePath(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
      }
     
     @Override

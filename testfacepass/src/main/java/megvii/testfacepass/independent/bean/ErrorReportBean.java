@@ -116,4 +116,17 @@ public class ErrorReportBean {
     }
 
 
+    @Override
+    public String toString() {
+        return "ErrorReportBean{" +
+                "errorId=" + errorId +
+                ", orderNumber='" + orderNumber + '\'' +
+                ", doorNumber=" + doorNumber +
+                ", data='" + data + '\'' +
+                ", orderString='" + orderString + '\'' +
+                ", deviceId='" + deviceId + '\'' +
+                ", time=" + time +
+                ", msg='" + msg + '\'' +
+                '}';
+    }
 }

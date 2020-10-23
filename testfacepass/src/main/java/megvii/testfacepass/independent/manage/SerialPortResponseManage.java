@@ -24,8 +24,11 @@ import megvii.testfacepass.independent.bean.DeliveryRecordDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.ErrorReportBean;
 import megvii.testfacepass.independent.bean.OrderMessage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.DustbinUtil;
+import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.OrderUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 
@@ -36,6 +39,7 @@ import static megvii.testfacepass.MainActivity.MY_ORDER;
  * */
 public class SerialPortResponseManage {
     /**
+     * @deprecated
      * @param order 指令的字符串形式
      * */
     public static void inOrderString(Context context , String order){
@@ -327,7 +331,7 @@ public class SerialPortResponseManage {
 
         //  先判定指令 帧头 帧尾 是否符合标准
         if(Arrays.equals(orderMessage.getHead(), OrderUtil.HARDWARE_TO_ANDROID_HEAD_BYTES) && Arrays.equals(orderMessage.getEnd(), OrderUtil.HARDWARE_TO_ANDROID_END_BYTES)){
-
+            //  门开关
 
             if(orderMessage.getOrder()[0] == OrderUtil.DOOR_BYTE){
 
@@ -344,12 +348,41 @@ public class SerialPortResponseManage {
                 }else if(orderMessage.getDataContent()[0] == 0x00){
                     //  关成功
                     toast(context,"关成功");
+
+                    //  获取门板号
+                    DustbinStateBean dustbinStateBean = DustbinUtil.getDustbinState(orderMessage.getOrder()[1]);
+                    //  通知开启闪关灯并拍照
+                    EventBus.getDefault().post(dustbinStateBean);
+
                 }else if(orderMessage.getDataContent()[0] == 0x01){
                     //  关失败
                     toast(context,"关失败");
+
+
+                    ErrorReportBean errorReportBean = new ErrorReportBean();
+                    //  错误描述
+                    errorReportBean.setMsg("关门失败，原因:" + (orderMessage.getDataContent()[0] == 0x01 ? "未知原因失败" : "电机过载") );
+                    //  发生时间
+                    errorReportBean.setTime(System.currentTimeMillis());
+                    //  数据位
+                    errorReportBean.setData(ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
+                    //  具体哪一个垃圾门
+                    errorReportBean.setOrderNumber(String.valueOf(orderMessage.getOrder()[1]));
+                    //  设备id
+                    errorReportBean.setDeviceId(APP.getDeviceId());
+                    //  错误编号
+                    errorReportBean.setErrorId(null);
+                    //  实际指令
+                    errorReportBean.setOrderString(ByteStringUtil.byteArrayToHexStr(order));
+                    //  开始上报
+                    NetWorkUtil.getInstance().errorUpload(errorReportBean);
+
+                    //  本地错误记录
+                    DataBaseUtil.getInstance(context).getDaoSession().getErrorReportBeanDao().insert(errorReportBean);
                 }
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.GET_DATA_BYTE){
+                //  读取数据
 
                 DustbinStateBean dustbinStateBean = new DustbinStateBean();
                 //  重量 0-25000 * 10g
@@ -358,6 +391,8 @@ public class SerialPortResponseManage {
                 dustbinStateBean.setTemperature(orderMessage.getDataContent()[1]);
                 //  湿度 0-100%
                 dustbinStateBean.setHumidity(orderMessage.getDataContent()[2]);
+                //  设置门编号
+                dustbinStateBean.setDoorNumber(orderMessage.getOrder()[1]);
 
                 //  其它
                 //  1.空	2.接近开关	3.人工门开关	 4.测满	5.推杆过流	6.通信异常	7.投料锁	8.人工门锁
@@ -385,6 +420,18 @@ public class SerialPortResponseManage {
                 Log.i("状态",tString);
                 Log.i("状态",dustbinStateBean.toString());
 
+                APP.setDustbinState(dustbinStateBean);
+
+                //  人接近 与离开
+                /*DustbinStateBean oldDustbinStateBean =  DustbinUtil.getDustbinState(dustbinStateBean.getDoorNumber());
+
+                if(oldDustbinStateBean.getProximitySwitch()){
+                    if(dustbinStateBean.getProximitySwitch()){
+
+                    }else{
+
+                    }
+                }*/
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_BYTE){
 

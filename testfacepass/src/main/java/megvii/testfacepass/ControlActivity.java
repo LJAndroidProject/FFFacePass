@@ -30,6 +30,9 @@ import com.lgh.uvccamera.callback.PictureCallback;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.greenrobot.greendao.query.QueryBuilder;
+
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -41,7 +44,10 @@ import java.util.Set;
 import java.util.TreeSet;
 import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.AdminLoginResult;
+import megvii.testfacepass.independent.bean.DeliveryRecord;
+import megvii.testfacepass.independent.bean.DeliveryRecordDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
+import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.GeneralBean;
@@ -49,7 +55,6 @@ import megvii.testfacepass.independent.bean.PhoneCodeVerifyBean;
 import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
-import megvii.testfacepass.independent.util.DustbinUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
@@ -283,49 +288,18 @@ public class ControlActivity extends AppCompatActivity{
                         mUVCCamera.closeCamera(); // 关闭相机
 
 
-                        DustbinStateBean dustbinStateBean = openDoorByType(data.getDustbinBoxType());
-                        if(dustbinStateBean == null){
-                            return;
-                        }
-                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
-
-                        /*if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
-
-                        }else if(DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())){
-
-                        }else if(DustbinENUM.RECYCLABLES.toString().equals(data.getDustbinBoxType())){
-
-                        }else if(DustbinENUM.KITCHEN.toString().equals(data.getDustbinBoxType())){
-
-                        }else if(DustbinENUM.HARMFUL.toString().equals(data.getDustbinBoxType())){
-
-                        }else if(DustbinENUM.OTHER.toString().equals(data.getDustbinBoxType())){
-
-                        }*/
-
-                        //  开启闪关灯
-                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(data.getDoorNumber()));
-
                         mUsbDevice = getUsbCameraDevice(hexToInt(data.getDoorNumber()));
                         mUVCCamera.requestPermission(mUsbDevice);
 
 
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(ControlActivity.this, "拍照", Toast.LENGTH_SHORT).show();
-                                mUVCCamera.takePicture();
-                            }
-                        },2000);
+                        //  获取合适的垃圾箱类型
+                        DustbinStateBean dustbinStateBean = openDoorByType(data.getDustbinBoxType());
+                        if(dustbinStateBean == null){
+                            return;
+                        }
 
-
-                        //  10 s 后 关闭闪关灯
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeLight(data.getDoorNumber()));
-                            }
-                        },10 * 1000);
+                        //  开启垃圾箱
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
                     }
 
 
@@ -339,10 +313,74 @@ public class ControlActivity extends AppCompatActivity{
         mUVCCamera.setPictureTakenCallback(new PictureCallback() {
             @Override
             public void onPictureTaken(String path) {
-                textView.append("图片路径" + path);
-                textView.append("\n");
+                File file = new File(path);
+                //  去除.jpg
+                //  设备id + 门板编号 + 用户id + 时间戳 .jpg
+                String fileName = file.getName().replace(".jpg","");
+
+                //  解析文件名称
+                final String[] fileArray = fileName.split("_");
+
+
+
+                //  首先根据时间戳查询 投递记录,
+                DeliveryRecord deliveryRecord = DataBaseUtil.getInstance(ControlActivity.this).getDaoSession().getDeliveryRecordDao().queryBuilder().where(DeliveryRecordDao.Properties.DeliveryTime.eq(fileArray[3])).unique();
+                //  修改投递记录 中的拍摄图片地址 （关门时创建的投递记录是没有图片的，所以这里拍摄回调需要添加拍摄地址）
+                deliveryRecord.setTakePath(file.getPath());
+                //  修改信息
+                DataBaseUtil.getInstance(ControlActivity.this).getDaoSession().getDeliveryRecordDao().update(deliveryRecord);
+
+
+
+                /*
+                 * 这里可以做一个 判空 如果数据表中，有两个 拍摄记录为 null 的数据，说明有摄像头没有拍摄到图片，说明摄像头故障
+                 * */
+                /*if(DataBaseUtil.getInstance(ControlActivity.this).getDaoSession().getDeliveryRecordDao().queryBuilder().where(DeliveryRecordDao.Properties.TakePath.isNull()).list().size() > 2){
+                    //  错误上报
+                }*/
+
+
+                /*
+                 *
+                 * 图片文件上传
+                 * */
+
+                /*NetWorkUtil.getInstance().fileUpload(file, new NetWorkUtil.FileUploadListener() {
+                    @Override
+                    public void success(String fileUrl) {
+                        Map<String,String> map = new HashMap();
+                        map.put("doorNumber",fileArray[0]);
+                        map.put("userId",fileArray[1]);
+                        map.put("deliveryTime",fileArray[2]);
+                        NetWorkUtil.getInstance().doPost(ServerAddress.FILE_UPLOAD, map, new NetWorkUtil.NetWorkListener() {
+                            @Override
+                            public void success(String response) {
+
+                            }
+
+                            @Override
+                            public void fail(Call call, IOException e) {
+
+                            }
+
+                            @Override
+                            public void error(Exception e) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void error(Exception e) {
+
+                    }
+                });*/
+
+
             }
         });
+
+        //mUVCCamera.
 
         mUVCCamera.setConnectCallback(new ConnectCallback() {
             @Override
@@ -387,10 +425,120 @@ public class ControlActivity extends AppCompatActivity{
         });
     }
 
+    /**
+     * 串口回调 垃圾箱被关闭
+     * */
+    @Subscribe(threadMode = ThreadMode.POSTING)
+    private void closeDoor(final DustbinStateBean dustbinStateBean){
+        long time = System.currentTimeMillis();
 
-    private void camera(){
+        //  设备id + 门板编号 + 用户id + 时间戳
+        //  GD-GZ-HP-HP-1_1_329_1603419106.jpg
+        final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + ".jpg";
+        //String imageName = System.currentTimeMillis() + ".jpg";
 
+        //  开启闪关灯
+        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
+
+        //  切换摄像头
+        mUsbDevice = getUsbCameraDevice(hexToInt(dustbinStateBean.getDoorNumber()));
+        mUVCCamera.requestPermission(mUsbDevice);
+
+        //  拍照
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(ControlActivity.this, "拍照", Toast.LENGTH_SHORT).show();
+                mUVCCamera.takePicture(imageName);
+            }
+        },2 * 1000);
+
+        //  10 s 后 关闭闪关灯
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeLight(dustbinStateBean.getDoorNumber()));
+            }
+        },10 * 1000);
+
+
+        //  添加一条用户投递记录
+        DeliveryRecord deliveryRecord = new DeliveryRecord(null,dustbinStateBean.getDoorNumber(),APP.userId,time,dustbinStateBean.getDustbinWeight(),null);
+        DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().insert(deliveryRecord);
+
+
+        //  计算投递重量差 ，兑换积分
+        //  如果人工门不是开启的，并且不是瓶子 才计算重量
+        if(!dustbinStateBean.getArtificialDoor() && !dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())){
+            //  如果为 0 说明不是通过扫码进入
+            if(APP.userId > 0){
+
+                DeliveryRecord nowDeliveryRecord = new DeliveryRecord();
+                nowDeliveryRecord.setDeliveryTime(System.currentTimeMillis());
+                nowDeliveryRecord.setDoorNumber(dustbinStateBean.getDoorNumber());
+                nowDeliveryRecord.setUserId(APP.userId);
+                nowDeliveryRecord.setWeight(dustbinStateBean.getDustbinWeight());
+
+                //  增加投递记录，之后通知计算该用户与上一次投递后的结果差
+                DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().insert(nowDeliveryRecord);
+
+
+                //  查询同一个桶最近两次投递记录，算出重量差
+                QueryBuilder<DeliveryRecord> queryBuilder =  DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().queryBuilder();
+                queryBuilder.where(DustbinBeanDao.Properties.DustbinBoxType.eq(dustbinStateBean.getDoorNumber()));
+                queryBuilder.orderDesc(DeliveryRecordDao.Properties.Id);
+                queryBuilder.limit(2);
+                List<DeliveryRecord> result = queryBuilder.list();
+
+                //  重量差
+                double diff = 0;
+
+                //  没有投递记录，那肯定是不正常的
+                if(result != null && result.size() != 0 ){
+                    //  说明之前没有投递记录，第一条记录即是本次投递记录
+                    if(result.size() == 1){
+                        diff = result.get(0).getWeight();
+                    }else if(result.size() == 2){
+                        diff = result.get(0).getWeight() - result.get(1).getWeight();
+
+                        //  不知道先后顺序，直接算出重量差即可
+                        if(diff < 0 ){
+                            diff = Math.abs(diff);
+                        }
+                    }
+                }else{
+                    return;
+                }
+
+
+                //  上传重量差
+                Map<String,String> map = new HashMap<>();
+                map.put("weightDiff",String.valueOf(diff));
+                map.put("userId",String.valueOf(APP.userId));
+                map.put("dustbinType",dustbinStateBean.getDustbinBoxType());
+                map.put("dustbinNumber",String.valueOf(dustbinStateBean.getDoorNumber()));
+                NetWorkUtil.getInstance().doPost(ServerAddress.DUSTBIN_INTEGRAL, map, new NetWorkUtil.NetWorkListener() {
+                    @Override
+                    public void success(String response) {
+
+                    }
+
+                    @Override
+                    public void fail(Call call, IOException e) {
+
+                    }
+
+                    @Override
+                    public void error(Exception e) {
+
+                    }
+                });
+
+            }
+        }
     }
+
+
 
     // 显示管理员
     String [] finalStrings = new String[]{"回收箱管理","故障维修管理","售卖机补货"};
@@ -617,9 +765,9 @@ public class ControlActivity extends AppCompatActivity{
 
             //  厨余
             if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
-                image_resource = R.mipmap.chuyu;
-            }else if(DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())){
                 image_resource = R.mipmap.pinzi;
+            }else if(DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())){
+                image_resource = R.mipmap.zhipi;
             }else if(DustbinENUM.RECYCLABLES.toString().equals(data.getDustbinBoxType())){
                 image_resource = R.mipmap.kehuishou;
             }else if(DustbinENUM.KITCHEN.toString().equals(data.getDustbinBoxType())){

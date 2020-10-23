@@ -1185,6 +1185,7 @@ mipmap qita
 mipmap shouhuo
 mipmap wenzi
 mipmap youhai
+mipmap zhipi
 string abc_action_bar_home_description
 string abc_action_bar_home_description_format
 string abc_action_bar_home_subtitle_description_format

@@ -1,24 +1,43 @@
 package megvii.testfacepass.independent.util;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
+import com.google.gson.Gson;
+
+import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
 
 
 import megvii.testfacepass.APP;
+import megvii.testfacepass.ControlActivity;
+import megvii.testfacepass.MainActivity;
+import megvii.testfacepass.independent.ServerAddress;
+import megvii.testfacepass.independent.bean.ErrorMessage;
+import megvii.testfacepass.independent.bean.ErrorReportBean;
+import megvii.testfacepass.independent.bean.GeneralBean;
+import megvii.testfacepass.independent.bean.ImageUploadResult;
+import megvii.testfacepass.independent.bean.ResultMould;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class NetWorkUtil {
@@ -170,6 +189,92 @@ public class NetWorkUtil {
 
     }
 
+
+    /**
+     * 错误上报
+     *
+     * */
+    public void errorUpload(ErrorReportBean errorReportBean){
+        Log.i("错误上报结果",errorReportBean.toString());
+
+        if(APP.getDeviceId() != null){
+
+            long nowTime = System.currentTimeMillis() / 1000 ;
+
+            /**
+             * sign	是	string	签名
+             * timestamp	是	string	当前时间戳
+             * device_id	是	string	设备ID
+             * msg	是	string	错误描述
+             * order_number	否	string	指令编码
+             * data	否	int	指令错误类型
+             * order_string	否	string	原始指令
+             * door_number	否	int	几号门
+             * time	否	string	错误发生时间戳
+             * */
+            FormBody.Builder formBody = new FormBody.Builder();
+            formBody.add("sign",md5(nowTime + key).toUpperCase());
+            formBody.add("timestamp",String.valueOf(nowTime));
+            formBody.add("device_id", APP.getDeviceId());
+            formBody.add("msg",errorReportBean.getMsg());
+            formBody.add("order_number",errorReportBean.getOrderNumber());
+            formBody.add("data",errorReportBean.getData());
+            formBody.add("order_string",errorReportBean.getOrderString());
+            formBody.add("door_number",String.valueOf(errorReportBean.getDoorNumber()));
+            formBody.add("time",String.valueOf(errorReportBean.getTime() / 1000));
+
+
+            Request request = new Request.Builder().url(ServerAddress.ERROR_UPLOAD).post(formBody.build()).build();
+            okHttpClient.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(final Call call,final IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(final Call call, final Response response) throws IOException {
+                        Log.i("错误上报结果",response.body().string());
+                }
+            });
+        }
+
+
+    }
+
+
+    public void fileUpload(File file,final FileUploadListener fileUploadListener){
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), file);
+
+        // 文件上传的请求体封装
+        MultipartBody multipartBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), requestBody)
+                .build();
+
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(ServerAddress.FILE_UPLOAD)
+                .post(multipartBody)
+                .build();
+
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                fileUploadListener.error(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()){
+                    //  通用 bean
+                    GeneralBean generalBean = new Gson().fromJson(response.body().string(),GeneralBean.class);
+                    fileUploadListener.success(generalBean.getData());
+                }else{
+                    fileUploadListener.error(new Exception("状态码异常"));
+                }
+            }
+        });
+    }
+
     private final static String key = "e0e9061d403f1898a501b8d7a840b949";
     @NonNull
     public static String md5(String string) {
@@ -199,6 +304,13 @@ public class NetWorkUtil {
         void success(String response);
 
         void fail(Call call, IOException e);
+
+        void error(Exception e);
+    }
+
+
+    public interface FileUploadListener{
+        void success(String fileUrl);
 
         void error(Exception e);
     }

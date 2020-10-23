@@ -197,6 +197,7 @@ public class APP extends Application {
      * 修改垃圾箱
      * */
     public static void setDustbinState(DustbinStateBean dustbinStateBean){
+        boolean hasMan;
         for(int i = 0 ; i < dustbinBeanList.size(); i++){
             if(dustbinBeanList.get(i).getDoorNumber() == dustbinStateBean.getDoorNumber()){
                 dustbinBeanList.set(i,dustbinStateBean);

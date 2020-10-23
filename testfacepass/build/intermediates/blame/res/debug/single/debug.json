@@ -1484,6 +1484,10 @@
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\drawable-mdpi-v4\\abc_scrubber_primary_mtrl_alpha.9.png"
     },
     {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi_zhipi.png.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\mipmap-xhdpi\\zhipi.png"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi-v4_abc_btn_check_to_on_mtrl_000.png.flat",
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\drawable-mdpi-v4\\abc_btn_check_to_on_mtrl_000.png"
     },

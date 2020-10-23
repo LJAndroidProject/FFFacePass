@@ -196,9 +196,9 @@ public class InitConfig extends AppCompatActivity {
         }else if(text.equals("D")){
             return DustbinENUM.HARMFUL.toString();
         }else if(text.equals("E")){
-            return DustbinENUM.WASTE_PAPER.toString();
-        }else if(text.equals("F")){
             return DustbinENUM.BOTTLE.toString();
+        }else if(text.equals("F")){
+            return DustbinENUM.WASTE_PAPER.toString();
         }else{
             return null;
         }

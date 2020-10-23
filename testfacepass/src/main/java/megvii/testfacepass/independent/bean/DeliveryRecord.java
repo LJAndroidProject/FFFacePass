@@ -21,14 +21,17 @@ public class DeliveryRecord {
     long deliveryTime;
     //  当前重量
     double weight;
-    @Generated(hash = 715919933)
+    //  门关闭后 拍照的图片路径
+    String takePath;
+    @Generated(hash = 79249361)
     public DeliveryRecord(Long id, int doorNumber, long userId, long deliveryTime,
-            double weight) {
+            double weight, String takePath) {
         this.id = id;
         this.doorNumber = doorNumber;
         this.userId = userId;
         this.deliveryTime = deliveryTime;
         this.weight = weight;
+        this.takePath = takePath;
     }
     @Generated(hash = 1327237091)
     public DeliveryRecord() {
@@ -63,6 +66,23 @@ public class DeliveryRecord {
     public void setWeight(double weight) {
         this.weight = weight;
     }
+    public String getTakePath() {
+        return this.takePath;
+    }
+    public void setTakePath(String takePath) {
+        this.takePath = takePath;
+    }
 
-    
+
+    @Override
+    public String toString() {
+        return "DeliveryRecord{" +
+                "id=" + id +
+                ", doorNumber=" + doorNumber +
+                ", userId=" + userId +
+                ", deliveryTime=" + deliveryTime +
+                ", weight=" + weight +
+                ", takePath='" + takePath + '\'' +
+                '}';
+    }
 }

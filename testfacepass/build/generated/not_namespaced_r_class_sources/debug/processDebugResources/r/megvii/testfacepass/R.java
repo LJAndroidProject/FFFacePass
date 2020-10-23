@@ -3844,6 +3844,7 @@ public final class R {
     public static final int shouhuo=0x7f0c0008;
     public static final int wenzi=0x7f0c0009;
     public static final int youhai=0x7f0c000a;
+    public static final int zhipi=0x7f0c000b;
   }
   public static final class string {
     public static final int abc_action_bar_home_description=0x7f0d0000;

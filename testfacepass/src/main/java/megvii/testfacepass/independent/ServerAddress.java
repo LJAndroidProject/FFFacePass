@@ -44,6 +44,12 @@ public class ServerAddress {
     //  验证验证码是否正确
     public final static String PHONE_CODE_VERIFY = IP + "api/Android/phoneCodeVerify";
 
+    //  错误上报
+    public final static String ERROR_UPLOAD = IP + "api/Android/equipmentErrLogPost";
+
+    //  垃圾箱积分
+    public final static String DUSTBIN_INTEGRAL = IP + "";
+
 
 
 }

@@ -327,16 +327,19 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         mainHandler = new Handler(Looper.getMainLooper());
 
 
-        //                                   |
-        //String order = "F3 3F 00 01 02 01 01 11 00 F4 4F".replace(" ","");
-        String order = "F3 3F 00 01 02 01 04 32 1A 1B 1C 00 F4 4F".replace(" ","");
-        SerialPortResponseManage.inOrderString(this, ByteStringUtil.hexStrToByteArray(order));
+
 
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
         app.setDustbinConfig(dustbinConfig);
         //  代表 全局 垃圾桶 list 对象
         app.setDustbinBeanList(DataBaseUtil.getInstance(MainActivity.this).getDustbinByType(null));
+
+
+        //                                   |
+        String order = "F3 3F 00 01 01 01 01 01 00 F4 4F".replace(" ","");
+        //String order = "F3 3F 00 01 02 01 04 32 1A 1B 1C 00 F4 4F".replace(" ","");
+        SerialPortResponseManage.inOrderString(this, ByteStringUtil.hexStrToByteArray(order));
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -716,18 +719,33 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     private String tcp_client_id;
 
+    private String cache;
+    private String tcpResponse;
     private void initTCP(){
         TCPConnectUtil.getInstance().connect();
         TCPConnectUtil.getInstance().setListener(new NettyClientListener() {
             @Override
             public void onMessageResponseClient(byte[] bytes, int i) {
                 //  来自服务器的响应
-                final String response = new String(bytes, StandardCharsets.UTF_8);
+                tcpResponse = new String(bytes, StandardCharsets.UTF_8);
 
-                //  首先判定 响应中是否存在 type 和 data
-                if(response.contains("type") && response.contains("data")){
+                //  这一步解决一个返回特征值分段问题    =====================================================
+                if(tcpResponse.startsWith("{\"type\":\"QrReturn\",") && !tcpResponse.endsWith("}")){
+                    cache = tcpResponse;
+                    return;
+                }
+                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 300){
+                    tcpResponse = cache + tcpResponse;
+                }
+                //  =======================================================================================
+
+
+                Log.i("响应结果", tcpResponse + ",长度:" + tcpResponse.length() + "，状态:" + i);
+
+                //  首先判定 响应中是否存在 type 和 data 是否以 { 开头
+                if(tcpResponse.startsWith("{") && tcpResponse.contains("type") && tcpResponse.contains("data")){
                     try {
-                        JSONObject jsonObject = new JSONObject(response);
+                        JSONObject jsonObject = new JSONObject(tcpResponse);
                         String type = jsonObject.getString("type");
                         final String data = jsonObject.getString("data");
 
@@ -736,7 +754,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             new Handler(Looper.getMainLooper()).post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    
+
                                     Map<String,String> map = new HashMap<>();
                                     map.put("tcp_client_id",tcp_client_id);
                                     NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
@@ -899,9 +917,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
-                Log.i("响应结果", response + "，状态:" + i);
-
-                if(response.contains("client_id")){
+                if(tcpResponse.contains("client_id")){
                     long nowTime = System.currentTimeMillis() / 1000;
                     TCPVerify verify = new TCPVerify();
                     verify.setType("login");

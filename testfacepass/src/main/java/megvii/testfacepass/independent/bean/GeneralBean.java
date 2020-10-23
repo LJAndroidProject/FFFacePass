@@ -15,7 +15,7 @@ public class GeneralBean {
     private int code;
     private String msg;
     private String time;
-    private Object data;
+    private String data;
 
     public int getCode() {
         return code;
@@ -41,11 +41,11 @@ public class GeneralBean {
         this.time = time;
     }
 
-    public Object getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(String data) {
         this.data = data;
     }
 }
