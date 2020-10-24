@@ -901,6 +901,9 @@ id end
 id end_padder
 id enterAlways
 id enterAlwaysCollapsed
+id error_door
+id error_msg
+id error_time
 id et_face_image_path
 id et_face_token
 id et_group_name
@@ -926,6 +929,8 @@ id ifRoom
 id image
 id imview
 id info
+id item_record_icon
+id item_record_layout
 id item_replenishment_details_dateInProduced
 id item_replenishment_details_layout
 id item_replenishment_details_layout_expirationTime
@@ -1140,6 +1145,7 @@ layout design_navigation_item_subheader
 layout design_navigation_menu
 layout design_navigation_menu_item
 layout design_text_input_password_icon
+layout error_record_layout
 layout item_record_layout
 layout item_replenishment
 layout item_replenishment_details_layout

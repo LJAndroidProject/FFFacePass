@@ -132,7 +132,7 @@ public class VendingMachineActivity extends AppCompatActivity {
         },5000);*/
 
         if(APP.isDebugMode()){
-            SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
+            /*SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
                 @Override
                 public void response(String response) {
                     //  通过事件总线发送出去
@@ -140,7 +140,7 @@ public class VendingMachineActivity extends AppCompatActivity {
 
                     //SerialPortResponseManage.inOrderString(MainActivity.this,response);
                 }
-            });
+            });*/
         }
 
 

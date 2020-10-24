@@ -5,13 +5,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
+
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import megvii.testfacepass.APP;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.manage.SerialPortRequestManage;
+import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.utils.DownloadUtil;
+import okhttp3.Call;
 
 /**
  * 常驻服务
@@ -31,6 +49,8 @@ public class ResidentService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -42,6 +62,37 @@ public class ResidentService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Log.i("结果","上传状态");
+                List<DustbinStateBean> dustbinStateBeans = APP.dustbinBeanList;
+
+                if(dustbinStateBeans != null && dustbinStateBeans.size() > 0){
+                    NetWorkUtil.getInstance().stateUpload(ServerAddress.STATE_UPLOAD, dustbinStateBeans, new NetWorkUtil.NetWorkListener() {
+                        @Override
+                        public void success(String response) {
+                            Log.i("结果",response);
+                        }
+
+                        @Override
+                        public void fail(Call call, IOException e) {
+
+                        }
+
+                        @Override
+                        public void error(Exception e) {
+
+                        }
+                    });
+                }
+            }
+        };
+
+        Timer timer = new Timer();
+        timer.schedule(timerTask,1000 * 60);
     }
 
     /**
@@ -82,4 +133,28 @@ public class ResidentService extends Service {
         }
         startActivity(intent);
     }
+
+
+    /**
+     * 过滤字段
+     * Gson gson = new GsonBuilder().setExclusionStrategies(myExclusionStrategy).create();
+     * */
+    ExclusionStrategy myExclusionStrategy = new ExclusionStrategy() {
+        @Override
+        public boolean shouldSkipField(FieldAttributes fa) {
+            if("isFull".equals(fa.getName()) || "id".equals(fa.getName()) || "dustbinWeight".equals(fa.getName()) || "temperature".equals(fa.getName())) {
+                return false;
+            }
+
+            return true;
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return false;
+        }
+
+    };
+
+
 }

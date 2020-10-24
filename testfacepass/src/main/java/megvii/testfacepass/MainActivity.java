@@ -125,6 +125,7 @@ import megvii.testfacepass.adapter.GroupNameAdapter;
 import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
 import megvii.testfacepass.camera.CameraPreviewData;
+import megvii.testfacepass.independent.ResidentService;
 import megvii.testfacepass.independent.bean.BuySuccessMsg;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.ImageUploadResult;
@@ -336,10 +337,13 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         app.setDustbinBeanList(DataBaseUtil.getInstance(MainActivity.this).getDustbinByType(null));
 
 
+        startService(new Intent(this,ResidentService.class));
+
+
         //                                   |
-        String order = "F3 3F 00 01 01 01 01 01 00 F4 4F".replace(" ","");
+        /*String order = "F3 3F 00 01 01 01 01 01 00 F4 4F".replace(" ","");
         //String order = "F3 3F 00 01 02 01 04 32 1A 1B 1C 00 F4 4F".replace(" ","");
-        SerialPortResponseManage.inOrderString(this, ByteStringUtil.hexStrToByteArray(order));
+        SerialPortResponseManage.inOrderString(this, ByteStringUtil.hexStrToByteArray(order));*/
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -412,11 +416,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         userMessageDao = DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao();
 
         //  注册串口监听,与硬件进行通信
-        SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
+        SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseByteListener() {
             @Override
-            public void response(String response) {
+            public void response(byte[] response) {
                 //  通过事件总线发送出去
-                Log.i(MY_TAG,"串口接收" + response);
+                Log.i(MY_TAG,"串口接收" + ByteStringUtil.byteArrayToHexStr(response));
 
                 SerialPortResponseManage.inOrderString(MainActivity.this,response);
             }

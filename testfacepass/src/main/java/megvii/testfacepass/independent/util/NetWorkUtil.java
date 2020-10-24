@@ -1,14 +1,9 @@
 package megvii.testfacepass.independent.util;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -17,19 +12,17 @@ import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
 import megvii.testfacepass.APP;
-import megvii.testfacepass.ControlActivity;
-import megvii.testfacepass.MainActivity;
 import megvii.testfacepass.independent.ServerAddress;
-import megvii.testfacepass.independent.bean.ErrorMessage;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.DustbinStateUploadBean;
 import megvii.testfacepass.independent.bean.ErrorReportBean;
 import megvii.testfacepass.independent.bean.GeneralBean;
-import megvii.testfacepass.independent.bean.ImageUploadResult;
-import megvii.testfacepass.independent.bean.ResultMould;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -273,6 +266,41 @@ public class NetWorkUtil {
                 }
             }
         });
+    }
+
+    /**
+     *
+     * 上传垃圾箱状态
+     * */
+    public void stateUpload(String url, List<DustbinStateBean> dustbinStateBeans, final NetWorkListener netWorkListener){
+        DustbinStateUploadBean dustbinStateUploadBean = new DustbinStateUploadBean();
+
+        List<DustbinStateUploadBean.ListBean> listBean = new ArrayList<>();
+        for(DustbinStateBean dustbinStateBean:dustbinStateBeans){
+            listBean.add(new DustbinStateUploadBean.ListBean(dustbinStateBean.getDustbinWeight(),dustbinStateBean.getId(),dustbinStateBean.getIsFull(),dustbinStateBean.getTemperature()));
+        }
+        dustbinStateUploadBean.setList(listBean);
+        long nowTime = System.currentTimeMillis() / 1000 ;
+        dustbinStateUploadBean.setSign(md5(nowTime + key).toUpperCase());
+        dustbinStateUploadBean.setTimestamp(String.valueOf(nowTime));
+
+        RequestBody body = FormBody.create(MediaType.parse("application/json"), new Gson().toJson(dustbinStateUploadBean));
+
+        Request request = new Request.Builder().url(url).post(body).build();
+
+        Log.i("传输内容",new Gson().toJson(dustbinStateUploadBean));
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                netWorkListener.error(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                netWorkListener.success(response.body().string());
+            }
+        });
+
     }
 
     private final static String key = "e0e9061d403f1898a501b8d7a840b949";

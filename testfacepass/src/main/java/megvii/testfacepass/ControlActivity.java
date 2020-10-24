@@ -288,8 +288,8 @@ public class ControlActivity extends AppCompatActivity{
                         mUVCCamera.closeCamera(); // 关闭相机
 
 
-                        mUsbDevice = getUsbCameraDevice(hexToInt(data.getDoorNumber()));
-                        mUVCCamera.requestPermission(mUsbDevice);
+                        /*mUsbDevice = getUsbCameraDevice(hexToInt(data.getDoorNumber()));
+                        mUVCCamera.requestPermission(mUsbDevice);*/
 
 
                         //  获取合适的垃圾箱类型
@@ -345,10 +345,10 @@ public class ControlActivity extends AppCompatActivity{
                  * 图片文件上传
                  * */
 
-                /*NetWorkUtil.getInstance().fileUpload(file, new NetWorkUtil.FileUploadListener() {
+                NetWorkUtil.getInstance().fileUpload(file, new NetWorkUtil.FileUploadListener() {
                     @Override
                     public void success(String fileUrl) {
-                        Map<String,String> map = new HashMap();
+                        Map<String,String> map = new HashMap<>();
                         map.put("doorNumber",fileArray[0]);
                         map.put("userId",fileArray[1]);
                         map.put("deliveryTime",fileArray[2]);
@@ -374,7 +374,7 @@ public class ControlActivity extends AppCompatActivity{
                     public void error(Exception e) {
 
                     }
-                });*/
+                });
 
 
             }
@@ -429,7 +429,7 @@ public class ControlActivity extends AppCompatActivity{
      * 串口回调 垃圾箱被关闭
      * */
     @Subscribe(threadMode = ThreadMode.POSTING)
-    private void closeDoor(final DustbinStateBean dustbinStateBean){
+    public void closeDoor(final DustbinStateBean dustbinStateBean){
         long time = System.currentTimeMillis();
 
         //  设备id + 门板编号 + 用户id + 时间戳
@@ -440,6 +440,8 @@ public class ControlActivity extends AppCompatActivity{
         //  开启闪关灯
         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
 
+
+        mUVCCamera.closeCamera(); // 关闭相机
         //  切换摄像头
         mUsbDevice = getUsbCameraDevice(hexToInt(dustbinStateBean.getDoorNumber()));
         mUVCCamera.requestPermission(mUsbDevice);
@@ -465,6 +467,7 @@ public class ControlActivity extends AppCompatActivity{
         //  添加一条用户投递记录
         DeliveryRecord deliveryRecord = new DeliveryRecord(null,dustbinStateBean.getDoorNumber(),APP.userId,time,dustbinStateBean.getDustbinWeight(),null);
         DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().insert(deliveryRecord);
+
 
 
         //  计算投递重量差 ，兑换积分

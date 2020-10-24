@@ -169,6 +169,7 @@ public class SerialPortService implements ISerialPortService {
 
 
     /**
+     * @deprecated
      * 响应串口的一个监听
      * */
     public interface SerialResponseListener{

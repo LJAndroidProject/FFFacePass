@@ -51,5 +51,9 @@ public class ServerAddress {
     public final static String DUSTBIN_INTEGRAL = IP + "";
 
 
+    //  状态上传
+    public final static String STATE_UPLOAD = IP + "api/Android/binStatusPost";
+
+
 
 }

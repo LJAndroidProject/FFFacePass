@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_record_layout"
+    android:layout_width="match_parent"
+    android:layout_height="60dp">
+    <TextView
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:id="@+id/error_door"
+        android:text="错误门"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+    <TextView
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:id="@+id/error_msg"
+        android:text="错误描述"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+    <TextView
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:id="@+id/error_time"
+        android:text="错误时间"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"/>
+</LinearLayout>

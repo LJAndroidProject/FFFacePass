@@ -2044,6 +2044,10 @@
         "source": "C:\\Users\\Administrator\\.gradle\\caches\\transforms-2\\files-2.1\\52ffed5eff6be83d5d93df9df05108fa\\res\\drawable-hdpi-v4\\abc_ic_star_black_48dp.png"
     },
     {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\layout_error_record_layout.xml.flat",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\layout\\error_record_layout.xml"
+    },
+    {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\res\\merged\\debug\\mipmap-xhdpi_wenzi.png.flat",
         "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\src\\main\\res\\mipmap-xhdpi\\wenzi.png"
     },

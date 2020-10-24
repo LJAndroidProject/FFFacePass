@@ -197,12 +197,22 @@ public class APP extends Application {
      * 修改垃圾箱
      * */
     public static void setDustbinState(DustbinStateBean dustbinStateBean){
-        boolean hasMan;
+        // 1. boolean hasMan = false;
         for(int i = 0 ; i < dustbinBeanList.size(); i++){
             if(dustbinBeanList.get(i).getDoorNumber() == dustbinStateBean.getDoorNumber()){
                 dustbinBeanList.set(i,dustbinStateBean);
             }
+
+            // 2. 有一个桶 有人 就 true
+            /*if(dustbinStateBean.getProximitySwitch()){
+                hasMan = true;
+            }*/
         }
+
+        //  3.如果所有桶都没有人就把userID 设置为 0 并且退回首页
+        /*if(hasMan){
+            userId = 0;
+        }*/
     }
 
     public static void getDustbinState(){

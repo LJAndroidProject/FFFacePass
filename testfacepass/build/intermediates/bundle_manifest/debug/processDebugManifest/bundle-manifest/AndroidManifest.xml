@@ -43,13 +43,14 @@
         android:testOnly="true"
         android:theme="@style/AppTheme" >
         <activity android:name="megvii.testfacepass.WeightCalibrationActivity" />
-        <activity android:name="megvii.testfacepass.DustbinManageActivity" />
-        <activity android:name="megvii.testfacepass.InitConfig" >
+        <activity android:name="megvii.testfacepass.DustbinManageActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name="megvii.testfacepass.InitConfig" >
         </activity>
         <activity android:name="megvii.testfacepass.VendingMachineActivity" />
         <activity android:name="megvii.testfacepass.ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
@@ -217,6 +218,7 @@
             android:name="com.umeng.message.UmengDownloadResourceService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name="megvii.testfacepass.independent.ResidentService" />
 
         <provider
             android:name="com.umeng.message.provider.MessageProvider"

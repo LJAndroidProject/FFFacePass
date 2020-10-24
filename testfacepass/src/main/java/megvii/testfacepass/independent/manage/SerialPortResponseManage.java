@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.serialportlibrary.util.ByteStringUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -351,8 +352,11 @@ public class SerialPortResponseManage {
 
                     //  获取门板号
                     DustbinStateBean dustbinStateBean = DustbinUtil.getDustbinState(orderMessage.getOrder()[1]);
-                    //  通知开启闪关灯并拍照
-                    EventBus.getDefault().post(dustbinStateBean);
+                    if(dustbinStateBean != null){
+                        Log.i("结果","切换的桶" + dustbinStateBean.toString());
+                        //  通知开启闪关灯并拍照
+                        EventBus.getDefault().post(dustbinStateBean);
+                    }
 
                 }else if(orderMessage.getDataContent()[0] == 0x01){
                     //  关失败
@@ -366,8 +370,10 @@ public class SerialPortResponseManage {
                     errorReportBean.setTime(System.currentTimeMillis());
                     //  数据位
                     errorReportBean.setData(ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
-                    //  具体哪一个垃圾门
-                    errorReportBean.setOrderNumber(String.valueOf(orderMessage.getOrder()[1]));
+                    //  命令位
+                    errorReportBean.setOrderNumber(String.valueOf(orderMessage.getOrder()[0]));
+                    //  具体哪一个门
+                    errorReportBean.setDoorNumber(orderMessage.getOrder()[1]);
                     //  设备id
                     errorReportBean.setDeviceId(APP.getDeviceId());
                     //  错误编号
@@ -376,6 +382,8 @@ public class SerialPortResponseManage {
                     errorReportBean.setOrderString(ByteStringUtil.byteArrayToHexStr(order));
                     //  开始上报
                     NetWorkUtil.getInstance().errorUpload(errorReportBean);
+
+                    Log.i("结果",errorReportBean.toString());
 
                     //  本地错误记录
                     DataBaseUtil.getInstance(context).getDaoSession().getErrorReportBeanDao().insert(errorReportBean);

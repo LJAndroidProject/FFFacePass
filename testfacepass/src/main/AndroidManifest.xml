@@ -33,13 +33,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".WeightCalibrationActivity"></activity>
-        <activity android:name=".DustbinManageActivity"></activity>
-        <activity android:name=".InitConfig">
+        <activity android:name=".DustbinManageActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".InitConfig">
+
         </activity>
         <activity android:name=".VendingMachineActivity"></activity>
         <activity android:name=".ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
@@ -207,6 +209,8 @@
             android:name="com.umeng.message.UmengDownloadResourceService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service android:name=".independent.ResidentService"/>
 
         <provider
             android:name="com.umeng.message.provider.MessageProvider"
