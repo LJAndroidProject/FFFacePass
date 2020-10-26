@@ -79,6 +79,7 @@ public class DustbinManageActivity extends AppCompatActivity {
         deliveryRecords = DataBaseUtil.getInstance(DustbinManageActivity.this).getDaoSession().getDeliveryRecordDao().queryBuilder().limit(10).orderDesc(DeliveryRecordDao.Properties.Id).list();
         dustbin_manage_recyclerView.setLayoutManager(new LinearLayoutManager(DustbinManageActivity.this));
         dustbinManageRecordAdapter = new DustbinManageRecordAdapter(R.layout.item_record_layout,deliveryRecords);
+        dustbinManageRecordAdapter.addHeaderView(recordHeadView);
 
         Toolbar mToolbarTb = (Toolbar) findViewById(R.id.tb_toolbar);
         setSupportActionBar(mToolbarTb);

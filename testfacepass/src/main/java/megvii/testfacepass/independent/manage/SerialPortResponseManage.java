@@ -20,6 +20,7 @@ import megvii.testfacepass.APP;
 import megvii.testfacepass.AdvertisingActivity;
 import megvii.testfacepass.ControlActivity;
 import megvii.testfacepass.MainActivity;
+import megvii.testfacepass.WeightCalibrationActivity;
 import megvii.testfacepass.independent.bean.DeliveryRecord;
 import megvii.testfacepass.independent.bean.DeliveryRecordDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
@@ -27,6 +28,7 @@ import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.ErrorReportBean;
 import megvii.testfacepass.independent.bean.OrderMessage;
+import megvii.testfacepass.independent.bean.WeightCalibrationCall;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.DustbinUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
@@ -410,6 +412,8 @@ public class SerialPortResponseManage {
                 String tString = Integer.toBinaryString((other & 0xFF) + 0x100).substring(1);
                 char[] chars = tString.toCharArray();
 
+                //  挡板是否开启
+                dustbinStateBean.setProximitySwitch(chars[0] == '1');
                 //  接近开关
                 dustbinStateBean.setProximitySwitch(chars[1] == '1');
                 //  人工门开关
@@ -443,19 +447,21 @@ public class SerialPortResponseManage {
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_BYTE){
 
-                //  数据位
-                if(orderMessage.getDataContent()[0] == 0x01){
 
-                    toast(context,"进入校准");
-                }else if(orderMessage.getDataContent()[0] == 0x00){
-                    toast(context,"校准完成");
+                WeightCalibrationCall weightCalibrationCall = new WeightCalibrationCall();
+                weightCalibrationCall.setCalibrationNumber(1);
+                weightCalibrationCall.setResult((byte) orderMessage.getDataContent()[0]);
 
-                }else if(orderMessage.getDataContent()[0] == (byte)(0xff)){
-                    toast(context,"校准失败");
-                }
+                EventBus.getDefault().post(weightCalibrationCall);
+
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_2_BYTE){
 
+                WeightCalibrationCall weightCalibrationCall = new WeightCalibrationCall();
+                weightCalibrationCall.setCalibrationNumber(2);
+                weightCalibrationCall.setResult((byte) orderMessage.getDataContent()[0]);
+
+                EventBus.getDefault().post(weightCalibrationCall);
 
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.STERILIZE_BYTE){

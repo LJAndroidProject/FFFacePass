@@ -50,6 +50,8 @@ public class ServerAddress {
     //  垃圾箱积分
     public final static String DUSTBIN_INTEGRAL = IP + "";
 
+    //  垃圾投递记录
+    public final static String DUSTBIN_RECORD = IP + "api/Android/throwRubbishPost";
 
     //  状态上传
     public final static String STATE_UPLOAD = IP + "api/Android/binStatusPost";

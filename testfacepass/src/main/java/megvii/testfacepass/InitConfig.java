@@ -113,7 +113,7 @@ public class InitConfig extends AppCompatActivity {
                                 String typeNumber = listBean.getBin_type() + id;
 
 
-                                list.add(new DustbinStateBean(id,number,typeString,typeNumber,0,0,0,false,false,false,false,false,false,false));
+                                list.add(new DustbinStateBean(id,number,typeString,typeNumber,0,0,0,false,false,false,false,false,false,false,false));
                             }
 
                             //  保存箱体配置
@@ -235,7 +235,7 @@ public class InitConfig extends AppCompatActivity {
                 }
 
 
-                DataBaseUtil.getInstance(InitConfig.this).getDaoSession().getCommodityAlternativeBeanDao().insertInTx(commodityAlternativeBeans);
+                DataBaseUtil.getInstance(InitConfig.this).getDaoSession().getCommodityAlternativeBeanDao().insertOrReplaceInTx(commodityAlternativeBeans);
 
                 progressDialog.dismiss();
                 Toast.makeText(InitConfig.this, "获取售货机备选成功", Toast.LENGTH_SHORT).show();

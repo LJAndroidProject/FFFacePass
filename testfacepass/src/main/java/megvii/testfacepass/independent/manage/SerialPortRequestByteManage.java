@@ -17,7 +17,7 @@ public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX
 
     public static SerialPortRequestByteManage getInstance(){
         if(serialPortRequestManage == null){
-            synchronized (SerialPortRequestManage.class){
+            synchronized (SerialPortRequestByteManage.class){
                 if(serialPortRequestManage == null){
                     serialPortRequestManage = new SerialPortRequestByteManage();
                 }
@@ -45,7 +45,6 @@ public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX
     public byte[] measureTheDistance(int doorNumber) {
         return OrderUtil.generateOrder(OrderUtil.WEIGHING_2_BYTE,doorNumber,new byte[]{0x01});
     }
-
 
     /**
      * 此方法已弃用
@@ -125,5 +124,16 @@ public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX
     @Override
     public byte[] closeLight(int doorNumber) {
         return OrderUtil.generateOrder(OrderUtil.LIGHT_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+
+    @Override
+    public byte[] weightCalibration_1(int doorNumber,int weight) {
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_BYTE,doorNumber,new byte[]{(byte) (weight & 0xff)});
+    }
+
+    @Override
+    public byte[] weightCalibration_2(int doorNumber,int weight) {
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_2_BYTE,doorNumber,new byte[]{(byte) (weight & 0xff)});
     }
 }

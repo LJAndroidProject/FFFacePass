@@ -1,6 +1,7 @@
 package megvii.testfacepass;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
@@ -83,10 +84,20 @@ public class ControlActivity extends AppCompatActivity{
     private RecyclerView control_recyclerview;
 
     private TextView textView;
+
+    private ProgressDialog bottleDialog;
+    public int bottleNumber = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
+
+        bottleDialog = new ProgressDialog(this);
+        bottleDialog.setMessage("没有检测到瓶子...");
+        bottleDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        bottleDialog.create();
+
+
 
 
         textTueView = (TextureView) findViewById(R.id.textTueView);
@@ -285,9 +296,12 @@ public class ControlActivity extends AppCompatActivity{
                     if("自动售卖机".equals(data.getDustbinBoxType())){
                         startActivity(new Intent(ControlActivity.this,VendingMachineActivity.class));
                     }else{
-                        mUVCCamera.closeCamera(); // 关闭相机
+                        //  瓶子
+                        if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
+                            bottleDialog.show();
+                        }
 
-
+                        //mUVCCamera.closeCamera(); // 关闭相机
                         /*mUsbDevice = getUsbCameraDevice(hexToInt(data.getDoorNumber()));
                         mUVCCamera.requestPermission(mUsbDevice);*/
 
@@ -349,7 +363,7 @@ public class ControlActivity extends AppCompatActivity{
                     @Override
                     public void success(String fileUrl) {
                         Map<String,String> map = new HashMap<>();
-                        map.put("doorNumber",fileArray[0]);
+                        map.put("dustbinId",fileArray[4]);
                         map.put("userId",fileArray[1]);
                         map.put("deliveryTime",fileArray[2]);
                         NetWorkUtil.getInstance().doPost(ServerAddress.FILE_UPLOAD, map, new NetWorkUtil.NetWorkListener() {
@@ -434,7 +448,7 @@ public class ControlActivity extends AppCompatActivity{
 
         //  设备id + 门板编号 + 用户id + 时间戳
         //  GD-GZ-HP-HP-1_1_329_1603419106.jpg
-        final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + ".jpg";
+        final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + "_" +  dustbinStateBean.getId() + ".jpg";
         //String imageName = System.currentTimeMillis() + ".jpg";
 
         //  开启闪关灯
@@ -467,6 +481,29 @@ public class ControlActivity extends AppCompatActivity{
         //  添加一条用户投递记录
         DeliveryRecord deliveryRecord = new DeliveryRecord(null,dustbinStateBean.getDoorNumber(),APP.userId,time,dustbinStateBean.getDustbinWeight(),null);
         DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().insert(deliveryRecord);
+
+
+        //  如果是瓶子类型,则上传本次投递的瓶子数量
+        if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())){
+            /*Map<String,String> hashMap = new HashMap<>();
+            hashMap.put("bottleNumber",String.valueOf(bottleNumber));
+            NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, hashMap, new NetWorkUtil.NetWorkListener() {
+                @Override
+                public void success(String response) {
+
+                }
+
+                @Override
+                public void fail(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void error(Exception e) {
+
+                }
+            });*/
+        }
 
 
 
@@ -709,6 +746,7 @@ public class ControlActivity extends AppCompatActivity{
 
 
 
+
     public UsbDevice getUsbCameraDevice(int pid) {
         UsbManager mUsbManager = (UsbManager) getSystemService(USB_SERVICE);
 
@@ -807,6 +845,60 @@ public class ControlActivity extends AppCompatActivity{
         }
     }
 
+    /**
+     * 退出进行结算
+     * */
+    public void exit(View view){
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("正在退出与结算垃圾...");
+        progressDialog.create();
+        progressDialog.show();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                try {
+
+                    //  查询所有开启的门板
+                    List<DustbinStateBean> dustbinBeanList = APP.dustbinBeanList;
+                    for(DustbinStateBean dustbinStateBean:dustbinBeanList){
+
+                        //  扫描门板开启的箱体
+                        if(!dustbinStateBean.getDoorIsOpen()){
+                            //  关闭门
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
+                        }
+
+
+                        //  线程休眠 3s,给时间拍照
+                        Thread.sleep(3000);
+                    }
+
+                    //  用户id设置为0
+                    APP.userId = 0;
+                    //  投递瓶子数量设置为 0
+                    bottleNumber = 0;
+
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressDialog.dismiss();
+                        }
+                    });
+
+                    startActivity(new Intent(ControlActivity.this,MainActivity.class));
+                }catch (InterruptedException e){
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+    }
 
 }
 

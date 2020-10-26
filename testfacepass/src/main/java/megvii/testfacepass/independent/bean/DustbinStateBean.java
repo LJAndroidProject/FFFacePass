@@ -47,6 +47,8 @@ public class DustbinStateBean {
      * */
 
 
+    //  电机是否开启，也就是垃圾门是否开启
+    private boolean doorIsOpen;
     //  接近开关
     private boolean proximitySwitch;
     //  人工门开关
@@ -61,12 +63,13 @@ public class DustbinStateBean {
     private boolean deliverLock;
     //  人工门锁
     private boolean artificialDoorLock;
-    @Generated(hash = 2047140947)
+    @Generated(hash = 102999780)
     public DustbinStateBean(Long id, int doorNumber, String dustbinBoxType,
             String dustbinBoxNumber, double dustbinWeight, double temperature,
-            double humidity, boolean proximitySwitch, boolean artificialDoor,
-            boolean isFull, boolean pushRod, boolean abnormalCommunication,
-            boolean deliverLock, boolean artificialDoorLock) {
+            double humidity, boolean doorIsOpen, boolean proximitySwitch,
+            boolean artificialDoor, boolean isFull, boolean pushRod,
+            boolean abnormalCommunication, boolean deliverLock,
+            boolean artificialDoorLock) {
         this.id = id;
         this.doorNumber = doorNumber;
         this.dustbinBoxType = dustbinBoxType;
@@ -74,6 +77,7 @@ public class DustbinStateBean {
         this.dustbinWeight = dustbinWeight;
         this.temperature = temperature;
         this.humidity = humidity;
+        this.doorIsOpen = doorIsOpen;
         this.proximitySwitch = proximitySwitch;
         this.artificialDoor = artificialDoor;
         this.isFull = isFull;
@@ -126,6 +130,12 @@ public class DustbinStateBean {
     }
     public void setHumidity(double humidity) {
         this.humidity = humidity;
+    }
+    public boolean getDoorIsOpen() {
+        return this.doorIsOpen;
+    }
+    public void setDoorIsOpen(boolean doorIsOpen) {
+        this.doorIsOpen = doorIsOpen;
     }
     public boolean getProximitySwitch() {
         return this.proximitySwitch;
@@ -180,6 +190,7 @@ public class DustbinStateBean {
                 ", dustbinWeight=" + dustbinWeight +
                 ", temperature=" + temperature +
                 ", humidity=" + humidity +
+                ", doorIsOpen=" + doorIsOpen +
                 ", proximitySwitch=" + proximitySwitch +
                 ", artificialDoor=" + artificialDoor +
                 ", isFull=" + isFull +

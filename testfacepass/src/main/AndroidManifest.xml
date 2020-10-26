@@ -34,14 +34,14 @@
         android:theme="@style/AppTheme">
         <activity android:name=".WeightCalibrationActivity"></activity>
         <activity android:name=".DustbinManageActivity">
+
+        </activity>
+        <activity android:name=".InitConfig">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".InitConfig">
-
         </activity>
         <activity android:name=".VendingMachineActivity"></activity>
         <activity android:name=".ReplenishmentDetailsActivity" /> <!-- 补货界面 -->

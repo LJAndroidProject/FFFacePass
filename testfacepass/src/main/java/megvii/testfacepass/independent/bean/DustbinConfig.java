@@ -12,6 +12,9 @@ public class DustbinConfig {
     //  设备名称
     private String dustbinDeviceName;
 
+    //  是否进行过重量校准
+    private boolean haasCalibration;
+
     //  设备备注
     private String dustbinDeviceRemark;
 
@@ -24,12 +27,13 @@ public class DustbinConfig {
     //  是否有售卖机
     private boolean hasVendingMachine;
 
-    @Generated(hash = 489081554)
+    @Generated(hash = 1102787937)
     public DustbinConfig(String dustbinDeviceId, String dustbinDeviceName,
-            String dustbinDeviceRemark, double longitude, double latitude,
-            boolean hasVendingMachine) {
+            boolean haasCalibration, String dustbinDeviceRemark, double longitude,
+            double latitude, boolean hasVendingMachine) {
         this.dustbinDeviceId = dustbinDeviceId;
         this.dustbinDeviceName = dustbinDeviceName;
+        this.haasCalibration = haasCalibration;
         this.dustbinDeviceRemark = dustbinDeviceRemark;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -54,6 +58,14 @@ public class DustbinConfig {
 
     public void setDustbinDeviceName(String dustbinDeviceName) {
         this.dustbinDeviceName = dustbinDeviceName;
+    }
+
+    public boolean getHaasCalibration() {
+        return this.haasCalibration;
+    }
+
+    public void setHaasCalibration(boolean haasCalibration) {
+        this.haasCalibration = haasCalibration;
     }
 
     public String getDustbinDeviceRemark() {
@@ -87,6 +99,8 @@ public class DustbinConfig {
     public void setHasVendingMachine(boolean hasVendingMachine) {
         this.hasVendingMachine = hasVendingMachine;
     }
+
+    
 
 
 }

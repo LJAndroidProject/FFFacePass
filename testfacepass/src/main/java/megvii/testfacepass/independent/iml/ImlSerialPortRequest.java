@@ -261,5 +261,19 @@ public class ImlSerialPortRequest {
          * @param doorNumber 第几扇门
          * */
         byte[] closeLight(int doorNumber);
+
+
+        /**
+         * 重量校准 1
+         * @param weight 重量
+         * */
+        byte[] weightCalibration_1(int doorNumber,int weight);
+
+
+        /**
+         * 重量校准 2
+         * @param weight 重量
+         * */
+        byte[] weightCalibration_2(int doorNumber,int weight);
     }
 }

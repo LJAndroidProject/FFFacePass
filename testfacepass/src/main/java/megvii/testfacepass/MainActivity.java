@@ -415,16 +415,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  初始化 greenDao 数据库，以及数据库操作对象
         userMessageDao = DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao();
 
-        //  注册串口监听,与硬件进行通信
-        SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseByteListener() {
-            @Override
-            public void response(byte[] response) {
-                //  通过事件总线发送出去
-                Log.i(MY_TAG,"串口接收" + ByteStringUtil.byteArrayToHexStr(response));
-
-                SerialPortResponseManage.inOrderString(MainActivity.this,response);
-            }
-        });
 
 
         //  初始化 TCP 连接，与服务器进行通信
@@ -469,7 +459,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             mSDKModeBtn.setVisibility(View.GONE);
         }
 
-        startActivity(new Intent(MainActivity.this,VendingMachineActivity.class));
+
     }
 
 

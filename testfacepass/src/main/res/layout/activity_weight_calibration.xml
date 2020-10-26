@@ -22,19 +22,28 @@
         android:text="重量校准，将重物放置到箱体内，输入该重物重量，点击按钮开始校准，及完成一次重量校准，建议两次以上校准，校准物重量递增。"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <TextView
+        android:padding="20dp"
+        android:text="步骤：\n\n1.放置重物\n2.点击开始校准，等待校准完毕 \n3.放置重物 2 (建议相对第一次重物递增)\n4.再次点击校准"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <TextView
         android:padding="30dp"
         android:text="单位 : g"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <EditText
+        android:id="@+id/awc_weight_edit"
+        android:inputType="number"
         android:padding="20dp"
         android:layout_margin="20dp"
         android:hint="输入重量，单位g"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <Button
-        android:text="开始重量校准"
+        android:id="@+id/awc_weight_btn"
+        android:text="开始重量校准 ( 第一次 )"
         android:layout_margin="20dp"
         style="@style/themeButtonStyle"
         android:layout_width="match_parent"

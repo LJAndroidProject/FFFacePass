@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.serialportlibrary.service.impl.SerialPortService;
+import com.serialportlibrary.util.ByteStringUtil;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengCallback;
 import com.umeng.message.IUmengRegisterCallback;
@@ -30,8 +32,10 @@ import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.TCPConnectUtil;
 import okhttp3.Call;
 
@@ -45,9 +49,22 @@ public class APP extends Application {
 
     private static DustbinConfig dustbinConfig;
 
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        //  注册串口监听,与硬件进行通信
+        SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseByteListener() {
+            @Override
+            public void response(byte[] response) {
+                //  通过事件总线发送出去
+                Log.i("串口接收",ByteStringUtil.byteArrayToHexStr(response));
+
+                SerialPortResponseManage.inOrderString(APP.this,response);
+            }
+        });
 
 
         //  友盟推送

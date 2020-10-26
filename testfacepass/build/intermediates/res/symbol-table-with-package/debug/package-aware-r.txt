@@ -836,6 +836,8 @@ id all
 id always
 id auto
 id awc_toolbar
+id awc_weight_btn
+id awc_weight_edit
 id back
 id basic
 id beginning
