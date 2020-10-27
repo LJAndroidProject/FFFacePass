@@ -3,8 +3,11 @@ package megvii.testfacepass.independent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -25,6 +28,7 @@ import java.util.TimerTask;
 
 import megvii.testfacepass.APP;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.StateCallBean;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
@@ -35,6 +39,10 @@ import okhttp3.Call;
  * 常驻服务
  * */
 public class ResidentService extends Service {
+    private Gson gson = new Gson();
+
+    //  下载安装包中
+    private boolean downloading = false;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -75,6 +83,11 @@ public class ResidentService extends Service {
                         @Override
                         public void success(String response) {
                             Log.i("结果",response);
+                            StateCallBean stateCallBean = gson.fromJson(response, StateCallBean.class);
+                            //  大于，并且没有已经在下载 所以要更新
+                            if(stateCallBean.getData() !=null && stateCallBean.getData().getVersion_code() > getAppVersionCode(ResidentService.this) && !downloading){
+                                download(stateCallBean.getData().getApk_download_url());
+                            }
                         }
 
                         @Override
@@ -92,29 +105,58 @@ public class ResidentService extends Service {
         };
 
         Timer timer = new Timer();
-        timer.schedule(timerTask,1000 * 60);
+        timer.schedule(timerTask,1000);
+    }
+
+
+    public static long getAppVersionCode(Context context) {
+        long appVersionCode = 0;
+        try {
+            PackageInfo packageInfo = context.getApplicationContext().getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            appVersionCode = packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e("", e.getMessage());
+        }
+        return appVersionCode;
     }
 
     /**
      * 下载安装包
      * */
-    public void download(){
-        /*DownloadUtil.get().download(url, path, fileName, new DownloadUtil.OnDownloadListener() {
+    public void download(final String url){
+
+        final String saveDir = Environment.getExternalStorageDirectory().toString();
+
+        //  文件名称
+        final String fileName = System.currentTimeMillis() + ".apk";
+
+        new Thread(new Runnable() {
             @Override
-            public void onDownloadSuccess(File file) {
-                installApk(file);
+            public void run() {
+
+                downloading = true;
+
+                DownloadUtil.get().download(url, saveDir, fileName, new DownloadUtil.OnDownloadListener() {
+                    @Override
+                    public void onDownloadSuccess(File file) {
+                        downloading = false;
+                        Log.i("结果","地址" +file);
+                        installApk(file);
+                    }
+
+                    @Override
+                    public void onDownloading(int progress) {
+                        Log.i("结果","下载进度" + progress);
+                    }
+
+                    @Override
+                    public void onDownloadFailed(Exception e) {
+                        downloading = false;
+                    }
+                });
+
             }
-
-            @Override
-            public void onDownloading(int progress) {
-
-            }
-
-            @Override
-            public void onDownloadFailed(Exception e) {
-
-            }
-        });*/
+        }).start();
     }
 
 
@@ -133,6 +175,7 @@ public class ResidentService extends Service {
         }
         startActivity(intent);
     }
+
 
 
     /**

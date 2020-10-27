@@ -24,6 +24,11 @@
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 end -->
+
+
+    <!-- 安装安装包 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <permission
         android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
         android:protectionLevel="signature" />
@@ -36,13 +41,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
-        <activity android:name="megvii.testfacepass.VendingMachineActivity" >
+        <activity android:name="megvii.testfacepass.WeightCalibrationActivity" />
+        <activity android:name="megvii.testfacepass.DustbinManageActivity" >
+        </activity>
+        <activity android:name="megvii.testfacepass.InitConfig" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="megvii.testfacepass.VendingMachineActivity" />
         <activity android:name="megvii.testfacepass.ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
         <activity android:name="megvii.testfacepass.ReplenishmentActivity" /> <!-- 垃圾箱控制台 -->
         <activity
@@ -59,8 +68,7 @@
             android:label="facepass" /> <!-- 扫脸界面 -->
         <activity
             android:name="megvii.testfacepass.MainActivity"
-            android:launchMode="singleTask" >
-        </activity> <!-- 设置界面 -->
+            android:launchMode="singleTask" /> <!-- 设置界面 -->
         <activity
             android:name="megvii.testfacepass.SettingActivity"
             android:launchMode="singleTask"
@@ -209,6 +217,7 @@
             android:name="com.umeng.message.UmengDownloadResourceService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name="megvii.testfacepass.independent.ResidentService" />
 
         <provider
             android:name="com.umeng.message.provider.MessageProvider"

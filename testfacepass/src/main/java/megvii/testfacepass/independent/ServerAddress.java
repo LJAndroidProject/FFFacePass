@@ -47,11 +47,12 @@ public class ServerAddress {
     //  错误上报
     public final static String ERROR_UPLOAD = IP + "api/Android/equipmentErrLogPost";
 
-    //  垃圾箱积分
-    public final static String DUSTBIN_INTEGRAL = IP + "";
 
     //  垃圾投递记录
     public final static String DUSTBIN_RECORD = IP + "api/Android/throwRubbishPost";
+
+    //  提交垃圾图片
+    public final static String RUBBISH_IMAGE_POST = IP + "api/Android/rubbishImagePost";
 
     //  状态上传
     public final static String STATE_UPLOAD = IP + "api/Android/binStatusPost";

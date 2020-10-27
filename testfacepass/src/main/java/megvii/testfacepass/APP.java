@@ -263,7 +263,7 @@ public class APP extends Application {
     @Override
     public void onTrimMemory(int level) {
         // 程序在内存清理的时候执行
-        TCPConnectUtil.getInstance().disconnect();
+        //TCPConnectUtil.getInstance().disconnect();
         super.onTrimMemory(level);
     }
 }

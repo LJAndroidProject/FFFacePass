@@ -9,9 +9,6 @@ package megvii.testfacepass;
 
 public final class Manifest {
   public static final class permission {
-    /**
-     * 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 end
-     */
     public static final String INTERACT_ACROSS_USERS_FULL="android.permission.INTERACT_ACROSS_USERS_FULL";
   }
 

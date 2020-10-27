@@ -4,7 +4,13 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -15,6 +21,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +38,7 @@ import megvii.testfacepass.independent.bean.GetDustbinConfig;
 import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.utils.DownloadUtil;
 import okhttp3.Call;
 
 public class InitConfig extends AppCompatActivity {
@@ -44,6 +52,7 @@ public class InitConfig extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
+
         //  查看是否存在配置，有配置则直接跳刀人脸识别界面
         if(DataBaseUtil.getInstance(InitConfig.this).hasDustBinConfig()){
 
@@ -51,7 +60,6 @@ public class InitConfig extends AppCompatActivity {
 
             return;
         }
-
 
         setContentView(R.layout.activity_init_config);
         //  初始化布局
@@ -110,7 +118,7 @@ public class InitConfig extends AppCompatActivity {
                                 //  垃圾箱类型 例如 可回收垃圾、有害垃圾、厨余垃圾
                                 String typeString = getDustbinType(listBean.getBin_type());
                                 //  垃圾箱类型 例如A1 A2 B3 B5 C5 D6 D7 D8
-                                String typeNumber = listBean.getBin_type() + id;
+                                String typeNumber = listBean.getBin_type();
 
 
                                 list.add(new DustbinStateBean(id,number,typeString,typeNumber,0,0,0,false,false,false,false,false,false,false,false));
@@ -204,6 +212,122 @@ public class InitConfig extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * 检查新版本
+     * */
+    ProgressDialog downloadProgressDialog;
+    private void checkNewVersion(){
+        downloadProgressDialog = new ProgressDialog(this);
+        downloadProgressDialog.setCancelable(false);
+        downloadProgressDialog.setMessage("准备下载安装包...");
+        downloadProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        downloadProgressDialog.create();
+
+        NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, null, new NetWorkUtil.NetWorkListener() {
+            @Override
+            public void success(String response) {
+                if(true){
+
+                    AlertDialog.Builder alert = new AlertDialog.Builder(InitConfig.this);
+                    alert.setCancelable(false);
+                    alert.setTitle("版本更新提示：");
+                    alert.setMessage("发现新版本");
+                    alert.setPositiveButton("下载", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            download("");
+
+
+                            downloadProgressDialog.show();
+                        }
+                    });
+                    alert.create();
+                    alert.show();
+                }
+            }
+
+            @Override
+            public void fail(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void error(Exception e) {
+
+            }
+        });
+    }
+
+
+
+    public void download(final String url){
+
+        final String saveDir = Environment.getExternalStorageDirectory().toString();
+
+        //  文件名称
+        final String fileName = System.currentTimeMillis() + ".apk";
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                DownloadUtil.get().download(url, saveDir, fileName, new DownloadUtil.OnDownloadListener() {
+                    @Override
+                    public void onDownloadSuccess(File file) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                downloadProgressDialog.dismiss();
+                            }
+                        });
+                        installApk(file);
+                    }
+
+                    @Override
+                    public void onDownloading(final int progress) {
+                        Log.i("结果","下载进度" + progress);
+
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                downloadProgressDialog.setProgress(progress);
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDownloadFailed(Exception e) {
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                downloadProgressDialog.dismiss();
+                            }
+                        });
+                    }
+                });
+
+            }
+        }).start();
+    }
+
+
+    /**
+     * 打开 安装包 开始安装
+     * */
+    private void installApk(File file) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { // 7.0+以上版本
+            Uri apkUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", file);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        } else {
+            intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+        }
+        startActivity(intent);
+    }
 
 
     /**

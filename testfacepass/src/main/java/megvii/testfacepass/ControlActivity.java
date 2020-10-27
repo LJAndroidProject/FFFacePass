@@ -329,7 +329,7 @@ public class ControlActivity extends AppCompatActivity{
             public void onPictureTaken(String path) {
                 File file = new File(path);
                 //  去除.jpg
-                //  设备id + 门板编号 + 用户id + 时间戳 .jpg
+                //  设备id + 门板编号 + 用户id + 时间戳 + 垃圾箱id . jpg
                 String fileName = file.getName().replace(".jpg","");
 
                 //  解析文件名称
@@ -362,11 +362,16 @@ public class ControlActivity extends AppCompatActivity{
                 NetWorkUtil.getInstance().fileUpload(file, new NetWorkUtil.FileUploadListener() {
                     @Override
                     public void success(String fileUrl) {
+
                         Map<String,String> map = new HashMap<>();
-                        map.put("dustbinId",fileArray[4]);
-                        map.put("userId",fileArray[1]);
-                        map.put("deliveryTime",fileArray[2]);
-                        NetWorkUtil.getInstance().doPost(ServerAddress.FILE_UPLOAD, map, new NetWorkUtil.NetWorkListener() {
+                        map.put("bin_id",fileArray[4]);
+                        map.put("user_id",fileArray[2]);
+                        map.put("rubbish_image",fileUrl);
+                        map.put("time",fileArray[3]);
+
+
+
+                        NetWorkUtil.getInstance().doPost(ServerAddress.RUBBISH_IMAGE_POST, map, new NetWorkUtil.NetWorkListener() {
                             @Override
                             public void success(String response) {
 
@@ -444,9 +449,9 @@ public class ControlActivity extends AppCompatActivity{
      * */
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void closeDoor(final DustbinStateBean dustbinStateBean){
-        long time = System.currentTimeMillis();
+        long time = System.currentTimeMillis() / 1000;
 
-        //  设备id + 门板编号 + 用户id + 时间戳
+        //  设备id + 门板编号 + 用户id + 时间戳 + 垃圾箱id
         //  GD-GZ-HP-HP-1_1_329_1603419106.jpg
         final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + "_" +  dustbinStateBean.getId() + ".jpg";
         //String imageName = System.currentTimeMillis() + ".jpg";
@@ -483,33 +488,16 @@ public class ControlActivity extends AppCompatActivity{
         DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().insert(deliveryRecord);
 
 
-        //  如果是瓶子类型,则上传本次投递的瓶子数量
-        if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())){
-            /*Map<String,String> hashMap = new HashMap<>();
-            hashMap.put("bottleNumber",String.valueOf(bottleNumber));
-            NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, hashMap, new NetWorkUtil.NetWorkListener() {
-                @Override
-                public void success(String response) {
 
-                }
 
-                @Override
-                public void fail(Call call, IOException e) {
 
-                }
-
-                @Override
-                public void error(Exception e) {
-
-                }
-            });*/
-        }
 
 
 
         //  计算投递重量差 ，兑换积分
         //  如果人工门不是开启的，并且不是瓶子 才计算重量
-        if(!dustbinStateBean.getArtificialDoor() && !dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())){
+        if(!dustbinStateBean.getArtificialDoor()){
+
             //  如果为 0 说明不是通过扫码进入
             if(APP.userId > 0){
 
@@ -525,7 +513,7 @@ public class ControlActivity extends AppCompatActivity{
 
                 //  查询同一个桶最近两次投递记录，算出重量差
                 QueryBuilder<DeliveryRecord> queryBuilder =  DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().queryBuilder();
-                queryBuilder.where(DustbinBeanDao.Properties.DustbinBoxType.eq(dustbinStateBean.getDoorNumber()));
+                queryBuilder.where(DeliveryRecordDao.Properties.DoorNumber.eq(dustbinStateBean.getDoorNumber()));
                 queryBuilder.orderDesc(DeliveryRecordDao.Properties.Id);
                 queryBuilder.limit(2);
                 List<DeliveryRecord> result = queryBuilder.list();
@@ -534,43 +522,70 @@ public class ControlActivity extends AppCompatActivity{
                 double diff = 0;
 
                 //  没有投递记录，那肯定是不正常的
-                if(result != null && result.size() != 0 ){
+                if(result != null && result.size() > 0 ){
                     //  说明之前没有投递记录，第一条记录即是本次投递记录
                     if(result.size() == 1){
+
                         diff = result.get(0).getWeight();
                     }else if(result.size() == 2){
+
                         diff = result.get(0).getWeight() - result.get(1).getWeight();
 
-                        //  不知道先后顺序，直接算出重量差即可
+                        //  不知道先后顺序，直接算出重量差即可,不能这样算，如果垃圾箱被清空！！！！！！！！！！！！！！
                         if(diff < 0 ){
                             diff = Math.abs(diff);
                         }
                     }
                 }else{
+
                     return;
                 }
 
 
-                //  上传重量差
+                /*user_id	是	int	用户ID
+                device_id	是	string	设备ID
+                bin_id	是	int	垃圾箱ID
+                bin_type	是	string	垃圾箱分类 ABCDEF
+                post_weight	否	float	投放重量
+                former_weight	否	float	原来的重量
+                now_weight	否	float	现在的重量
+                plastic_bottle_num	否	int	瓶子的个数
+                rubbish_image	否	string	垃圾图片
+                timestamp	否	string	当前时间戳*/
+
+
+                //  上传投递记录
                 Map<String,String> map = new HashMap<>();
-                map.put("weightDiff",String.valueOf(diff));
-                map.put("userId",String.valueOf(APP.userId));
-                map.put("dustbinType",dustbinStateBean.getDustbinBoxType());
-                map.put("dustbinNumber",String.valueOf(dustbinStateBean.getDoorNumber()));
-                NetWorkUtil.getInstance().doPost(ServerAddress.DUSTBIN_INTEGRAL, map, new NetWorkUtil.NetWorkListener() {
+                map.put("user_id",String.valueOf(APP.userId));
+                map.put("bin_id",String.valueOf(dustbinStateBean.getId()));
+                map.put("bin_type",dustbinStateBean.getDustbinBoxNumber());
+                map.put("post_weight",String.valueOf(diff));
+                map.put("former_weight",String.valueOf(dustbinStateBean.getDustbinWeight() - diff));
+                map.put("now_weight",String.valueOf(dustbinStateBean.getDustbinWeight()));
+                map.put("plastic_bottle_num",String.valueOf(bottleNumber));
+                map.put("time",String.valueOf(time));
+                map.put("rubbish_image","");
+
+                NetWorkUtil.getInstance().doPost(ServerAddress.DUSTBIN_RECORD, map, new NetWorkUtil.NetWorkListener() {
                     @Override
                     public void success(String response) {
 
+
+
+                        //  如果是瓶子类型,则清空瓶子
+                        if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())){
+                            bottleNumber = 0;
+                        }
                     }
 
                     @Override
                     public void fail(Call call, IOException e) {
-
+                        Log.i("投递记录结果，仅记录",e.getMessage());
                     }
 
                     @Override
                     public void error(Exception e) {
-
+                        Log.i("投递记录结果，仅记录",e.getMessage());
                     }
                 });
 

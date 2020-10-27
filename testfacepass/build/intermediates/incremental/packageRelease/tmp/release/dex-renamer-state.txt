@@ -1,4 +1,4 @@
-#Wed Sep 30 12:31:16 CST 2020
+#Tue Oct 27 14:35:18 CST 2020
 base.0=C\:\\Users\\Administrator\\AndroidStudioProjects\\DustbinFacePass\\FacePass\\testfacepass\\build\\intermediates\\dex\\release\\mergeDexRelease\\out
 path.1=classes2.dex
 renamed.1=classes2.dex

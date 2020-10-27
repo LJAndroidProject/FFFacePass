@@ -21,7 +21,7 @@ public class DustbinStateBean {
     //  箱体类型，厨余、可回收、有害、其他
     private String dustbinBoxType;
 
-    //  垃圾箱编号 例如A1 B2 C3 C4 D5
+    //  垃圾箱编号 例如A B C C D
     private String dustbinBoxNumber;
 
     //  当前重量 0-25000 * 10g

@@ -137,6 +137,7 @@ import megvii.testfacepass.independent.bean.VXLoginResult;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.independent.util.VendingUtil;
 import megvii.testfacepass.independent.util.VoiceUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
 import megvii.testfacepass.independent.util.QRCodeUtil;
@@ -327,6 +328,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         app = (APP) getApplication();
         mainHandler = new Handler(Looper.getMainLooper());
 
+        //Log.i("结果",ByteStringUtil.byteArrayToHexStr(new byte[]{VendingUtil.getXor(new byte[]{0x28, 0X00, 0x60, 0x00 ,(byte)(0xff) ,0x0a ,0x0a ,0x31 ,0x32,0x33 ,0x34,0x35 ,0x36 ,0x37 ,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00 ,0x00,0x00,0x00,0x00 ,0x00 ,0x00,0x00,0x00,0x00,0x00,0x00,0x00 ,0x00})}));
 
 
 
