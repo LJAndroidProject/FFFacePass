@@ -128,7 +128,9 @@ import megvii.testfacepass.camera.CameraPreviewData;
 import megvii.testfacepass.independent.ResidentService;
 import megvii.testfacepass.independent.bean.BuySuccessMsg;
 import megvii.testfacepass.independent.bean.DustbinConfig;
+import megvii.testfacepass.independent.bean.ICCard;
 import megvii.testfacepass.independent.bean.ImageUploadResult;
+import megvii.testfacepass.independent.bean.NfcActivityBean;
 import megvii.testfacepass.independent.bean.ResultMould;
 import megvii.testfacepass.independent.bean.TCPVerify;
 import megvii.testfacepass.independent.bean.TCPVerifyResponse;
@@ -904,6 +906,19 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                             }
 
+                        }else if(type.equals("nfcActivity")){
+                            NfcActivityBean nfcActivityBean = gson.fromJson(data,NfcActivityBean.class);
+                            //  nfc 绑定成功
+                            if(nfcActivityBean.getData().getCode() == 1){
+                                //  设置用户id
+                                APP.setUserId(nfcActivityBean.getData().getInfo().getUser_id());
+
+                                //  跳转到垃圾箱控制台
+                                Intent intent = new Intent(MainActivity.this,ControlActivity.class);
+                                intent.putExtra("userId",app.getUserId());
+                                startActivity(intent);
+
+                            }
                         }
 
                     }catch (Exception e){
@@ -1121,6 +1136,28 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         super.onResume();
     }
 
+    AlertDialog icAlert;
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void icCard(ICCard icCard){
+        //  二维码弹窗
+        if(qrCodeDialog != null && qrCodeDialog.isShowing()){
+            qrCodeDialog.dismiss();
+        }
+
+        ImageView imageView = new ImageView(this);
+        int padding = 50;
+        imageView.setPadding(padding,padding,padding,padding);
+        imageView.setImageBitmap(QRCodeUtil.getICLogin(ServerAddress.IC_BING + "?device_id=" + APP.getDeviceId() + "&card_code=" + icCard.getCardCode()));
+
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+        alert.setCancelable(true);
+        alert.setTitle("请使用微信扫描二维码绑定ic卡");
+        alert.setView(imageView);
+        alert.create();
+        icAlert = alert.show();
+
+    }
 
     //  检查底库创建情况
     private void checkGroup() {
@@ -2700,6 +2737,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         if(progressDialog != null && progressDialog.isShowing()){
+            return true;
+        }
+
+        if(icAlert != null && icAlert.isShowing()){
             return true;
         }
 

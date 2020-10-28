@@ -91,6 +91,11 @@ public class OrderUtil {
     public final static String VENDING = "0B";
     public final static byte VENDING_BYTE = 0x0B;
 
+
+    //  IC 卡
+    public final static String IC_CARD = "0D";
+    public final static byte IC_CARD_BYTE = 0x0D;
+
     /**
      * @param oldString 旧的字符串
      * @param newString 某个位置需要替换成的字符串

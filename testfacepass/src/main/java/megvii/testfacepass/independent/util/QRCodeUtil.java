@@ -93,10 +93,21 @@ public class QRCodeUtil {
     }
 
 
-
+    /**
+     * 商品购买
+     * */
     public static Bitmap getAppletBuyCode(String text){
 
-        Log.i("结果",text);
+        return createQRCodeBitmap(text, 300, 300,"UTF-8","H", "1", Color.BLACK, Color.WHITE);
+    }
+
+
+    /**
+     *
+     * ic卡绑定
+     * */
+    public static Bitmap getICLogin(String text){
+        Log.i("卡",text);
         return createQRCodeBitmap(text, 300, 300,"UTF-8","H", "1", Color.BLACK, Color.WHITE);
     }
 }

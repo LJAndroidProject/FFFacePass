@@ -189,8 +189,8 @@ public class APP extends Application {
         return userId;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public static void setUserId(long userID) {
+        userId = userID;
     }
 
     public List<DustbinStateBean> getDustbinBeanList() {

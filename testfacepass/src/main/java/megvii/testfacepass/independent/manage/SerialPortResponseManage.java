@@ -27,6 +27,7 @@ import megvii.testfacepass.independent.bean.DeliveryResult;
 import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.ErrorReportBean;
+import megvii.testfacepass.independent.bean.ICCard;
 import megvii.testfacepass.independent.bean.OrderMessage;
 import megvii.testfacepass.independent.bean.WeightCalibrationCall;
 import megvii.testfacepass.independent.util.DataBaseUtil;
@@ -490,6 +491,11 @@ public class SerialPortResponseManage {
             }else if(orderMessage.getOrder()[0] == OrderUtil.VENDING_BYTE){
                 //  售卖机指令转发
                 //OrderMessage orderMessage = OrderUtil.orderAnalysis(ByteStringUtil.hexStrToByteArray(order));
+
+            }else if(orderMessage.getOrder()[0] == OrderUtil.IC_CARD_BYTE){
+                //  IC 卡
+                ICCard icCard = new ICCard(0,ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
+                EventBus.getDefault().post(icCard);
 
             }else{
                 Log.i(MY_ORDER,"未知功能");

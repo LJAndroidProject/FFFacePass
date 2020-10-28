@@ -57,6 +57,9 @@ public class ServerAddress {
     //  状态上传
     public final static String STATE_UPLOAD = IP + "api/Android/binStatusPost";
 
+    //  ic 卡
+    public final static String IC_BING = IP + "index.php/index/index/nfcActivity";
+
 
 
 }

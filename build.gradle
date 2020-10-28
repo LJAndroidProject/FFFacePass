@@ -29,6 +29,7 @@ allprojects {
             //dirs 'libs'
             dirs project(':testfacepass').file('libs')
         }
+
     }
 }
 
