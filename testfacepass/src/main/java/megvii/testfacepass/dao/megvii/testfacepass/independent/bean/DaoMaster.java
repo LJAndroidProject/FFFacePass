@@ -21,28 +21,28 @@ public class DaoMaster extends AbstractDaoMaster {
 
     /** Creates underlying database table using DAOs. */
     public static void createAllTables(Database db, boolean ifNotExists) {
-        DeliveryRecordDao.createTable(db, ifNotExists);
-        DustbinBeanDao.createTable(db, ifNotExists);
-        UserMessageDao.createTable(db, ifNotExists);
         CommodityAlternativeBeanDao.createTable(db, ifNotExists);
         CommodityBeanDao.createTable(db, ifNotExists);
+        DeliveryRecordDao.createTable(db, ifNotExists);
+        DustbinBeanDao.createTable(db, ifNotExists);
         DustbinConfigDao.createTable(db, ifNotExists);
-        ErrorMessageDao.createTable(db, ifNotExists);
         DustbinStateBeanDao.createTable(db, ifNotExists);
+        ErrorMessageDao.createTable(db, ifNotExists);
         ErrorReportBeanDao.createTable(db, ifNotExists);
+        UserMessageDao.createTable(db, ifNotExists);
     }
 
     /** Drops underlying database table using DAOs. */
     public static void dropAllTables(Database db, boolean ifExists) {
-        DeliveryRecordDao.dropTable(db, ifExists);
-        DustbinBeanDao.dropTable(db, ifExists);
-        UserMessageDao.dropTable(db, ifExists);
         CommodityAlternativeBeanDao.dropTable(db, ifExists);
         CommodityBeanDao.dropTable(db, ifExists);
+        DeliveryRecordDao.dropTable(db, ifExists);
+        DustbinBeanDao.dropTable(db, ifExists);
         DustbinConfigDao.dropTable(db, ifExists);
-        ErrorMessageDao.dropTable(db, ifExists);
         DustbinStateBeanDao.dropTable(db, ifExists);
+        ErrorMessageDao.dropTable(db, ifExists);
         ErrorReportBeanDao.dropTable(db, ifExists);
+        UserMessageDao.dropTable(db, ifExists);
     }
 
     /**
@@ -61,15 +61,15 @@ public class DaoMaster extends AbstractDaoMaster {
 
     public DaoMaster(Database db) {
         super(db, SCHEMA_VERSION);
-        registerDaoClass(DeliveryRecordDao.class);
-        registerDaoClass(DustbinBeanDao.class);
-        registerDaoClass(UserMessageDao.class);
         registerDaoClass(CommodityAlternativeBeanDao.class);
         registerDaoClass(CommodityBeanDao.class);
+        registerDaoClass(DeliveryRecordDao.class);
+        registerDaoClass(DustbinBeanDao.class);
         registerDaoClass(DustbinConfigDao.class);
-        registerDaoClass(ErrorMessageDao.class);
         registerDaoClass(DustbinStateBeanDao.class);
+        registerDaoClass(ErrorMessageDao.class);
         registerDaoClass(ErrorReportBeanDao.class);
+        registerDaoClass(UserMessageDao.class);
     }
 
     public DaoSession newSession() {

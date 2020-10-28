@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'mtj-circle-plugin'
 
 android {
     compileSdkVersion 25
@@ -9,8 +10,8 @@ android {
         applicationId "megvii.testfacepass"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -47,8 +48,17 @@ android {
     }*/
 }
 
+MtjCirclePluginConfig {
+    // 设置appkey
+    appkey = 'f674b852a9'
+    // 设置debug 开关，如果需要查看日志则打开开关，为避免影响性能建议上线前关闭（设置为false）
+    debug = false
+    // 默认启动此插件，如果开发者不需要可以禁用（设置为false）
+    enabled = true
+}
 
 dependencies {
+    implementation files('libs\\BaiduLBS_Android.jar')
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile(name: 'FacePassAndroidSDK-month-release', ext: 'aar')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {

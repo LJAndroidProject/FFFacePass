@@ -67,6 +67,10 @@ import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.Volley;
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.google.gson.Gson;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.serialportlibrary.service.impl.SerialPortService;
@@ -128,8 +132,10 @@ import megvii.testfacepass.camera.CameraPreviewData;
 import megvii.testfacepass.independent.ResidentService;
 import megvii.testfacepass.independent.bean.BuySuccessMsg;
 import megvii.testfacepass.independent.bean.DustbinConfig;
+import megvii.testfacepass.independent.bean.GetNfcUserBean;
 import megvii.testfacepass.independent.bean.ICCard;
 import megvii.testfacepass.independent.bean.ImageUploadResult;
+import megvii.testfacepass.independent.bean.NearByFeatrueSendBean;
 import megvii.testfacepass.independent.bean.NfcActivityBean;
 import megvii.testfacepass.independent.bean.ResultMould;
 import megvii.testfacepass.independent.bean.TCPVerify;
@@ -159,6 +165,8 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 
 public class MainActivity extends Activity implements CameraManager.CameraListener, View.OnClickListener {
@@ -205,7 +213,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     private static final String PERMISSION_READ_STORAGE = Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final String PERMISSION_INTERNET = Manifest.permission.INTERNET;
     private static final String PERMISSION_ACCESS_NETWORK_STATE = Manifest.permission.ACCESS_NETWORK_STATE;
-    private String[] Permission = new String[]{PERMISSION_CAMERA, PERMISSION_WRITE_STORAGE, PERMISSION_READ_STORAGE, PERMISSION_INTERNET, PERMISSION_ACCESS_NETWORK_STATE};
+    private String[] Permission = new String[]{PERMISSION_CAMERA, PERMISSION_WRITE_STORAGE, PERMISSION_READ_STORAGE, PERMISSION_INTERNET, PERMISSION_ACCESS_NETWORK_STATE,ACCESS_COARSE_LOCATION};
 
 
     /* SDK 实例对象 */
@@ -334,6 +342,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
+
+
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
         app.setDustbinConfig(dustbinConfig);
@@ -440,6 +450,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         } else {
             initFacePassSDK();
         }
+
+        initLocationOption();
 
         initFaceHandler();
         /* 初始化网络请求库 */
@@ -732,13 +744,23 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     cache = tcpResponse;
                     return;
                 }
-                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 300){
+
+
+                //  这一步解决一个返回特征值分段问题    =====================================================
+                if(tcpResponse.startsWith("{\"type\":\"nearByFeatrueSend\",") && !tcpResponse.endsWith("}")){
+                    cache = tcpResponse;
+                    return;
+                }
+
+
+
+                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 200){
                     tcpResponse = cache + tcpResponse;
                 }
                 //  =======================================================================================
 
 
-                Log.i("响应结果", tcpResponse + ",长度:" + tcpResponse.length() + "，状态:" + i);
+                Log.i("响应结果3", tcpResponse + ",长度:" + tcpResponse.length() + "，状态:" + i);
 
                 //  首先判定 响应中是否存在 type 和 data 是否以 { 开头
                 if(tcpResponse.startsWith("{") && tcpResponse.contains("type") && tcpResponse.contains("data")){
@@ -919,9 +941,37 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                 startActivity(intent);
 
                             }
+                        }else if(type.equals("nearByFeatrueSend")){
+                            Log.i("响应结果",data);
+                            NearByFeatrueSendBean nearByFeatrueSendBean = gson.fromJson(data,NearByFeatrueSendBean.class);
+
+
+
+                            if(nearByFeatrueSendBean != null && nearByFeatrueSendBean.getFeatrue() != null){
+                                Log.i("响应结果",nearByFeatrueSendBean.toString());
+                                //  获取来自服务器人脸特征 ( 字符串之前是 Base64 形式 )
+                                byte[] feature = Base64.decode(nearByFeatrueSendBean.getFeatrue(),Base64.DEFAULT);
+
+                                FacePassFeatureAppendInfo facePassFeatureAppendInfo = new FacePassFeatureAppendInfo();
+                                //  插入人脸特征值，返回faceToken ，如果特征值不可用会抛出异常
+                                String faceToken = mFacePassHandler.insertFeature(feature,facePassFeatureAppendInfo);
+                                //  facetoken 绑定底库
+                                boolean bindResult = mFacePassHandler.bindGroup(group_name, faceToken.getBytes());
+                                //  绑定成功就可以 将 facetoken 和 id 进行绑定了
+
+                                if(bindResult) {
+                                    Log.i("响应结果","绑定成功");
+                                    //  facetoken 和用户id 绑定
+                                    DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(nearByFeatrueSendBean.getUser_id(), faceToken);
+                                }
+
+                            }else{
+                                Log.i("响应结果","特征值为空");
+                            }
                         }
 
                     }catch (Exception e){
+                        Log.i("响应结果",e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -1138,24 +1188,70 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     AlertDialog icAlert;
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void icCard(ICCard icCard){
-        //  二维码弹窗
-        if(qrCodeDialog != null && qrCodeDialog.isShowing()){
-            qrCodeDialog.dismiss();
-        }
+    public void icCard(final ICCard icCard){
 
-        ImageView imageView = new ImageView(this);
-        int padding = 50;
-        imageView.setPadding(padding,padding,padding,padding);
-        imageView.setImageBitmap(QRCodeUtil.getICLogin(ServerAddress.IC_BING + "?device_id=" + APP.getDeviceId() + "&card_code=" + icCard.getCardCode()));
+        Log.i("卡",icCard.toString());
+
+        Map<String,String> map = new HashMap<>();
+        map.put("card_code",icCard.getCardCode());
+        NetWorkUtil.getInstance().doPost(ServerAddress.IC_GetNfcUserBean, map, new NetWorkUtil.NetWorkListener() {
+            @Override
+            public void success(String response) {
+                Log.i("卡",response);
+                GetNfcUserBean getNfcUserBean = gson.fromJson(response,GetNfcUserBean.class);
+                if(getNfcUserBean.getCode() == 1){
+                    if(getNfcUserBean.getData().getState() == 1){
+                        //  已经绑定好了
+                        //  设置用户id
+                        APP.setUserId(getNfcUserBean.getData().getUser_id());
+
+                        //  跳转到垃圾箱控制台
+                        Intent intent = new Intent(MainActivity.this,ControlActivity.class);
+                        intent.putExtra("userId",app.getUserId());
+                        startActivity(intent);
+
+                    }else{
+                        //  卡片未激活，弹出绑定窗口
+                        //  二维码弹窗
+                        if(qrCodeDialog != null && qrCodeDialog.isShowing()){
+                            qrCodeDialog.dismiss();
+                        }
 
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-        alert.setCancelable(true);
-        alert.setTitle("请使用微信扫描二维码绑定ic卡");
-        alert.setView(imageView);
-        alert.create();
-        icAlert = alert.show();
+                        //  如果已经存在 绑定 ic卡的二维码
+                        if(icAlert != null && icAlert.isShowing()){
+                            icAlert.dismiss();
+                        }
+
+                        ImageView imageView = new ImageView(MainActivity.this);
+                        int padding = 50;
+                        imageView.setPadding(padding,padding,padding,padding);
+                        imageView.setImageBitmap(QRCodeUtil.getICLogin(ServerAddress.IC_BING + "?device_id=" + APP.getDeviceId() + "&card_code=" + icCard.getCardCode()));
+
+
+                        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+                        alert.setCancelable(true);
+                        alert.setTitle("请使用微信扫描二维码绑定 IC 卡");
+                        alert.setView(imageView);
+                        alert.create();
+                        icAlert = alert.show();
+                    }
+                }else{
+                    Toast.makeText(MainActivity.this, "卡片不存在", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void fail(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void error(Exception e) {
+
+            }
+        });
+
 
     }
 
@@ -1662,6 +1758,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         setContentView(R.layout.activity_main);
+
 
 
         //  添加按钮以及设置监听器
@@ -3532,6 +3629,112 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             }
             return result;
         }
+    }
+
+
+    /**
+     * 初始化定位参数配置
+     */
+    private LocationClient locationClient;
+    private static double latitude ,longitude;
+    //获取经度信息;
+    private void initLocationOption() {
+
+        //定位服务的客户端。宿主程序在客户端声明此类，并调用，目前只支持在主线程中启动
+        locationClient = new LocationClient(getApplicationContext());
+        //声明LocationClient类实例并配置定位参数
+        LocationClientOption locationOption = new LocationClientOption();
+        MyLocationListener myLocationListener = new MyLocationListener();
+        //注册监听函数
+        locationClient.registerLocationListener(myLocationListener);
+        //可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+        locationOption.setLocationMode(LocationClientOption.LocationMode.Hight_Accuracy);
+        //可选，默认gcj02，设置返回的定位结果坐标系，如果配合百度地图使用，建议设置为bd09ll;
+        locationOption.setCoorType("gcj02");
+        //可选，默认0，即仅定位一次，设置发起连续定位请求的间隔需要大于等于1000ms才是有效的
+        locationOption.setScanSpan(3000);
+        //可选，设置是否需要地址信息，默认不需要
+        locationOption.setIsNeedAddress(true);
+        //可选，设置是否需要地址描述
+        locationOption.setIsNeedLocationDescribe(true);
+        //可选，设置是否需要设备方向结果
+        locationOption.setNeedDeviceDirect(false);
+        //可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
+        locationOption.setLocationNotify(false);
+        //可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+        locationOption.setIgnoreKillProcess(true);
+        //可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        locationOption.setIsNeedLocationDescribe(true);
+        //可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        locationOption.setIsNeedLocationPoiList(true);
+        //可选，默认false，设置是否收集CRASH信息，默认收集
+        locationOption.SetIgnoreCacheException(false);
+        //可选，默认false，设置是否开启Gps定位
+        locationOption.setOpenGps(true);
+        //可选，默认false，设置定位时是否需要海拔信息，默认不需要，除基础定位版本都可用
+        locationOption.setIsNeedAltitude(false);
+        //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者，该模式下开发者无需再关心定位间隔是多少，定位SDK本身发现位置变化就会及时回调给开发者
+        locationOption.setOpenAutoNotifyMode();
+        //设置打开自动回调位置模式，该开关打开后，期间只要定位SDK检测到位置变化就会主动回调给开发者
+        locationOption.setOpenAutoNotifyMode(3000,1, LocationClientOption.LOC_SENSITIVITY_HIGHT);
+        //需将配置好的LocationClientOption对象，通过setLocOption方法传递给LocationClient对象使用
+        locationClient.setLocOption(locationOption);
+        //开始定位
+        locationClient.start();
+    }
+
+
+    /**
+     * 实现定位回调
+     */
+    public static class MyLocationListener extends BDAbstractLocationListener {
+        @Override
+        public void onReceiveLocation(BDLocation location){
+            //此处的BDLocation为定位结果信息类，通过它的各种get方法可获取定位相关的全部结果
+            //以下只列举部分获取经纬度相关（常用）的结果信息
+            //更多结果信息获取说明，请参照类参考中BDLocation类中的说明
+
+            Log.i("经纬度","触发定位" + location.getLongitude() + "," + location.getLatitude());
+
+            if(location.getLatitude() == 0.0 || location.getLongitude() == 0.0){
+
+                return;
+            }
+
+
+            if ("4.9E-324".equals(String.valueOf(location.getLatitude())) || "4.9E-324".equals(String.valueOf(location.getLongitude()))) {
+                return;
+            }
+
+            //  获取纬度信息
+            latitude = location.getLatitude();
+            //  获取经度信息
+            longitude = location.getLongitude();
+
+            Log.i("经纬度3","经纬度 " + latitude + "," + longitude);
+
+            Map<String,String> map = new HashMap<>();
+            map.put("longitude",String.valueOf(longitude));
+            map.put("latitude",String.valueOf(latitude));
+            NetWorkUtil.getInstance().doPost(ServerAddress.UPDATE_DEVICE_LOCATION, map, new NetWorkUtil.NetWorkListener() {
+                @Override
+                public void success(String response) {
+                    Log.i("经纬度","维度更新结果：" + response);
+                }
+
+                @Override
+                public void fail(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void error(Exception e) {
+
+                }
+            });
+
+        }
+
     }
 
 

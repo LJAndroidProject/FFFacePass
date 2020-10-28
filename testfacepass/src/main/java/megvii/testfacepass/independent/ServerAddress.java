@@ -57,8 +57,16 @@ public class ServerAddress {
     //  状态上传
     public final static String STATE_UPLOAD = IP + "api/Android/binStatusPost";
 
-    //  ic 卡
+    //  ic 卡    二维码
     public final static String IC_BING = IP + "index.php/index/index/nfcActivity";
+
+    //  ic 卡号查询
+    public final static String IC_GetNfcUserBean = IP + "api/Android/getNfcUser";
+
+
+    //  更新设备经纬度
+    public final static String UPDATE_DEVICE_LOCATION = IP + "api/Android/equipmentLocationPost";
+
 
 
 

@@ -33,6 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
     <android.support.v7.widget.RecyclerView
+        android:overScrollMode="never"
         android:id="@+id/control_recyclerview"
         android:layout_below="@+id/control_image"
         android:layout_width="match_parent"

@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: com.github.Liuguihong:AndroidUVCCamera:1.0.0@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/2fbe079db66cc51210b77d7b005b7110/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/2fbe079db66cc51210b77d7b005b7110/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/2fbe079db66cc51210b77d7b005b7110/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e32f1c59bfa5f098349b94f983342a70/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e32f1c59bfa5f098349b94f983342a70/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e32f1c59bfa5f098349b94f983342a70/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
