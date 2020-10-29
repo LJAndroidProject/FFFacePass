@@ -18,6 +18,7 @@ import java.util.Map;
 
 
 import megvii.testfacepass.APP;
+import megvii.testfacepass.independent.ResidentService;
 import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.DustbinStateUploadBean;
@@ -272,7 +273,7 @@ public class NetWorkUtil {
      *
      * 上传垃圾箱状态
      * */
-    public void stateUpload(String url, List<DustbinStateBean> dustbinStateBeans, final NetWorkListener netWorkListener){
+    public void stateUpload(String url,int versionCode, List<DustbinStateBean> dustbinStateBeans, final NetWorkListener netWorkListener){
         DustbinStateUploadBean dustbinStateUploadBean = new DustbinStateUploadBean();
 
         List<DustbinStateUploadBean.ListBean> listBean = new ArrayList<>();
@@ -283,6 +284,8 @@ public class NetWorkUtil {
         long nowTime = System.currentTimeMillis() / 1000 ;
         dustbinStateUploadBean.setSign(md5(nowTime + key).toUpperCase());
         dustbinStateUploadBean.setTimestamp(String.valueOf(nowTime));
+        dustbinStateUploadBean.setApk_type(1);
+        dustbinStateUploadBean.setVersion_code(versionCode);
 
         RequestBody body = FormBody.create(MediaType.parse("application/json"), new Gson().toJson(dustbinStateUploadBean));
 

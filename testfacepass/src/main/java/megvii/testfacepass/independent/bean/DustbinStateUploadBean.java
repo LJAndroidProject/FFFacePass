@@ -12,7 +12,25 @@ public class DustbinStateUploadBean {
 
     private String timestamp;
     private String sign;
+    private int apk_type;
+    private int version_code;
     private List<ListBean> list;
+
+    public int getApk_type() {
+        return apk_type;
+    }
+
+    public void setApk_type(int apk_type) {
+        this.apk_type = apk_type;
+    }
+
+    public int getVersion_code() {
+        return version_code;
+    }
+
+    public void setVersion_code(int version_code) {
+        this.version_code = version_code;
+    }
 
     public String getTimestamp() {
         return timestamp;

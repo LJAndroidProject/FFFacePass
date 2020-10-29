@@ -1761,6 +1761,33 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
+
+
+
+
+
+
+
+
+        Toast.makeText(this, "触发8", Toast.LENGTH_SHORT).show();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //  添加按钮以及设置监听器
         mSyncGroupBtn = (ImageView) findViewById(R.id.btn_group_name);
         mSyncGroupBtn.setOnClickListener(this);

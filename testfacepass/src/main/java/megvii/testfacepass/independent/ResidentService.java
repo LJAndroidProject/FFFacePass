@@ -79,10 +79,10 @@ public class ResidentService extends Service {
                 List<DustbinStateBean> dustbinStateBeans = APP.dustbinBeanList;
 
                 if(dustbinStateBeans != null && dustbinStateBeans.size() > 0){
-                    NetWorkUtil.getInstance().stateUpload(ServerAddress.STATE_UPLOAD, dustbinStateBeans, new NetWorkUtil.NetWorkListener() {
+                    NetWorkUtil.getInstance().stateUpload(ServerAddress.STATE_UPLOAD, (int)getAppVersionCode(ResidentService.this),dustbinStateBeans, new NetWorkUtil.NetWorkListener() {
                         @Override
                         public void success(String response) {
-                            Log.i("结果",response);
+                            Log.i("结果2",response);
                             StateCallBean stateCallBean = gson.fromJson(response, StateCallBean.class);
                             //  大于，并且没有已经在下载 所以要更新
                             if(stateCallBean.getData() !=null && stateCallBean.getData().getVersion_code() > getAppVersionCode(ResidentService.this) && !downloading){

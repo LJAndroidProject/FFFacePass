@@ -28,6 +28,8 @@ import com.lgh.uvccamera.UVCCameraProxy;
 import com.lgh.uvccamera.bean.PicturePath;
 import com.lgh.uvccamera.callback.ConnectCallback;
 import com.lgh.uvccamera.callback.PictureCallback;
+import com.serialportlibrary.util.ByteStringUtil;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -55,6 +57,7 @@ import megvii.testfacepass.independent.bean.GeneralBean;
 import megvii.testfacepass.independent.bean.PhoneCodeVerifyBean;
 import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
+import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
@@ -327,6 +330,11 @@ public class ControlActivity extends AppCompatActivity{
         mUVCCamera.setPictureTakenCallback(new PictureCallback() {
             @Override
             public void onPictureTaken(String path) {
+                //  可能为空
+                if(path == null){
+                    return;
+                }
+
                 File file = new File(path);
                 //  去除.jpg
                 //  设备id + 门板编号 + 用户id + 时间戳 + 垃圾箱id . jpg
@@ -460,7 +468,11 @@ public class ControlActivity extends AppCompatActivity{
         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
 
 
+
         mUVCCamera.closeCamera(); // 关闭相机
+        mUVCCamera.closeDevice();
+
+
         //  切换摄像头
         mUsbDevice = getUsbCameraDevice(hexToInt(dustbinStateBean.getDoorNumber()));
         mUVCCamera.requestPermission(mUsbDevice);
@@ -469,7 +481,7 @@ public class ControlActivity extends AppCompatActivity{
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(ControlActivity.this, "拍照", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ControlActivity.this, "拍照2", Toast.LENGTH_SHORT).show();
                 mUVCCamera.takePicture(imageName);
             }
         },2 * 1000);
@@ -879,18 +891,33 @@ public class ControlActivity extends AppCompatActivity{
 
                     //  查询所有开启的门板
                     List<DustbinStateBean> dustbinBeanList = APP.dustbinBeanList;
-                    for(DustbinStateBean dustbinStateBean:dustbinBeanList){
+                    for(final DustbinStateBean dustbinStateBean:dustbinBeanList){
 
                         //  扫描门板开启的箱体
                         if(!dustbinStateBean.getDoorIsOpen()){
                             //  关闭门
                             SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
+
+
+                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    byte[] bytes = new byte[]{(byte) 0xF3 ,0x3F ,0x00 ,0x01 ,0x01 ,(byte) (dustbinStateBean.getDoorNumber() & 0xff) ,0x01 ,0x00 ,0x00 ,(byte) 0xF4 ,0x4F};
+
+                                    SerialPortResponseManage.inOrderString(ControlActivity.this,bytes);
+
+                                    Log.i("串口接收2", ByteStringUtil.byteArrayToHexStr(bytes));
+
+                                        }
+                            },6000);
+
+                            //  线程休眠 3s,给时间拍照
+                            Thread.sleep(6000);
                         }
-
-
-                        //  线程休眠 3s,给时间拍照
-                        Thread.sleep(3000);
                     }
+
+
+                    Thread.sleep(1000);
 
                     //  用户id设置为0
                     APP.userId = 0;
@@ -905,7 +932,8 @@ public class ControlActivity extends AppCompatActivity{
                         }
                     });
 
-                    startActivity(new Intent(ControlActivity.this,MainActivity.class));
+                    //startActivity(new Intent(ControlActivity.this,MainActivity.class));
+                    finish();
                 }catch (InterruptedException e){
                     e.printStackTrace();
                 }
