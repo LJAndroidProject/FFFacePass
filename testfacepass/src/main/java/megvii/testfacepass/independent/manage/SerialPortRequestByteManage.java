@@ -128,12 +128,27 @@ public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX
 
 
     @Override
-    public byte[] weightCalibration_1(int doorNumber,int weight) {
-        return OrderUtil.generateOrder(OrderUtil.WEIGHING_BYTE,doorNumber,new byte[]{(byte) (weight & 0xff)});
+    public byte[] weightCalibration_1(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_BYTE,doorNumber,new byte[]{0x01});
     }
 
     @Override
     public byte[] weightCalibration_2(int doorNumber,int weight) {
-        return OrderUtil.generateOrder(OrderUtil.WEIGHING_2_BYTE,doorNumber,new byte[]{(byte) (weight & 0xff)});
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_2_BYTE,doorNumber,new byte[]{toLH(weight)[1],toLH(weight)[0]});
+    }
+
+    @Override
+    public byte[] getDate(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.GET_DATA_BYTE,doorNumber,CLOSE_PARAMETER);
+    }
+
+
+    public static byte[] toLH(int n) {
+        byte[] b = new byte[4];
+        b[0] = (byte) (n & 0xff);
+        b[1] = (byte) (n >> 8 & 0xff);
+        b[2] = (byte) (n >> 16 & 0xff);
+        b[3] = (byte) (n >> 24 & 0xff);
+        return b;
     }
 }

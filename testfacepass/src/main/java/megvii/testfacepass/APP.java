@@ -1,45 +1,32 @@
 package megvii.testfacepass;
 
 import android.app.Application;
-import android.app.Notification;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.provider.Settings;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.serialportlibrary.service.impl.SerialPortService;
 import com.serialportlibrary.util.ByteStringUtil;
-import com.umeng.commonsdk.UMConfigure;
-import com.umeng.message.IUmengCallback;
-import com.umeng.message.IUmengRegisterCallback;
-import com.umeng.message.PushAgent;
-import com.umeng.message.UmengMessageHandler;
-import com.umeng.message.UmengNotificationClickHandler;
-import com.umeng.message.entity.UMessage;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import megvii.testfacepass.independent.ServerAddress;
-import megvii.testfacepass.independent.bean.DustbinBean;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.DebugLogBean;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
-import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.TCPConnectUtil;
-import okhttp3.Call;
 
 public class APP extends Application {
+
+    public final static String TAG = "硬件串口对接日志";
 
     public static long userId;
 
@@ -49,25 +36,60 @@ public class APP extends Application {
 
     private static DustbinConfig dustbinConfig;
 
+    private Handler handler;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
 
+        handler = new Handler(Looper.getMainLooper());
+
+        /*//  设置垃圾箱配置
+        DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
+        setDustbinConfig(dustbinConfig);
+        //  代表 全局 垃圾桶 list 对象
+        setDustbinBeanList(DataBaseUtil.getInstance(this).getDustbinByType(null));*/
+
+        // 如果垃圾箱为 null 则创建
+        if(APP.dustbinBeanList == null || APP.dustbinBeanList .size() == 0){
+            List<DustbinStateBean> dustbinStateBeans = new ArrayList<>();
+            for(int i = 1 ;i <= 4 ;i++){
+                DustbinStateBean dustbinStateBean = new DustbinStateBean();
+                dustbinStateBean.setDoorNumber(i);
+                dustbinStateBeans.add(dustbinStateBean);
+            }
+
+            APP.dustbinBeanList = dustbinStateBeans;
+        }
+
 
         //  注册串口监听,与硬件进行通信
         SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseByteListener() {
             @Override
-            public void response(byte[] response) {
+            public void response(final byte[] response) {
                 //  通过事件总线发送出去
-                Log.i("串口接收",ByteStringUtil.byteArrayToHexStr(response));
+                //Log.i("串口接收",ByteStringUtil.byteArrayToHexStr(response));
+                /*final DebugLogBean debugLogBean = new DebugLogBean();
+                debugLogBean.setString(ByteStringUtil.byteArrayToHexStr(response));
+                EventBus.getDefault().post(debugLogBean);*/
+
+                if(DebugActivity.debug_log_tv != null){
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            DebugActivity.debug_log_tv.append("接收:" + ByteStringUtil.byteArrayToHexStr(response));
+                            DebugActivity.debug_log_tv.append("\n");
+                        }
+                    });
+                }
 
                 SerialPortResponseManage.inOrderString(APP.this,response);
             }
         });
 
 
-        //  友盟推送
+        //  友盟推送，暂时无用
 
         // 在此处调用基础组件包提供的初始化函数 相应信息可在应用管理 -> 应用信息 中找到 http://message.umeng.com/list/apps
         // 参数一：当前上下文context；
@@ -75,7 +97,7 @@ public class APP extends Application {
         // 参数三：渠道名称；
         // 参数四：设备类型，必须参数，传参数为UMConfigure.DEVICE_TYPE_PHONE则表示手机；传参数为UMConfigure.DEVICE_TYPE_BOX则表示盒子；默认为手机；
         // 参数五：Push推送业务的secret 填充Umeng Message Secret对应信息（需替换）
-        UMConfigure.init(this, "5f59f33da4ae0a7f7d02d29a", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, "e3a46cec8019c99194fd1054607e94a8");
+        /*UMConfigure.init(this, "5f59f33da4ae0a7f7d02d29a", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, "e3a46cec8019c99194fd1054607e94a8");
 
 
         // 获取消息推送代理示例
@@ -118,9 +140,9 @@ public class APP extends Application {
 
 
 
-                /*SharedPreferences.Editor editor = getSharedPreferences("appConfig", MODE_PRIVATE).edit();
+                *//*SharedPreferences.Editor editor = getSharedPreferences("appConfig", MODE_PRIVATE).edit();
                 editor.putString("deviceToken",deviceToken);
-                editor.apply();*/
+                editor.apply();*//*
             }
 
             @Override
@@ -137,7 +159,7 @@ public class APP extends Application {
                 EventBus.getDefault().post(msg);
             }
         };
-        mPushAgent.setMessageHandler(messageHandler);
+        mPushAgent.setMessageHandler(messageHandler);*/
 
     }
 

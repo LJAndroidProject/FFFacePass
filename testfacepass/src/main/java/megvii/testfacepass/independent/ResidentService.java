@@ -29,6 +29,7 @@ import java.util.TimerTask;
 import megvii.testfacepass.APP;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.StateCallBean;
+import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
@@ -72,6 +73,7 @@ public class ResidentService extends Service {
         super.onCreate();
 
 
+        //  设备状态上报服务器
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -105,7 +107,32 @@ public class ResidentService extends Service {
         };
 
         Timer timer = new Timer();
-        timer.schedule(timerTask,1000);
+        timer.schedule(timerTask,60 * 1000);
+
+
+
+
+
+
+
+        //  获取垃圾箱状态
+        TimerTask getDustbinState = new TimerTask() {
+            @Override
+            public void run() {
+                if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0){
+                    try {
+
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().getDate(0));
+
+                        Thread.sleep(500);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        timer.schedule(getDustbinState,500);
     }
 
 

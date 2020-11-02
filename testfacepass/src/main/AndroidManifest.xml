@@ -17,13 +17,10 @@
     <uses-permission android:name="android.permission.BROADCAST_PACKAGE_REPLACED" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- 以下为需要的基本权限，需要自行添加至您的AndroidManifest文件中 end -->
-
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <!-- 这个权限用于访问GPS定位-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
-    <!--安装安装包-->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 安装安装包 -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
     <permission
         android:name="android.permission.INTERACT_ACROSS_USERS_FULL"
         android:protectionLevel="signature" />
@@ -36,40 +33,31 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".DebugActivity"></activity>
         <!-- 您从百度网站获取的APP KEY，根据实际您的APP申请的APP_KEY进行修改 -->
         <meta-data
             android:name="BaiduMobAd_STAT_ID"
-            android:value="a9e2ad84a2" />
-
-        <!-- 渠道商编号 -->
+            android:value="a9e2ad84a2" /> <!-- 渠道商编号 -->
         <meta-data
             android:name="BaiduMobAd_CHANNEL"
-            android:value="Baidu Market" />
-
-        <!-- 是否开启错误日志统计，默认为false -->
+            android:value="Baidu Market" /> <!-- 是否开启错误日志统计，默认为false -->
         <meta-data
             android:name="BaiduMobAd_EXCEPTION_LOG"
-            android:value="true" />
-
-        <!-- 日志仅在wifi网络下发送，默认为false -->
+            android:value="true" /> <!-- 日志仅在wifi网络下发送，默认为false -->
         <meta-data
             android:name="BaiduMobAd_ONLY_WIFI"
-            android:value="false" />
-
-
-        <!--百度地图-->
+            android:value="false" /> <!-- 百度地图 -->
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="vZGIZ92t9q70dIiidljE5vuG4GiM7Z81" />
-        <service android:name="com.baidu.location.f"
+
+        <service
+            android:name="com.baidu.location.f"
             android:enabled="true"
-            android:process=":remote"/>
+            android:process=":remote" />
 
-
-        <activity android:name=".WeightCalibrationActivity"></activity>
-        <activity android:name=".DustbinManageActivity">
-
-        </activity>
+        <activity android:name=".WeightCalibrationActivity" />
+        <activity android:name=".DustbinManageActivity"></activity>
         <activity android:name=".InitConfig">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -77,7 +65,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".VendingMachineActivity"></activity>
+        <activity android:name=".VendingMachineActivity" />
         <activity android:name=".ReplenishmentDetailsActivity" /> <!-- 补货界面 -->
         <activity android:name=".ReplenishmentActivity" /> <!-- 垃圾箱控制台 -->
         <activity
@@ -94,7 +82,7 @@
             android:label="facepass" /> <!-- 扫脸界面 -->
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"></activity> <!-- 设置界面 -->
+            android:launchMode="singleTask" /> <!-- 设置界面 -->
         <activity
             android:name=".SettingActivity"
             android:launchMode="singleTask"
@@ -243,8 +231,7 @@
             android:name="com.umeng.message.UmengDownloadResourceService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
-        <service android:name=".independent.ResidentService"/>
+        <service android:name=".independent.ResidentService" />
 
         <provider
             android:name="com.umeng.message.provider.MessageProvider"

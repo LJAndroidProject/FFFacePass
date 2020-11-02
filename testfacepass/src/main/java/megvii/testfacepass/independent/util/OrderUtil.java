@@ -357,7 +357,7 @@ public class OrderUtil {
 
         //orderMessage.setChecksum(new byte[]{bytes[2 + 2 + 2 + 1 + datas.length]});
         //  校验和
-        orderMessage.setChecksum(new byte[bytes[bytes.length - 3]]);
+        orderMessage.setChecksum(new byte[]{bytes[bytes.length - 3]});
 
         //  帧率尾
         orderMessage.setEnd(new byte[]{bytes[bytes.length-2],bytes[bytes.length-1]});

@@ -265,9 +265,8 @@ public class ImlSerialPortRequest {
 
         /**
          * 重量校准 1
-         * @param weight 重量
          * */
-        byte[] weightCalibration_1(int doorNumber,int weight);
+        byte[] weightCalibration_1(int doorNumber);
 
 
         /**
@@ -275,5 +274,11 @@ public class ImlSerialPortRequest {
          * @param weight 重量
          * */
         byte[] weightCalibration_2(int doorNumber,int weight);
+
+        /**
+         * 读取数据
+         * @param doorNumber
+         * */
+        byte[] getDate(int doorNumber);
     }
 }

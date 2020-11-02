@@ -1769,7 +1769,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
-        Toast.makeText(this, "触发8", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "触发", Toast.LENGTH_SHORT).show();
 
 
 

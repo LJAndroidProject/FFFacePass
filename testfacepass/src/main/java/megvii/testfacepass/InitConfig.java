@@ -17,9 +17,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.serialportlibrary.util.ByteStringUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +50,7 @@ import okhttp3.Call;
 public class InitConfig extends AppCompatActivity {
 
     private EditText edit_dustbin_query;
-    private Button btn_getDustbinConfig,btn_getGoodsPos;
+    private Button btn_getDustbinConfig;
     private ProgressDialog progressDialog;
     private EditText edit_dustbin_authorizationCode;
     @Override
@@ -62,10 +68,12 @@ public class InitConfig extends AppCompatActivity {
         }
 
         setContentView(R.layout.activity_init_config);
+
+        
+
         //  初始化布局
         edit_dustbin_query = (EditText)findViewById(R.id.edit_dustbin_query);
         btn_getDustbinConfig = (Button)findViewById(R.id.btn_getDustbinConfig);
-        btn_getGoodsPos = (Button)findViewById(R.id.btn_getGoodsPos);
         edit_dustbin_authorizationCode = (EditText)findViewById(R.id.edit_dustbin_authorizationCode);
 
 
@@ -79,6 +87,8 @@ public class InitConfig extends AppCompatActivity {
 
         //  获取售卖机备选
         getGoodsPos();
+
+
 
         //  绑定垃圾箱配置
         btn_getDustbinConfig.setOnClickListener(new View.OnClickListener() {
@@ -166,16 +176,7 @@ public class InitConfig extends AppCompatActivity {
         });
 
 
-        //  获取垃圾箱配置
-        btn_getGoodsPos.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                progressDialog.setMessage("正在获取售货机备选商品...");
-                progressDialog.show();
 
-                getGoodsPos();
-            }
-        });
 
     }
 
@@ -380,39 +381,6 @@ public class InitConfig extends AppCompatActivity {
     }
 
 
-    /**
-     * 查询到对应的垃圾箱
-     * */
-    /*private void alertMessage(String positionName,final List<DustbinBean> list){
-        StringBuilder stringBuilder = new StringBuilder();
-       for(DustbinBean dustbinBean : list){
-           stringBuilder.append(dustbinBean.getDustbinBoxType());
-           stringBuilder.append(",");
-       }
-        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("你确定应用此配置吗？");
-        alert.setCancelable(false);
-        alert.setMessage("您输入的 此 ID 对应是位于" + positionName + " 的垃圾箱，垃圾箱配置如下: \n" + stringBuilder.toString());
-        alert.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                DataBaseUtil.getInstance(InitConfig.this).setDustBinConfig(list);
-
-
-                Toast.makeText(InitConfig.this, "配置应用成功", Toast.LENGTH_SHORT).show();
-            }
-        });
-        alert.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        alert.create();
-        alert.show();
-    }*/
 
     /**
      * 创建售货机货道
@@ -461,6 +429,14 @@ public class InitConfig extends AppCompatActivity {
      * */
     public void goWeightCalibration(View view){
         startActivity(new Intent(InitConfig.this,WeightCalibrationActivity.class));
+    }
+
+
+    /**
+     * 跳转 debug 界面
+     * */
+    public void goDebug(View view){
+        startActivity(new Intent(InitConfig.this, DebugActivity.class));
     }
 
 }

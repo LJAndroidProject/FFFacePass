@@ -90,6 +90,9 @@ public class ControlActivity extends AppCompatActivity{
 
     private ProgressDialog bottleDialog;
     public int bottleNumber = 0;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +137,13 @@ public class ControlActivity extends AppCompatActivity{
                     ++mSecretNumber;
                     if (mSecretNumber == 5) {
 
+                        //  如果管理员登陆过 还没有退出，则可以直接复用，登陆信息 省的每次都要验证码
+                        if(phoneCodeVerifyBean != null){
+                            showAdminManage(phoneCodeVerifyBean);
+                            return;
+                        }
+
+                        //  开始
                         adminLoginDialog = new AdminLoginDialog(ControlActivity.this);
                         adminLoginDialog.setLoginListener(new AdminLoginDialog.LoginListener() {
                             @Override
@@ -183,7 +193,9 @@ public class ControlActivity extends AppCompatActivity{
                                                                         PhoneCodeVerifyBean phoneCodeVerifyBean = new Gson().fromJson(response,PhoneCodeVerifyBean.class);
                                                                         if(phoneCodeVerifyBean.getCode() == 1){
                                                                             Log.i("结果",phoneCodeVerifyBean.toString());
-                                                                            showAdminManage(alertDialog,phoneCodeVerifyBean);
+
+                                                                            alertDialog.dismiss();
+                                                                            showAdminManage(phoneCodeVerifyBean);
                                                                         }else{
                                                                             Toast.makeText(ControlActivity.this, "验证码错误", Toast.LENGTH_SHORT).show();
                                                                         }
@@ -312,11 +324,14 @@ public class ControlActivity extends AppCompatActivity{
                         //  获取合适的垃圾箱类型
                         DustbinStateBean dustbinStateBean = openDoorByType(data.getDustbinBoxType());
                         if(dustbinStateBean == null){
+
                             return;
                         }
 
                         //  开启垃圾箱
                         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+                        //  关闭消毒紫外线灯
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(dustbinStateBean.getDoorNumber()));
                     }
 
 
@@ -326,6 +341,10 @@ public class ControlActivity extends AppCompatActivity{
         control_recyclerview.setLayoutManager(new GridLayoutManager(this,3));
         control_recyclerview.setAdapter(controlItemAdapter);
 
+        /*
+         * 默认应该开启厨余 和 其它垃圾箱
+         * */
+        openDefaultDoor();
 
         mUVCCamera.setPictureTakenCallback(new PictureCallback() {
             @Override
@@ -452,6 +471,47 @@ public class ControlActivity extends AppCompatActivity{
         });
     }
 
+
+    /**
+     * 默认开启的门
+     * */
+    private void openDefaultDoor(){
+        List<DustbinStateBean> kitchens = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.KITCHEN);
+        List<DustbinStateBean> others = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.OTHER);
+
+        /*
+        * 开厨余
+        * */
+        if (kitchens != null && kitchens.size() > 0){
+            for(DustbinStateBean dustbinStateBean : kitchens){
+                if(!dustbinStateBean.getIsFull()){
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+                    break;
+                }else{
+                    Toast.makeText(this, dustbinStateBean.getDustbinBoxType() + "垃圾箱已满", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+
+
+        /*
+        *
+        * 开其它
+        * */
+        if (others != null && others.size() > 0){
+            for(DustbinStateBean dustbinStateBean : others){
+                if(!dustbinStateBean.getIsFull()){
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+                    break;
+                }else{
+                    Toast.makeText(this, dustbinStateBean.getDustbinBoxType() + "垃圾箱已满", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+    }
+
     /**
      * 串口回调 垃圾箱被关闭
      * */
@@ -467,7 +527,8 @@ public class ControlActivity extends AppCompatActivity{
         //  开启闪关灯
         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
 
-
+        //  开启杀菌消毒
+        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openTheDisinfection(dustbinStateBean.getDoorNumber()));
 
         mUVCCamera.closeCamera(); // 关闭相机
         mUVCCamera.closeDevice();
@@ -614,11 +675,10 @@ public class ControlActivity extends AppCompatActivity{
      *
      * 1：回收员，2维修员，3：补货员，99：超级管理员
      * */
-    private void showAdminManage(AlertDialog alertDialog,PhoneCodeVerifyBean phoneCodeVerifyBean){
-        alertDialog.dismiss();
 
-
-        //  如果不是超级管理员
+    private PhoneCodeVerifyBean phoneCodeVerifyBean;
+    private void showAdminManage(PhoneCodeVerifyBean phoneCodeVerifyBean){
+        //  如果不是超级管理员，把编号转换成 字符身份
         if(!phoneCodeVerifyBean.getData().getAdmin_types().contains("99")){
             String typeStr = phoneCodeVerifyBean.getData().getAdmin_types().replace("1", finalStrings[0]);
             typeStr = typeStr.replace("2", finalStrings[1]);
@@ -663,20 +723,22 @@ public class ControlActivity extends AppCompatActivity{
      * 筛选合适的垃圾箱
      * */
     private DustbinStateBean openDoorByType(String type){
-        List<DustbinStateBean> list = ((APP)getApplication()).getDustbinBeanList();
-        for(DustbinStateBean dustbinStateBean : list){
-            if(dustbinStateBean.getDustbinBoxType() .equals(type)){
-                
-                if(dustbinStateBean.getIsFull()){
-                    return dustbinStateBean;
-                }else{
-                    Toast.makeText(this, "垃圾箱已满或没有合适的垃圾箱", Toast.LENGTH_SHORT).show();
-                    return null;
+        if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0 ){
+            for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
+                if(dustbinStateBean.getDustbinBoxType().equals(type)){
+
+                    if(!dustbinStateBean.getIsFull()){
+                        return dustbinStateBean;
+                    }else{
+                        Toast.makeText(this, "垃圾箱已满", Toast.LENGTH_SHORT).show();
+                        return null;
+                    }
                 }
             }
+        }else{
+            Toast.makeText(this, "垃圾箱配置为空", Toast.LENGTH_SHORT).show();
         }
 
-        Toast.makeText(this, "垃圾箱已满", Toast.LENGTH_SHORT).show();
         return null;
     }
 
@@ -684,7 +746,7 @@ public class ControlActivity extends AppCompatActivity{
     /**
      * 根据桶位获取pid
      * */
-    private int hexToInt(int numb){
+    public static int hexToInt(int numb){
 
         int target = numb * 1111;
 
@@ -923,6 +985,10 @@ public class ControlActivity extends AppCompatActivity{
                     APP.userId = 0;
                     //  投递瓶子数量设置为 0
                     bottleNumber = 0;
+
+                    //  管理员登陆
+                    phoneCodeVerifyBean = null;
+
 
 
                     new Handler(Looper.getMainLooper()).post(new Runnable() {

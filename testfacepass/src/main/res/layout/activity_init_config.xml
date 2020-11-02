@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,53 +8,61 @@
     android:padding="20dp"
     tools:context=".InitConfig">
 
-    <TextView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:text="垃圾箱安装时或者数据被重置需要进行设备绑定"
-        android:textSize="20sp" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="垃圾箱安装时或者数据被重置需要进行设备绑定"
+            android:textSize="20sp" />
 
-    <EditText
-        android:text="GD-GZ-HP-DS-JT-001"
-        android:id="@+id/edit_dustbin_query"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="输入设备编号"
-        android:inputType="number"
-        android:padding="20dp" />
-    <EditText
-        android:text="CIUUHV"
-        android:id="@+id/edit_dustbin_authorizationCode"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="输入授权码"
-        android:inputType="number"
-        android:padding="20dp" />
+        <EditText
+            android:text="GD-GZ-HP-DS-JT-001"
+            android:id="@+id/edit_dustbin_query"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="输入设备编号"
+            android:inputType="number"
+            android:padding="20dp" />
+        <EditText
+            android:text="CIUUHV"
+            android:id="@+id/edit_dustbin_authorizationCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="输入授权码"
+            android:inputType="number"
+            android:padding="20dp" />
 
-    <Button
-        style="@style/themeButtonStyle"
-        android:id="@+id/btn_getDustbinConfig"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:layout_marginTop="20dp"
-        android:text="绑定设备" />
+        <Button
+            style="@style/themeButtonStyle"
+            android:id="@+id/btn_getDustbinConfig"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_marginTop="20dp"
+            android:text="绑定设备" />
 
-    <Button
-        android:padding="20dp"
-        android:id="@+id/btn_getGoodsPos"
-        android:layout_width="wrap_content"
-        android:layout_height="70dp"
-        android:layout_marginTop="20dp"
-        android:text="此设备"
-        android:visibility="gone" />
+        <RelativeLayout
+            android:requiresFadingEdge="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:onClick="goWeightCalibration"
+                android:padding="20dp"
+                android:text="重量校准"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_alignParentRight="true"
+                android:onClick="goDebug"
+                android:padding="20dp"
+                android:text="设备调试"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </RelativeLayout>
+    </LinearLayout>
 
-    <TextView
-        android:onClick="goWeightCalibration"
-        android:padding="20dp"
-        android:text="重量校准"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
 
-
-</LinearLayout>
+</ScrollView>

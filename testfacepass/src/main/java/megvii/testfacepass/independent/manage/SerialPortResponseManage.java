@@ -331,6 +331,8 @@ public class SerialPortResponseManage {
     private final static byte ORDER_FAIL = 0x11;
     public static void inOrderString(Context context , byte[] order){
 
+        Log.i(APP.TAG,"接收:" + ByteStringUtil.byteArrayToHexStr(order));
+
         OrderMessage orderMessage = OrderUtil.orderAnalysis(order);
 
         //  先判定指令 帧头 帧尾 是否符合标准
@@ -343,6 +345,9 @@ public class SerialPortResponseManage {
                 if(orderMessage.getDataContent()[0] == 0x10){
                     //开成功
                     toast(context,"开成功");
+
+                    //  开成功关闭消毒灯
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(orderMessage.getOrder()[1]));
                 }else if(orderMessage.getDataContent()[0] == 0x11){
                     //  开失败，未知原因
                     toast(context,"开失败，未知原因");
@@ -393,21 +398,26 @@ public class SerialPortResponseManage {
                 }
 
             }else if(orderMessage.getOrder()[0] == OrderUtil.GET_DATA_BYTE){
+
+                Log.i(APP.TAG,"获取到数据");
                 //  读取数据
+
+                Log.i(APP.TAG,"获取到数据位:" + ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
 
                 DustbinStateBean dustbinStateBean = new DustbinStateBean();
                 //  重量 0-25000 * 10g
-                dustbinStateBean.setDustbinWeight(orderMessage.getDataContent()[0] * 10);
+                //dustbinStateBean.setDustbinWeight(orderMessage.getDataContent()[0] * 10);
+                dustbinStateBean.setDustbinWeight(bytes2Int(new byte[]{orderMessage.getDataContent()[0],orderMessage.getDataContent()[1]}));
                 //  温度0-200°C
-                dustbinStateBean.setTemperature(orderMessage.getDataContent()[1]);
+                dustbinStateBean.setTemperature(orderMessage.getDataContent()[2]);
                 //  湿度 0-100%
-                dustbinStateBean.setHumidity(orderMessage.getDataContent()[2]);
+                dustbinStateBean.setHumidity(orderMessage.getDataContent()[3]);
                 //  设置门编号
                 dustbinStateBean.setDoorNumber(orderMessage.getOrder()[1]);
 
                 //  其它
                 //  1.空	2.接近开关	3.人工门开关	 4.测满	5.推杆过流	6.通信异常	7.投料锁	8.人工门锁
-                byte other = orderMessage.getDataContent()[3];
+                byte other = orderMessage.getDataContent()[4];
 
 
                 String tString = Integer.toBinaryString((other & 0xFF) + 0x100).substring(1);
@@ -430,10 +440,11 @@ public class SerialPortResponseManage {
                 //  人工锁
                 dustbinStateBean.setArtificialDoorLock(chars[7] == '1');
 
-                Log.i("状态",tString);
-                Log.i("状态",dustbinStateBean.toString());
+                Log.i(APP.TAG,"获取到数据的 二进制" + tString);
+                Log.i(APP.TAG, "状态解析" + dustbinStateBean.toString());
 
                 APP.setDustbinState(dustbinStateBean);
+
 
                 //  人接近 与离开
                 /*DustbinStateBean oldDustbinStateBean =  DustbinUtil.getDustbinState(dustbinStateBean.getDoorNumber());
@@ -451,7 +462,7 @@ public class SerialPortResponseManage {
 
                 WeightCalibrationCall weightCalibrationCall = new WeightCalibrationCall();
                 weightCalibrationCall.setCalibrationNumber(1);
-                weightCalibrationCall.setResult((byte) orderMessage.getDataContent()[0]);
+                weightCalibrationCall.setResult(orderMessage.getDataContent());
 
                 EventBus.getDefault().post(weightCalibrationCall);
 
@@ -460,7 +471,8 @@ public class SerialPortResponseManage {
 
                 WeightCalibrationCall weightCalibrationCall = new WeightCalibrationCall();
                 weightCalibrationCall.setCalibrationNumber(2);
-                weightCalibrationCall.setResult((byte) orderMessage.getDataContent()[0]);
+                weightCalibrationCall.setResult(orderMessage.getDataContent());
+                weightCalibrationCall.setDoorNumber(orderMessage.getOrder()[1]);
 
                 EventBus.getDefault().post(weightCalibrationCall);
 
@@ -511,6 +523,32 @@ public class SerialPortResponseManage {
         }
     }
 
+
+    /**
+     * byte[]转int
+     * @param bytes
+     * @return
+     */
+    public static int byteArrayToInt(byte[] bytes) {
+        int value = 0;
+        // 由高位到低位
+        for (int i = 0; i < 4; i++) {
+            int shift = (4 - 1 - i) * 8;
+            value += (bytes[i] & 0x000000FF) << shift;// 往高位游
+        }
+        Log.i(APP.TAG,"重量" + value);
+        return value;
+    }
+
+
+    public static int bytes2Int(byte[] bytes) {
+        int result = 0;
+        //将每个byte依次搬运到int相应的位置
+        result = bytes[0] & 0xff;
+        result = result << 8 | bytes[1] & 0xff;
+        Log.i(APP.TAG,"重量" + result);
+        return result;
+    }
 
 
 

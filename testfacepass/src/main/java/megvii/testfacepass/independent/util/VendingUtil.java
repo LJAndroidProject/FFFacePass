@@ -40,6 +40,30 @@ public class VendingUtil {
         SerialPortUtil.getInstance().sendData(newBytes);
     }
 
+
+    public static byte[] getDeliveryByte(int number){
+        byte[] headBytes = new byte[]{0x0D,0x24};
+        byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (number & 0xff),0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+        byte[] sumBytes = new byte[]{getXor(order)};
+        byte[] endBytes = new byte[]{0x0D,0x0A};
+
+
+        byte[] newBytes = new byte[headBytes.length + order.length + sumBytes.length + endBytes.length];
+
+
+        //  需要复制的数组、复制源的起始位置，目标数组，目标数组的起始位置，复制的长度
+        //  首先添加帧头
+        System.arraycopy(headBytes,0,newBytes,0,headBytes.length);
+        //  添加中间
+        System.arraycopy(order,0,newBytes,headBytes.length,order.length);
+        //  添加校验位
+        System.arraycopy(sumBytes,0,newBytes,headBytes.length + order.length,sumBytes.length);
+        //  添加帧尾部
+        System.arraycopy(endBytes,0,newBytes,headBytes.length + order.length + sumBytes.length,endBytes.length);
+
+        return newBytes;
+    }
+
     /**
      * 转发拼接
      * @param defaultBytes 原有的售卖机指令

@@ -5,6 +5,9 @@ import android.util.Log;
 
 import com.serialportlibrary.service.impl.SerialPortBuilder;
 import com.serialportlibrary.service.impl.SerialPortService;
+import com.serialportlibrary.util.ByteStringUtil;
+
+import megvii.testfacepass.APP;
 
 /**
  * 串口读写
@@ -59,6 +62,8 @@ public class SerialPortUtil {
 
 
     public void sendData(byte[] data){
+
+        Log.i(APP.TAG, "发送：" + ByteStringUtil.byteArrayToHexStr(data));
         serialPortService.sendData(data);
     }
 
