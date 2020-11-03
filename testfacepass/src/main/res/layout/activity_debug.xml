@@ -25,11 +25,12 @@
             android:layout_width="match_parent"
             android:layout_height="240dp">
             <TextureView
-                android:layout_centerHorizontal="true"
+                android:layout_alignParentRight="true"
                 android:id="@+id/debug_textTueView"
                 android:layout_width="320dp"
                 android:layout_height="240dp"/>
             <TextView
+                android:textColor="#FF1403"
                 android:scrollbars="vertical"
                 android:id="@+id/debug_camera_textTueView"
                 android:layout_width="match_parent"

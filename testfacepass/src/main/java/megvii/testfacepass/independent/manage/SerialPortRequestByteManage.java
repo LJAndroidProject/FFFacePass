@@ -133,6 +133,11 @@ public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX
     }
 
     @Override
+    public byte[] exitWeightCalibrationMode(int doorNumber) {
+        return OrderUtil.generateOrder(OrderUtil.WEIGHING_BYTE,doorNumber,new byte[]{0x00});
+    }
+
+    @Override
     public byte[] weightCalibration_2(int doorNumber,int weight) {
         return OrderUtil.generateOrder(OrderUtil.WEIGHING_2_BYTE,doorNumber,new byte[]{toLH(weight)[1],toLH(weight)[0]});
     }

@@ -329,51 +329,59 @@ public class SerialPortResponseManage {
 
     private final static byte ORDER_SUCCESS = 0x10;
     private final static byte ORDER_FAIL = 0x11;
-    public static void inOrderString(Context context , byte[] order){
+    public static void inOrderString(Context context , byte[] order) {
+        //  打印收到的指令
+        Log.i(APP.TAG, "接收:" + ByteStringUtil.byteArrayToHexStr(order));
 
-        Log.i(APP.TAG,"接收:" + ByteStringUtil.byteArrayToHexStr(order));
+        if(order.length < 4){
+            Log.i(APP.TAG,ByteStringUtil.byteArrayToHexStr(order) + "长度过小");
+            return;
+        }
 
-        OrderMessage orderMessage = OrderUtil.orderAnalysis(order);
+        //  首先指令长度大于 4
+        if (Arrays.equals(new byte[]{order[0], order[1]}, OrderUtil.HARDWARE_TO_ANDROID_HEAD_BYTES) && Arrays.equals(new byte[]{order[order.length - 2], order[order.length - 1]}, OrderUtil.HARDWARE_TO_ANDROID_END_BYTES)) {
 
-        //  先判定指令 帧头 帧尾 是否符合标准
-        if(Arrays.equals(orderMessage.getHead(), OrderUtil.HARDWARE_TO_ANDROID_HEAD_BYTES) && Arrays.equals(orderMessage.getEnd(), OrderUtil.HARDWARE_TO_ANDROID_END_BYTES)){
-            //  门开关
+            //  指令解析
+            OrderMessage orderMessage = OrderUtil.orderAnalysis(order);
 
-            if(orderMessage.getOrder()[0] == OrderUtil.DOOR_BYTE){
+            Log.i("串口",ByteStringUtil.byteArrayToHexStr(new byte[]{orderMessage.getOrder()[0]}));
+
+            //  如果是开门相关
+            if (orderMessage.getOrder()[0] == OrderUtil.DOOR_BYTE) {
 
                 //  数据位
-                if(orderMessage.getDataContent()[0] == 0x10){
+                if (orderMessage.getDataContent()[0] == 0x10) {
                     //开成功
-                    toast(context,"开成功");
+                    toast(context, "开成功");
 
                     //  开成功关闭消毒灯
                     SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(orderMessage.getOrder()[1]));
-                }else if(orderMessage.getDataContent()[0] == 0x11){
+                } else if (orderMessage.getDataContent()[0] == 0x11) {
                     //  开失败，未知原因
-                    toast(context,"开失败，未知原因");
-                }else if(orderMessage.getDataContent()[0] == 0x12){
+                    toast(context, "开失败，未知原因");
+                } else if (orderMessage.getDataContent()[0] == 0x12) {
                     //  开失败，电机过载
-                    toast(context,"开失败，电机过载");
-                }else if(orderMessage.getDataContent()[0] == 0x00){
+                    toast(context, "开失败，电机过载");
+                } else if (orderMessage.getDataContent()[0] == 0x00) {
                     //  关成功
-                    toast(context,"关成功");
+                    toast(context, "关成功");
 
                     //  获取门板号
                     DustbinStateBean dustbinStateBean = DustbinUtil.getDustbinState(orderMessage.getOrder()[1]);
-                    if(dustbinStateBean != null){
-                        Log.i("结果","切换的桶" + dustbinStateBean.toString());
+                    if (dustbinStateBean != null) {
+                        Log.i("结果", "切换的桶" + dustbinStateBean.toString());
                         //  通知开启闪关灯并拍照
                         EventBus.getDefault().post(dustbinStateBean);
                     }
 
-                }else if(orderMessage.getDataContent()[0] == 0x01){
+                } else if (orderMessage.getDataContent()[0] == 0x01) {
                     //  关失败
-                    toast(context,"关失败");
+                    toast(context, "关失败");
 
 
                     ErrorReportBean errorReportBean = new ErrorReportBean();
                     //  错误描述
-                    errorReportBean.setMsg("关门失败，原因:" + (orderMessage.getDataContent()[0] == 0x01 ? "未知原因失败" : "电机过载") );
+                    errorReportBean.setMsg("关门失败，原因:" + (orderMessage.getDataContent()[0] == 0x01 ? "未知原因失败" : "电机过载"));
                     //  发生时间
                     errorReportBean.setTime(System.currentTimeMillis());
                     //  数据位
@@ -391,23 +399,24 @@ public class SerialPortResponseManage {
                     //  开始上报
                     NetWorkUtil.getInstance().errorUpload(errorReportBean);
 
-                    Log.i("结果",errorReportBean.toString());
+                    Log.i("结果", errorReportBean.toString());
 
                     //  本地错误记录
                     DataBaseUtil.getInstance(context).getDaoSession().getErrorReportBeanDao().insert(errorReportBean);
                 }
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.GET_DATA_BYTE){
 
-                Log.i(APP.TAG,"获取到数据");
+            } else if (orderMessage.getOrder()[0] == OrderUtil.GET_DATA_BYTE) {   //  获取数据
+
+                Log.i(APP.TAG, "获取到数据");
                 //  读取数据
 
-                Log.i(APP.TAG,"获取到数据位:" + ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
+                Log.i(APP.TAG, "获取到数据位:" + ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
 
                 DustbinStateBean dustbinStateBean = new DustbinStateBean();
                 //  重量 0-25000 * 10g
                 //dustbinStateBean.setDustbinWeight(orderMessage.getDataContent()[0] * 10);
-                dustbinStateBean.setDustbinWeight(bytes2Int(new byte[]{orderMessage.getDataContent()[0],orderMessage.getDataContent()[1]}));
+                dustbinStateBean.setDustbinWeight(bytes2Int(new byte[]{orderMessage.getDataContent()[0], orderMessage.getDataContent()[1]}));
                 //  温度0-200°C
                 dustbinStateBean.setTemperature(orderMessage.getDataContent()[2]);
                 //  湿度 0-100%
@@ -440,25 +449,27 @@ public class SerialPortResponseManage {
                 //  人工锁
                 dustbinStateBean.setArtificialDoorLock(chars[7] == '1');
 
-                Log.i(APP.TAG,"获取到数据的 二进制" + tString);
+                Log.i(APP.TAG, "获取到数据的 二进制" + tString);
                 Log.i(APP.TAG, "状态解析" + dustbinStateBean.toString());
 
                 APP.setDustbinState(dustbinStateBean);
 
 
                 //  人接近 与离开
-                /*DustbinStateBean oldDustbinStateBean =  DustbinUtil.getDustbinState(dustbinStateBean.getDoorNumber());
+                    /*DustbinStateBean oldDustbinStateBean =  DustbinUtil.getDustbinState(dustbinStateBean.getDoorNumber());
 
-                if(oldDustbinStateBean.getProximitySwitch()){
-                    if(dustbinStateBean.getProximitySwitch()){
+                    if(oldDustbinStateBean.getProximitySwitch()){
+                        if(dustbinStateBean.getProximitySwitch()){
 
-                    }else{
+                        }else{
 
-                    }
-                }*/
+                        }
+                    }*/
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.WEIGHING_BYTE) {
 
+
+                Log.i("串口","触发校准进入");
 
                 WeightCalibrationCall weightCalibrationCall = new WeightCalibrationCall();
                 weightCalibrationCall.setCalibrationNumber(1);
@@ -467,7 +478,9 @@ public class SerialPortResponseManage {
                 EventBus.getDefault().post(weightCalibrationCall);
 
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.WEIGHING_2_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.WEIGHING_2_BYTE) {
+
+                Log.i("串口","触发校准过程");
 
                 WeightCalibrationCall weightCalibrationCall = new WeightCalibrationCall();
                 weightCalibrationCall.setCalibrationNumber(2);
@@ -477,52 +490,46 @@ public class SerialPortResponseManage {
                 EventBus.getDefault().post(weightCalibrationCall);
 
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.STERILIZE_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.STERILIZE_BYTE) {
                 //  杀菌、消毒
 
 
-
-            }else if(orderMessage.getOrder()[0] == OrderUtil.LIGHT_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.LIGHT_BYTE) {
                 //  照明灯
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.EXHAUST_FAN_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.EXHAUST_FAN_BYTE) {
 
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.ELECTROMAGNETIC_SWITCH_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.ELECTROMAGNETIC_SWITCH_BYTE) {
                 //  加热
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.WARM_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.WARM_BYTE) {
                 //  加热
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.BLENDER_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.BLENDER_BYTE) {
 
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.DOG_HOUSE_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.DOG_HOUSE_BYTE) {
 
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.VENDING_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.VENDING_BYTE) {
                 //  售卖机指令转发
                 //OrderMessage orderMessage = OrderUtil.orderAnalysis(ByteStringUtil.hexStrToByteArray(order));
 
-            }else if(orderMessage.getOrder()[0] == OrderUtil.IC_CARD_BYTE){
+            } else if (orderMessage.getOrder()[0] == OrderUtil.IC_CARD_BYTE) {
                 //  IC 卡
-                ICCard icCard = new ICCard(0,ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
+                ICCard icCard = new ICCard(0, ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
                 EventBus.getDefault().post(icCard);
 
-            }else{
-                Log.i(MY_ORDER,"未知功能");
+            } else {
+                Log.i(MY_ORDER, "未知功能");
             }
-
-
-            //  每一次得到控制电路的响应，都要更新数据库中的数据，然后再更新 application 中的全局list变量
-            //  代表 全局 垃圾桶 list 对象
-            //.setDustbinBeanList(DataBaseUtil.getInstance(context).getDustbinByType(null));
-
-        }else{
-            Log.i(MY_ORDER,"非法指令");
+        } else {
+            //  一个是售卖机指令
+            Log.i(APP.TAG,"非法指令");
         }
-    }
 
+    }
 
     /**
      * byte[]转int

@@ -268,12 +268,18 @@ public class ImlSerialPortRequest {
          * */
         byte[] weightCalibration_1(int doorNumber);
 
+        /**
+         * 退出校准模式
+         * */
+        byte[] exitWeightCalibrationMode(int doorNumber);
+
 
         /**
          * 重量校准 2
          * @param weight 重量
          * */
         byte[] weightCalibration_2(int doorNumber,int weight);
+
 
         /**
          * 读取数据

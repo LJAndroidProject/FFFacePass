@@ -146,15 +146,22 @@ public class SerialPortService implements ISerialPortService {
             public void run() {
                 while(true){
                     try {
+
+                        if(inputStream == null){
+                            return;
+                        }
                         byte[] buffer = new byte[1024];
                         int size = inputStream.read(buffer);
-                        byte[] readBytes = new byte[size];
-                        System.arraycopy(buffer, 0, readBytes, 0, size);
+
+                        if(size > 0){
+                            byte[] readBytes = new byte[size];
+                            System.arraycopy(buffer, 0, readBytes, 0, size);
 
 
-                        serialResponseByteListener.response(readBytes);
+                            serialResponseByteListener.response(readBytes);
+                        }
 
-                        Thread.sleep(1);
+                        //Thread.sleep(1);
 
                     } catch (Exception e) {
                         Log.i("硬件对接串口日志","串口接收发生异常:" + e.getMessage());

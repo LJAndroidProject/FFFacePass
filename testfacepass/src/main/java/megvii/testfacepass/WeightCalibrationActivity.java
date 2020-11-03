@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -114,10 +115,9 @@ public class WeightCalibrationActivity extends AppCompatActivity {
      * */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void weightCalibrationCall(WeightCalibrationCall weightCalibrationCall){
-        Toast.makeText(WeightCalibrationActivity.this, weightCalibrationCall.toString(), Toast.LENGTH_SHORT).show();
-
         //  1 是进入校准成功 、 2 是校准回馈
         if(weightCalibrationCall.getCalibrationNumber() == 1){
+            //  这里是校准开始 与结束的地方
             if(weightCalibrationCall.getResult()[0] == 0x01){
                 //  进入校准模式
                 Toast.makeText(this, "进入校准模式成功，可以放置重物了", Toast.LENGTH_SHORT).show();
@@ -129,9 +129,13 @@ public class WeightCalibrationActivity extends AppCompatActivity {
 
             }else if(weightCalibrationCall.getResult()[0] == (byte)(0xff)){
                 Toast.makeText(this, "进入校准模式失败！", Toast.LENGTH_SHORT).show();
+
+            }else if(weightCalibrationCall.getResult()[0] == 0x10){
+                Toast.makeText(this, "手动退出校准模式", Toast.LENGTH_SHORT).show();
             }
         }else if(weightCalibrationCall.getCalibrationNumber() == 2){
-                Toast.makeText(this, "校准反馈" + bytes2Int(weightCalibrationCall.getResult()), Toast.LENGTH_SHORT).show();
+                //  这里是校准过程
+                Toast.makeText(this, "校准成功，重量: " + bytes2Int(weightCalibrationCall.getResult()), Toast.LENGTH_SHORT).show();
         }
     }
 

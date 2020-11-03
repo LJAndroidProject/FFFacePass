@@ -971,15 +971,16 @@ public class ControlActivity extends AppCompatActivity{
                                     Log.i("串口接收2", ByteStringUtil.byteArrayToHexStr(bytes));
 
                                         }
-                            },6000);
+                            },4000);
 
                             //  线程休眠 3s,给时间拍照
-                            Thread.sleep(6000);
+                            Thread.sleep(4000);
                         }
                     }
 
 
-                    Thread.sleep(1000);
+                    //  最后一张
+                    Thread.sleep(4000);
 
                     //  用户id设置为0
                     APP.userId = 0;

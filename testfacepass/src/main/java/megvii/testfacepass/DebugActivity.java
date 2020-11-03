@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.lgh.uvccamera.UVCCameraProxy;
 import com.lgh.uvccamera.bean.PicturePath;
+import com.lgh.uvccamera.callback.ConnectCallback;
 import com.serialportlibrary.util.ByteStringUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -77,6 +78,38 @@ public class DebugActivity extends AppCompatActivity {
         mUVCCamera.requestPermission(mUsbDevice);
 
 
+        mUVCCamera.setConnectCallback(new ConnectCallback() {
+            @Override
+            public void onAttached(UsbDevice usbDevice) {
+
+
+                mUVCCamera.requestPermission(mUsbDevice); // USB设备授权
+            }
+
+            @Override
+            public void onGranted(UsbDevice usbDevice, boolean granted) {
+                mUVCCamera.connectDevice(mUsbDevice);
+                // 外置摄像头是/dev/bus/usb/001/021
+            }
+
+            @Override
+            public void onConnected(UsbDevice usbDevice) {
+                mUVCCamera.openCamera(); // 打开相机
+            }
+
+            @Override
+            public void onCameraOpened() {
+                //  拍出来的1图片大小
+                mUVCCamera.setPreviewSize(640, 480); // 设置预览尺寸
+                mUVCCamera.startPreview(); // 开始预览
+            }
+
+            @Override
+            public void onDetached(UsbDevice usbDevice) {
+                mUVCCamera.closeCamera(); // 关闭相机
+            }
+        });
+
 
         target_door_number.addTextChangedListener(new TextWatcher() {
             @Override
@@ -103,6 +136,7 @@ public class DebugActivity extends AppCompatActivity {
                     mUsbDevice = getUsbCameraDevice(ControlActivity.hexToInt(doorNumber));
                     mUVCCamera.requestPermission(mUsbDevice);
 
+                    Toast.makeText(DebugActivity.this, "切换摄像头" + doorNumber, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -230,6 +264,10 @@ public class DebugActivity extends AppCompatActivity {
 
                         VendingUtil.transmitJoint(VendingUtil.getDeliveryByte(1),door),
 
+                        VendingUtil.transmitJoint(VendingUtil.getDeliveryByte(20),door),
+
+                        VendingUtil.transmitJoint(VendingUtil.getDeliveryByte(46),door),
+
                         //  进入校准
                         SerialPortRequestByteManage.getInstance().weightCalibration_1(door),
 
@@ -265,7 +303,9 @@ public class DebugActivity extends AppCompatActivity {
                         "关搅拌",
                         "开投料",
                         "关投料",
-                        "第一台售卖机的第一个货道",
+                        "售卖机的第一个货道",
+                        "售卖机的第二十个货道",
+                        "售卖机的第四十六个货道",
                         "进入校准模式",
                         "0g 校准",
                         "3 g校准",
