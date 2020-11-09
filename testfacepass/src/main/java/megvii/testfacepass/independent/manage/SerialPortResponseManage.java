@@ -355,7 +355,7 @@ public class SerialPortResponseManage {
                     toast(context, "开成功");
 
                     //  开成功关闭消毒灯
-                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(orderMessage.getOrder()[1]));
+                    // SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(orderMessage.getOrder()[1]));
                 } else if (orderMessage.getDataContent()[0] == 0x11) {
                     //  开失败，未知原因
                     toast(context, "开失败，未知原因");
@@ -433,7 +433,7 @@ public class SerialPortResponseManage {
                 char[] chars = tString.toCharArray();
 
                 //  挡板是否开启
-                dustbinStateBean.setProximitySwitch(chars[0] == '1');
+                dustbinStateBean.setDoorIsOpen(chars[0] == '1');
                 //  接近开关
                 dustbinStateBean.setProximitySwitch(chars[1] == '1');
                 //  人工门开关

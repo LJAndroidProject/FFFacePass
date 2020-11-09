@@ -47,6 +47,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import megvii.testfacepass.independent.ServerAddress;
 import megvii.testfacepass.independent.bean.AdminLoginResult;
+import megvii.testfacepass.independent.bean.CommodityAlternativeBean;
+import megvii.testfacepass.independent.bean.CommodityBean;
+import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.bean.DeliveryRecord;
 import megvii.testfacepass.independent.bean.DeliveryRecordDao;
 import megvii.testfacepass.independent.bean.DeliveryResult;
@@ -54,6 +57,7 @@ import megvii.testfacepass.independent.bean.DustbinBeanDao;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.GeneralBean;
+import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.bean.PhoneCodeVerifyBean;
 import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
@@ -97,6 +101,11 @@ public class ControlActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
+
+
+        //  更新商品列表
+        getGoodsPos();
+
 
         bottleDialog = new ProgressDialog(this);
         bottleDialog.setMessage("没有检测到瓶子...");
@@ -190,7 +199,7 @@ public class ControlActivity extends AppCompatActivity{
                                                                 NetWorkUtil.getInstance().doPost(ServerAddress.PHONE_CODE_VERIFY, ma, new NetWorkUtil.NetWorkListener() {
                                                                     @Override
                                                                     public void success(String response) {
-                                                                        PhoneCodeVerifyBean phoneCodeVerifyBean = new Gson().fromJson(response,PhoneCodeVerifyBean.class);
+                                                                        phoneCodeVerifyBean = new Gson().fromJson(response,PhoneCodeVerifyBean.class);
                                                                         if(phoneCodeVerifyBean.getCode() == 1){
                                                                             Log.i("结果",phoneCodeVerifyBean.toString());
 
@@ -697,7 +706,8 @@ public class ControlActivity extends AppCompatActivity{
                 String item = strings[which];
 
                 if(finalStrings[0].equals(item)){
-
+                    Intent intent = new Intent(ControlActivity.this, RecyclerAdminActivity.class);
+                    startActivity(intent);
                 }else if(finalStrings[1].equals(item)){
                     Intent intent = new Intent(ControlActivity.this, DustbinManageActivity.class);
                     startActivity(intent);
@@ -934,6 +944,83 @@ public class ControlActivity extends AppCompatActivity{
         }
     }
 
+
+
+
+    /**
+     * 获取商品列表，不管有没有售卖机 都将备选列表下载下来
+     * */
+    private void getGoodsPos(){
+        NetWorkUtil.getInstance().doGetThread(ServerAddress.GET_GOODS_POS, null, new NetWorkUtil.NetWorkListener() {
+            @Override
+            public void success(String response) {
+                GetServerGoods getServerGoods = new Gson().fromJson(response,GetServerGoods.class);
+                //  获取商品列表
+                List<GetServerGoods.DataBean.ListBean> listBeans = getServerGoods.getData().getList();
+
+
+                List<CommodityAlternativeBean> commodityAlternativeBeans = new ArrayList<>();
+                for(GetServerGoods.DataBean.ListBean listBean : listBeans){
+                    CommodityAlternativeBean commodityBean = new CommodityAlternativeBean();
+                    commodityBean.setCommodityName(listBean.getGoods_name());
+                    commodityBean.setCanUserIntegral(listBean.getScore_pay() == 1);
+                    commodityBean.setCommodityID((long) listBean.getId());
+                    commodityBean.setCommodityMoney(listBean.getGoods_price());
+                    commodityBean.setExpirationDate(listBean.getGoods_wonderful_days());
+                    commodityBean.setImageUrl(listBean.getGoods_image());
+                    commodityBean.setIntegralNumber(listBean.getScore_pay());
+                    commodityBean.setShelvesOf(listBean.getStatus() == 1);
+
+                    commodityAlternativeBeans.add(commodityBean);
+                }
+
+
+                DataBaseUtil.getInstance(ControlActivity.this).getDaoSession().getCommodityAlternativeBeanDao().insertOrReplaceInTx(commodityAlternativeBeans);
+
+                //  挨个更新
+                updateCommodity(commodityAlternativeBeans);
+            }
+
+            @Override
+            public void fail(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void error(Exception e) {
+
+            }
+        });
+    }
+
+
+    /**
+     * 传入需要更新的商品备选，更新商品备选列表，并更新列表商品
+     * @param commodityAlternativeBeans 修改当前商品的备选
+     * */
+    private void updateCommodity(List<CommodityAlternativeBean> commodityAlternativeBeans){
+
+        //  修改备选商品数据库
+        DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().saveInTx(commodityAlternativeBeans);
+
+        //  遍历变化的商品
+        for(CommodityAlternativeBean commodityAlternativeBean : commodityAlternativeBeans){
+            //  查询所有这个id的商品
+            List<CommodityBean> com = DataBaseUtil.getInstance(ControlActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.CommodityID.eq(commodityAlternativeBean.getCommodityID())).list();
+
+            //  该id下的商品 挨个进行赋值
+            for(CommodityBean c :com){
+                c.setCommodityID(commodityAlternativeBean.getCommodityID());
+                c.setCommodityAlternativeBean(commodityAlternativeBean);
+            }
+
+            //  修改应用到数据库
+            DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().saveInTx(com);
+        }
+    }
+
+
+
     /**
      * 退出进行结算
      * */
@@ -956,12 +1043,12 @@ public class ControlActivity extends AppCompatActivity{
                     for(final DustbinStateBean dustbinStateBean:dustbinBeanList){
 
                         //  扫描门板开启的箱体
-                        if(!dustbinStateBean.getDoorIsOpen()){
+                        if(dustbinStateBean.getDoorIsOpen()){
                             //  关闭门
                             SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
 
 
-                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     byte[] bytes = new byte[]{(byte) 0xF3 ,0x3F ,0x00 ,0x01 ,0x01 ,(byte) (dustbinStateBean.getDoorNumber() & 0xff) ,0x01 ,0x00 ,0x00 ,(byte) 0xF4 ,0x4F};
@@ -971,7 +1058,7 @@ public class ControlActivity extends AppCompatActivity{
                                     Log.i("串口接收2", ByteStringUtil.byteArrayToHexStr(bytes));
 
                                         }
-                            },4000);
+                            },4000);*/
 
                             //  线程休眠 3s,给时间拍照
                             Thread.sleep(4000);

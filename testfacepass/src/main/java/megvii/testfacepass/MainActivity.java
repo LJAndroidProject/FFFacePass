@@ -344,6 +344,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
+
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
         app.setDustbinConfig(dustbinConfig);
@@ -1190,7 +1191,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void icCard(final ICCard icCard){
 
-        Log.i("卡",icCard.toString());
+        Log.i("卡 ",icCard.toString());
 
         Map<String,String> map = new HashMap<>();
         map.put("card_code",icCard.getCardCode());
@@ -1231,7 +1232,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                         AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
                         alert.setCancelable(true);
-                        alert.setTitle("请使用微信扫描二维码绑定 IC 卡");
+                        alert.setTitle("请使用微信扫描二维码绑定 IC 卡 .");
                         alert.setView(imageView);
                         alert.create();
                         icAlert = alert.show();
@@ -1769,7 +1770,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
-        Toast.makeText(this, "触发", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "id 为 null", Toast.LENGTH_SHORT).show();
 
 
 

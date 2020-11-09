@@ -33,8 +33,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DebugActivity"></activity>
-        <!-- 您从百度网站获取的APP KEY，根据实际您的APP申请的APP_KEY进行修改 -->
+        <activity android:name=".RecyclerAdminActivity"></activity>
+        <activity android:name=".DebugActivity" /> <!-- 您从百度网站获取的APP KEY，根据实际您的APP申请的APP_KEY进行修改 -->
         <meta-data
             android:name="BaiduMobAd_STAT_ID"
             android:value="a9e2ad84a2" /> <!-- 渠道商编号 -->
@@ -57,7 +57,7 @@
             android:process=":remote" />
 
         <activity android:name=".WeightCalibrationActivity" />
-        <activity android:name=".DustbinManageActivity"></activity>
+        <activity android:name=".DustbinManageActivity" />
         <activity android:name=".InitConfig">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

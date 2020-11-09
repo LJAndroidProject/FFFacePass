@@ -40,6 +40,7 @@ import okhttp3.Call;
  * 常驻服务
  * */
 public class ResidentService extends Service {
+    private String TAG = "常驻服务";
     private Gson gson = new Gson();
 
     //  下载安装包中
@@ -73,18 +74,24 @@ public class ResidentService extends Service {
         super.onCreate();
 
 
+        /**
+         * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 暂不开启 ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！
+         *
+         * */
+
+
         //  设备状态上报服务器
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                Log.i("结果","上传状态");
-                List<DustbinStateBean> dustbinStateBeans = APP.dustbinBeanList;
+                Log.i(TAG,"上传状态");
 
-                if(dustbinStateBeans != null && dustbinStateBeans.size() > 0){
-                    NetWorkUtil.getInstance().stateUpload(ServerAddress.STATE_UPLOAD, (int)getAppVersionCode(ResidentService.this),dustbinStateBeans, new NetWorkUtil.NetWorkListener() {
+                if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0){
+                    Log.i("结果",APP.dustbinBeanList.toString());
+                    NetWorkUtil.getInstance().stateUpload(ServerAddress.STATE_UPLOAD, (int)getAppVersionCode(ResidentService.this),APP.dustbinBeanList, new NetWorkUtil.NetWorkListener() {
                         @Override
                         public void success(String response) {
-                            Log.i("结果2",response);
+                            Log.i(TAG,response);
                             StateCallBean stateCallBean = gson.fromJson(response, StateCallBean.class);
                             //  大于，并且没有已经在下载 所以要更新
                             if(stateCallBean.getData() !=null && stateCallBean.getData().getVersion_code() > getAppVersionCode(ResidentService.this) && !downloading){
@@ -107,7 +114,7 @@ public class ResidentService extends Service {
         };
 
         Timer timer = new Timer();
-        timer.schedule(timerTask,60 * 1000);
+        timer.schedule(timerTask,1,60 * 1000);
 
 
 
@@ -120,19 +127,14 @@ public class ResidentService extends Service {
             @Override
             public void run() {
                 if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0){
-                    try {
-
-                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().getDate(0));
-
-                        Thread.sleep(500);
-                    }catch (Exception e){
-                        e.printStackTrace();
-                    }
+                    Log.i(TAG,"获取垃圾箱状态");
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().getDate(1));
                 }
             }
         };
 
-        timer.schedule(getDustbinState,500);
+        Timer timer2 = new Timer();
+        timer2.schedule(getDustbinState,1,500);
     }
 
 

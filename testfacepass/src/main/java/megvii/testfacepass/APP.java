@@ -45,14 +45,14 @@ public class APP extends Application {
 
         handler = new Handler(Looper.getMainLooper());
 
-        /*//  设置垃圾箱配置
+        //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
         setDustbinConfig(dustbinConfig);
         //  代表 全局 垃圾桶 list 对象
-        setDustbinBeanList(DataBaseUtil.getInstance(this).getDustbinByType(null));*/
+        setDustbinBeanList(DataBaseUtil.getInstance(this).getDustbinByType(null));
 
         // 如果垃圾箱为 null 则创建
-        if(APP.dustbinBeanList == null || APP.dustbinBeanList .size() == 0){
+        /*if(APP.dustbinBeanList == null || APP.dustbinBeanList .size() == 0){
             List<DustbinStateBean> dustbinStateBeans = new ArrayList<>();
             for(int i = 1 ;i <= 4 ;i++){
                 DustbinStateBean dustbinStateBean = new DustbinStateBean();
@@ -61,7 +61,7 @@ public class APP extends Application {
             }
 
             APP.dustbinBeanList = dustbinStateBeans;
-        }
+        }*/
 
 
         //  注册串口监听,与硬件进行通信
@@ -195,8 +195,8 @@ public class APP extends Application {
         return dustbinConfig;
     }
 
-    public void setDustbinConfig(DustbinConfig dustbinConfig) {
-        this.dustbinConfig = dustbinConfig;
+    public void setDustbinConfig(DustbinConfig dustbinConfigBean) {
+        dustbinConfig = dustbinConfigBean;
     }
 
     public String getKey() {
@@ -237,8 +237,12 @@ public class APP extends Application {
      * */
     public static void setDustbinState(DustbinStateBean dustbinStateBean){
         // 1. boolean hasMan = false;
-        for(int i = 0 ; i < dustbinBeanList.size(); i++){
+        for(int i = 1 ; i < dustbinBeanList.size(); i++){
             if(dustbinBeanList.get(i).getDoorNumber() == dustbinStateBean.getDoorNumber()){
+
+                //  之前没有设置 垃圾箱  id 导致为 null
+
+                dustbinStateBean.setId(dustbinBeanList.get(i).getId());
                 dustbinBeanList.set(i,dustbinStateBean);
             }
 

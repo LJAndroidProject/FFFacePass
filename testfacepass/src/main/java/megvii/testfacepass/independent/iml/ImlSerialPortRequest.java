@@ -235,7 +235,7 @@ public class ImlSerialPortRequest {
 
 
         /**
-         * 打开电磁投料口
+         * 打开投料口
          * @param doorNumber 第几扇门
          * */
         byte[] openDogHouse(int doorNumber);
@@ -243,7 +243,7 @@ public class ImlSerialPortRequest {
 
 
         /**
-         * 关闭电磁投料口
+         * 关闭投料口
          * @param doorNumber 第几扇门
          * */
         byte[] closeDogHouse(int doorNumber);

@@ -57,6 +57,12 @@ MtjCirclePluginConfig {
     enabled = true
 }
 
+
+task clean1(type: Exec) {
+    //commandLine 'cmd', "$lockhunter", '/delete', '/silent', buildDir
+    commandLine 'cmd'
+}
+
 dependencies {
     implementation files('libs\\BaiduLBS_Android.jar')
     compile fileTree(dir: 'libs', include: ['*.jar'])

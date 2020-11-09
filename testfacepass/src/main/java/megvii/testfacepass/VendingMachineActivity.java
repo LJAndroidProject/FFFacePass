@@ -95,8 +95,8 @@ public class VendingMachineActivity extends AppCompatActivity {
         vendingMachineActivity_title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(VendingMachineActivity.this,ReplenishmentActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(VendingMachineActivity.this,ReplenishmentActivity.class);
+                startActivity(intent);*/
             }
         });
 

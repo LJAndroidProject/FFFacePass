@@ -184,6 +184,52 @@ public class NetWorkUtil {
     }
 
 
+
+
+    /**
+     * 注意回调是子线程
+     * */
+    public void doGetThread(String url, Map<String,String> map, final NetWorkListener networkListener){
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if(map != null && map.size() > 0){
+            stringBuilder.append("?");
+            for(Map.Entry<String,String> e : map.entrySet()){
+                stringBuilder.append(e.getKey());//e.getValue()
+                stringBuilder.append("=");
+                stringBuilder.append(e.getValue());
+                stringBuilder.append("&");
+            }
+            stringBuilder.deleteCharAt(stringBuilder.length()-1);
+        }
+
+        Request request = new Request.Builder().url(url + stringBuilder.toString()).build();
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(final Call call,final IOException e) {
+                networkListener.fail(call,e);
+
+            }
+
+            @Override
+            public void onResponse(final Call call, final Response response) {
+
+                if(response.isSuccessful()){
+                    try {
+                        networkListener.success(response.body().string());
+                    }catch (Exception e){
+                        networkListener.error(e);
+                    }
+                }else{
+                    networkListener.error(new Exception("服务器异常"));
+                }
+
+            }
+        });
+
+    }
+
+
     /**
      * 错误上报
      *
