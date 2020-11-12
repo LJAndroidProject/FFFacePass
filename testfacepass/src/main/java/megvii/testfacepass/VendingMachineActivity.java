@@ -430,7 +430,9 @@ public class VendingMachineActivity extends AppCompatActivity {
 
         //Log.i("串口",Integer.toHexString(c .getTierChildrenNumber()));
 
-        VendingUtil.delivery(c .getTierChildrenNumber());
+
+        SerialPortUtil.getInstance().sendData(VendingUtil.transmitJoint(VendingUtil.getDeliveryByte(c .getTierChildrenNumber()),1));
+        //VendingUtil.delivery(c .getTierChildrenNumber());
 
         /*byte[] headBytes = new byte[]{0x0D,0x24};
         byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (c .getTierChildrenNumber() & 0xff)*//*,number[0]*//*,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};

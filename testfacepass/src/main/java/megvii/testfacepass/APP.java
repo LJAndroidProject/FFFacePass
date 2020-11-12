@@ -1,10 +1,12 @@
 package megvii.testfacepass;
 
 import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.serialportlibrary.service.impl.SerialPortService;
 import com.serialportlibrary.util.ByteStringUtil;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import megvii.testfacepass.independent.bean.DustbinConfig;
+import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.DebugLogBean;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
@@ -38,6 +41,9 @@ public class APP extends Application {
 
     private Handler handler;
 
+    //  apk 类型 例如 智能款、智能简易款
+    public final static int ApkType = 1;
+
 
     @Override
     public void onCreate() {
@@ -48,6 +54,7 @@ public class APP extends Application {
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
         setDustbinConfig(dustbinConfig);
+
         //  代表 全局 垃圾桶 list 对象
         setDustbinBeanList(DataBaseUtil.getInstance(this).getDustbinByType(null));
 
@@ -63,6 +70,7 @@ public class APP extends Application {
             APP.dustbinBeanList = dustbinStateBeans;
         }*/
 
+        Log.i("改变","改变1");
 
         //  注册串口监听,与硬件进行通信
         SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseByteListener() {
@@ -235,7 +243,7 @@ public class APP extends Application {
     /**
      * 修改垃圾箱
      * */
-    public static void setDustbinState(DustbinStateBean dustbinStateBean){
+    public static void setDustbinState(Context context,DustbinStateBean dustbinStateBean){
         // 1. boolean hasMan = false;
         for(int i = 1 ; i < dustbinBeanList.size(); i++){
             if(dustbinBeanList.get(i).getDoorNumber() == dustbinStateBean.getDoorNumber()){
@@ -244,6 +252,26 @@ public class APP extends Application {
 
                 dustbinStateBean.setId(dustbinBeanList.get(i).getId());
                 dustbinBeanList.set(i,dustbinStateBean);
+
+                if(dustbinStateBean.getDustbinBoxType() != null && dustbinStateBean.getDustbinBoxType() != null){
+                    //  如果是厨余垃圾 和 其它垃圾 ，人工门被开启或关闭 ，则删除所有记录
+                    if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.KITCHEN.toString())
+                            || dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())){
+
+                        //  如果之前人工门关闭为 true，而新的为 false 说明人工门被打开了
+                        if(dustbinBeanList.get(i).getArtificialDoor() && !dustbinStateBean.getArtificialDoor()){
+
+                            //  可以顺带一次去皮
+
+
+                            //  删除所有投递记录
+                            DataBaseUtil.getInstance(context).getDaoSession().getDeliveryRecordDao().deleteAll();
+
+                        }
+
+                    }
+                }
+
             }
 
             // 2. 有一个桶 有人 就 true

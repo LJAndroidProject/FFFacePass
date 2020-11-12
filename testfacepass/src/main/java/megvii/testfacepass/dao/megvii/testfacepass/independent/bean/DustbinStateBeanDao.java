@@ -29,14 +29,15 @@ public class DustbinStateBeanDao extends AbstractDao<DustbinStateBean, Long> {
         public final static Property DustbinWeight = new Property(4, double.class, "dustbinWeight", false, "DUSTBIN_WEIGHT");
         public final static Property Temperature = new Property(5, double.class, "temperature", false, "TEMPERATURE");
         public final static Property Humidity = new Property(6, double.class, "humidity", false, "HUMIDITY");
-        public final static Property DoorIsOpen = new Property(7, boolean.class, "doorIsOpen", false, "DOOR_IS_OPEN");
-        public final static Property ProximitySwitch = new Property(8, boolean.class, "proximitySwitch", false, "PROXIMITY_SWITCH");
-        public final static Property ArtificialDoor = new Property(9, boolean.class, "artificialDoor", false, "ARTIFICIAL_DOOR");
-        public final static Property IsFull = new Property(10, boolean.class, "isFull", false, "IS_FULL");
-        public final static Property PushRod = new Property(11, boolean.class, "pushRod", false, "PUSH_ROD");
-        public final static Property AbnormalCommunication = new Property(12, boolean.class, "abnormalCommunication", false, "ABNORMAL_COMMUNICATION");
-        public final static Property DeliverLock = new Property(13, boolean.class, "deliverLock", false, "DELIVER_LOCK");
-        public final static Property ArtificialDoorLock = new Property(14, boolean.class, "artificialDoorLock", false, "ARTIFICIAL_DOOR_LOCK");
+        public final static Property CloseFailNumber = new Property(7, int.class, "closeFailNumber", false, "CLOSE_FAIL_NUMBER");
+        public final static Property DoorIsOpen = new Property(8, boolean.class, "doorIsOpen", false, "DOOR_IS_OPEN");
+        public final static Property ProximitySwitch = new Property(9, boolean.class, "proximitySwitch", false, "PROXIMITY_SWITCH");
+        public final static Property ArtificialDoor = new Property(10, boolean.class, "artificialDoor", false, "ARTIFICIAL_DOOR");
+        public final static Property IsFull = new Property(11, boolean.class, "isFull", false, "IS_FULL");
+        public final static Property PushRod = new Property(12, boolean.class, "pushRod", false, "PUSH_ROD");
+        public final static Property AbnormalCommunication = new Property(13, boolean.class, "abnormalCommunication", false, "ABNORMAL_COMMUNICATION");
+        public final static Property DeliverLock = new Property(14, boolean.class, "deliverLock", false, "DELIVER_LOCK");
+        public final static Property ArtificialDoorLock = new Property(15, boolean.class, "artificialDoorLock", false, "ARTIFICIAL_DOOR_LOCK");
     }
 
 
@@ -59,14 +60,15 @@ public class DustbinStateBeanDao extends AbstractDao<DustbinStateBean, Long> {
                 "\"DUSTBIN_WEIGHT\" REAL NOT NULL ," + // 4: dustbinWeight
                 "\"TEMPERATURE\" REAL NOT NULL ," + // 5: temperature
                 "\"HUMIDITY\" REAL NOT NULL ," + // 6: humidity
-                "\"DOOR_IS_OPEN\" INTEGER NOT NULL ," + // 7: doorIsOpen
-                "\"PROXIMITY_SWITCH\" INTEGER NOT NULL ," + // 8: proximitySwitch
-                "\"ARTIFICIAL_DOOR\" INTEGER NOT NULL ," + // 9: artificialDoor
-                "\"IS_FULL\" INTEGER NOT NULL ," + // 10: isFull
-                "\"PUSH_ROD\" INTEGER NOT NULL ," + // 11: pushRod
-                "\"ABNORMAL_COMMUNICATION\" INTEGER NOT NULL ," + // 12: abnormalCommunication
-                "\"DELIVER_LOCK\" INTEGER NOT NULL ," + // 13: deliverLock
-                "\"ARTIFICIAL_DOOR_LOCK\" INTEGER NOT NULL );"); // 14: artificialDoorLock
+                "\"CLOSE_FAIL_NUMBER\" INTEGER NOT NULL ," + // 7: closeFailNumber
+                "\"DOOR_IS_OPEN\" INTEGER NOT NULL ," + // 8: doorIsOpen
+                "\"PROXIMITY_SWITCH\" INTEGER NOT NULL ," + // 9: proximitySwitch
+                "\"ARTIFICIAL_DOOR\" INTEGER NOT NULL ," + // 10: artificialDoor
+                "\"IS_FULL\" INTEGER NOT NULL ," + // 11: isFull
+                "\"PUSH_ROD\" INTEGER NOT NULL ," + // 12: pushRod
+                "\"ABNORMAL_COMMUNICATION\" INTEGER NOT NULL ," + // 13: abnormalCommunication
+                "\"DELIVER_LOCK\" INTEGER NOT NULL ," + // 14: deliverLock
+                "\"ARTIFICIAL_DOOR_LOCK\" INTEGER NOT NULL );"); // 15: artificialDoorLock
     }
 
     /** Drops the underlying database table. */
@@ -97,14 +99,15 @@ public class DustbinStateBeanDao extends AbstractDao<DustbinStateBean, Long> {
         stmt.bindDouble(5, entity.getDustbinWeight());
         stmt.bindDouble(6, entity.getTemperature());
         stmt.bindDouble(7, entity.getHumidity());
-        stmt.bindLong(8, entity.getDoorIsOpen() ? 1L: 0L);
-        stmt.bindLong(9, entity.getProximitySwitch() ? 1L: 0L);
-        stmt.bindLong(10, entity.getArtificialDoor() ? 1L: 0L);
-        stmt.bindLong(11, entity.getIsFull() ? 1L: 0L);
-        stmt.bindLong(12, entity.getPushRod() ? 1L: 0L);
-        stmt.bindLong(13, entity.getAbnormalCommunication() ? 1L: 0L);
-        stmt.bindLong(14, entity.getDeliverLock() ? 1L: 0L);
-        stmt.bindLong(15, entity.getArtificialDoorLock() ? 1L: 0L);
+        stmt.bindLong(8, entity.getCloseFailNumber());
+        stmt.bindLong(9, entity.getDoorIsOpen() ? 1L: 0L);
+        stmt.bindLong(10, entity.getProximitySwitch() ? 1L: 0L);
+        stmt.bindLong(11, entity.getArtificialDoor() ? 1L: 0L);
+        stmt.bindLong(12, entity.getIsFull() ? 1L: 0L);
+        stmt.bindLong(13, entity.getPushRod() ? 1L: 0L);
+        stmt.bindLong(14, entity.getAbnormalCommunication() ? 1L: 0L);
+        stmt.bindLong(15, entity.getDeliverLock() ? 1L: 0L);
+        stmt.bindLong(16, entity.getArtificialDoorLock() ? 1L: 0L);
     }
 
     @Override
@@ -129,14 +132,15 @@ public class DustbinStateBeanDao extends AbstractDao<DustbinStateBean, Long> {
         stmt.bindDouble(5, entity.getDustbinWeight());
         stmt.bindDouble(6, entity.getTemperature());
         stmt.bindDouble(7, entity.getHumidity());
-        stmt.bindLong(8, entity.getDoorIsOpen() ? 1L: 0L);
-        stmt.bindLong(9, entity.getProximitySwitch() ? 1L: 0L);
-        stmt.bindLong(10, entity.getArtificialDoor() ? 1L: 0L);
-        stmt.bindLong(11, entity.getIsFull() ? 1L: 0L);
-        stmt.bindLong(12, entity.getPushRod() ? 1L: 0L);
-        stmt.bindLong(13, entity.getAbnormalCommunication() ? 1L: 0L);
-        stmt.bindLong(14, entity.getDeliverLock() ? 1L: 0L);
-        stmt.bindLong(15, entity.getArtificialDoorLock() ? 1L: 0L);
+        stmt.bindLong(8, entity.getCloseFailNumber());
+        stmt.bindLong(9, entity.getDoorIsOpen() ? 1L: 0L);
+        stmt.bindLong(10, entity.getProximitySwitch() ? 1L: 0L);
+        stmt.bindLong(11, entity.getArtificialDoor() ? 1L: 0L);
+        stmt.bindLong(12, entity.getIsFull() ? 1L: 0L);
+        stmt.bindLong(13, entity.getPushRod() ? 1L: 0L);
+        stmt.bindLong(14, entity.getAbnormalCommunication() ? 1L: 0L);
+        stmt.bindLong(15, entity.getDeliverLock() ? 1L: 0L);
+        stmt.bindLong(16, entity.getArtificialDoorLock() ? 1L: 0L);
     }
 
     @Override
@@ -154,14 +158,15 @@ public class DustbinStateBeanDao extends AbstractDao<DustbinStateBean, Long> {
             cursor.getDouble(offset + 4), // dustbinWeight
             cursor.getDouble(offset + 5), // temperature
             cursor.getDouble(offset + 6), // humidity
-            cursor.getShort(offset + 7) != 0, // doorIsOpen
-            cursor.getShort(offset + 8) != 0, // proximitySwitch
-            cursor.getShort(offset + 9) != 0, // artificialDoor
-            cursor.getShort(offset + 10) != 0, // isFull
-            cursor.getShort(offset + 11) != 0, // pushRod
-            cursor.getShort(offset + 12) != 0, // abnormalCommunication
-            cursor.getShort(offset + 13) != 0, // deliverLock
-            cursor.getShort(offset + 14) != 0 // artificialDoorLock
+            cursor.getInt(offset + 7), // closeFailNumber
+            cursor.getShort(offset + 8) != 0, // doorIsOpen
+            cursor.getShort(offset + 9) != 0, // proximitySwitch
+            cursor.getShort(offset + 10) != 0, // artificialDoor
+            cursor.getShort(offset + 11) != 0, // isFull
+            cursor.getShort(offset + 12) != 0, // pushRod
+            cursor.getShort(offset + 13) != 0, // abnormalCommunication
+            cursor.getShort(offset + 14) != 0, // deliverLock
+            cursor.getShort(offset + 15) != 0 // artificialDoorLock
         );
         return entity;
     }
@@ -175,14 +180,15 @@ public class DustbinStateBeanDao extends AbstractDao<DustbinStateBean, Long> {
         entity.setDustbinWeight(cursor.getDouble(offset + 4));
         entity.setTemperature(cursor.getDouble(offset + 5));
         entity.setHumidity(cursor.getDouble(offset + 6));
-        entity.setDoorIsOpen(cursor.getShort(offset + 7) != 0);
-        entity.setProximitySwitch(cursor.getShort(offset + 8) != 0);
-        entity.setArtificialDoor(cursor.getShort(offset + 9) != 0);
-        entity.setIsFull(cursor.getShort(offset + 10) != 0);
-        entity.setPushRod(cursor.getShort(offset + 11) != 0);
-        entity.setAbnormalCommunication(cursor.getShort(offset + 12) != 0);
-        entity.setDeliverLock(cursor.getShort(offset + 13) != 0);
-        entity.setArtificialDoorLock(cursor.getShort(offset + 14) != 0);
+        entity.setCloseFailNumber(cursor.getInt(offset + 7));
+        entity.setDoorIsOpen(cursor.getShort(offset + 8) != 0);
+        entity.setProximitySwitch(cursor.getShort(offset + 9) != 0);
+        entity.setArtificialDoor(cursor.getShort(offset + 10) != 0);
+        entity.setIsFull(cursor.getShort(offset + 11) != 0);
+        entity.setPushRod(cursor.getShort(offset + 12) != 0);
+        entity.setAbnormalCommunication(cursor.getShort(offset + 13) != 0);
+        entity.setDeliverLock(cursor.getShort(offset + 14) != 0);
+        entity.setArtificialDoorLock(cursor.getShort(offset + 15) != 0);
      }
     
     @Override

@@ -362,7 +362,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("加载中...");
+        progressDialog.setMessage("加载中...。。");
         progressDialog.create();
 
         /*new Handler().postDelayed(new Runnable() {
@@ -404,7 +404,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         //  开启友盟推送
-        PushAgent.getInstance(this).onAppStart();
+        //PushAgent.getInstance(this).onAppStart();
 
         EventBus.getDefault().register(this);
 
@@ -1770,7 +1770,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
 
-        Toast.makeText(this, "id 为 null", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "id 为 null 1", Toast.LENGTH_SHORT).show();
 
 
 

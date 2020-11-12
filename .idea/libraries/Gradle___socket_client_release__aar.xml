@@ -8,6 +8,13 @@
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d9fca2f3c3776aff7131e307392497fe/jars/libs/netty-all-4.1.41.Final.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d9fca2f3c3776aff7131e307392497fe/jars/libs/slf4j-api-1.7.28.jar!/" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/d9fca2f3c3776aff7131e307392497fe/jars/libs/slf4j-nop-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/46ac8038b55a5e615233bddd4be139a1/jars/libs/log4j-over-slf4j-1.7.28.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/46ac8038b55a5e615233bddd4be139a1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/46ac8038b55a5e615233bddd4be139a1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/46ac8038b55a5e615233bddd4be139a1/jars/libs/slf4j-api-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/46ac8038b55a5e615233bddd4be139a1/jars/libs/slf4j-nop-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/46ac8038b55a5e615233bddd4be139a1/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/46ac8038b55a5e615233bddd4be139a1/jars/libs/netty-all-4.1.41.Final.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

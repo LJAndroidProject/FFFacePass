@@ -13,7 +13,7 @@
         <android.support.v7.widget.Toolbar
             app:theme="@style/MyDarkToolBarTheme"
             app:navigationIcon="?attr/homeAsUpIndicator"
-            android:id="@+id/awc_toolbar"
+            android:id="@+id/debug_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="设备调试"

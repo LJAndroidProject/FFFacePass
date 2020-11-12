@@ -53,4 +53,12 @@
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
+
+
+
+    <style name="SingleChoiceItemsDialogStyle" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
+        <!--修改AlertDialog按钮的颜色-->
+        <item name="android:listChoiceIndicatorSingle">@null</item>
+    </style>
+
 </resources>

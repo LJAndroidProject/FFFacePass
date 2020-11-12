@@ -2,12 +2,17 @@
   <library name="Gradle: com.android.support:support-fragment:25.0.0@aar">
     <ANNOTATIONS>
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/057c003c7b60bcc3361c73be6fee47ca/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f0ecb0bd826ef19ed091295a8f20ca0e/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/057c003c7b60bcc3361c73be6fee47ca/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/057c003c7b60bcc3361c73be6fee47ca/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/057c003c7b60bcc3361c73be6fee47ca/res" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/057c003c7b60bcc3361c73be6fee47ca/jars/libs/internal_impl-25.0.0.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f0ecb0bd826ef19ed091295a8f20ca0e/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f0ecb0bd826ef19ed091295a8f20ca0e/jars/libs/internal_impl-25.0.0.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f0ecb0bd826ef19ed091295a8f20ca0e/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f0ecb0bd826ef19ed091295a8f20ca0e/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

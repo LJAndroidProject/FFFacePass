@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FacePass.iml" filepath="$PROJECT_DIR$/.idea/modules/FacePass.iml" group="FacePass" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/serialportlibrary/serialportlibrary.iml" filepath="$PROJECT_DIR$/.idea/modules/serialportlibrary/serialportlibrary.iml" group="FacePass/serialportlibrary" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/testfacepass/testfacepass.iml" filepath="$PROJECT_DIR$/.idea/modules/testfacepass/testfacepass.iml" group="FacePass/testfacepass" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FacePass.iml" filepath="$PROJECT_DIR$/.idea/modules/FacePass.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/serialportlibrary/FacePass.serialportlibrary.iml" filepath="$PROJECT_DIR$/.idea/modules/serialportlibrary/FacePass.serialportlibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/testfacepass/FacePass.testfacepass.iml" filepath="$PROJECT_DIR$/.idea/modules/testfacepass/FacePass.testfacepass.iml" />
     </modules>
   </component>
 </project>

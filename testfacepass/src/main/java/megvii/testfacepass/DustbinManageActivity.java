@@ -1,5 +1,6 @@
 package megvii.testfacepass;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
@@ -14,8 +15,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -30,6 +33,7 @@ import megvii.testfacepass.independent.bean.CommodityBean;
 import megvii.testfacepass.independent.bean.CommodityBeanDao;
 import megvii.testfacepass.independent.bean.DeliveryRecord;
 import megvii.testfacepass.independent.bean.DeliveryRecordDao;
+import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.ErrorMessage;
 import megvii.testfacepass.independent.bean.ErrorMessageDao;
 import megvii.testfacepass.independent.util.DataBaseUtil;
@@ -52,6 +56,7 @@ public class DustbinManageActivity extends AppCompatActivity {
     DustbinManageRecordAdapter dustbinManageRecordAdapter;
     View errorHeadView,recordHeadView;
     DustbinManageErrorRecordAdapter dustbinManageErrorRecordAdapter;
+    Switch dustbin_switch_status,dustbin_switch_foreground;
 
 
     List<DeliveryRecord> deliveryRecords;
@@ -61,8 +66,38 @@ public class DustbinManageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dustbin_manage);
 
+
+
         tabLayout = (TabLayout) findViewById(R.id.dustbin_manage_tabLayout);
+        dustbin_switch_status = (Switch)findViewById(R.id.dustbin_switch_status);
+        dustbin_switch_foreground = (Switch)findViewById(R.id.dustbin_switch_foreground);
         dustbin_manage_recyclerView = (RecyclerView)findViewById(R.id.dustbin_manage_recyclerView);
+
+        dustbin_switch_status.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //  隐藏状态栏，也就是 app 打开后不能退出
+                Intent intent = new Intent("android.q_zheng.action.statusbar");
+                intent.putExtra("forbidden",isChecked);
+                intent.putExtra("status_bar",isChecked);
+                intent.putExtra("navigation_bar",isChecked);
+                sendBroadcast(intent);
+
+            }
+        });
+
+        dustbin_switch_foreground.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //  监听 app 是否在前台
+                Intent intent2 = new Intent("android.q_zheng.action.APPMONITOR");
+                intent2.putExtra("package_name","megvii.testfacepass"); //设置所监控应用的包名为 com.xxx.yyy
+                intent2.putExtra("self_starting", true); //设置开机自启动
+                intent2.putExtra("period", isChecked ? 15 : 0); //设置监控应有的周期，秒为单位，最小值为 15 秒，如果不设置
+                //或者为 0，表示不需要系统对应用是否在前台进行监控
+                sendBroadcast(intent2);
+            }
+        });
 
 
         errorHeadView = View.inflate(DustbinManageActivity.this,R.layout.error_record_layout,null);
@@ -81,7 +116,7 @@ public class DustbinManageActivity extends AppCompatActivity {
         dustbinManageRecordAdapter = new DustbinManageRecordAdapter(R.layout.item_record_layout,deliveryRecords);
         dustbinManageRecordAdapter.addHeaderView(recordHeadView);
 
-        Toolbar mToolbarTb = (Toolbar) findViewById(R.id.tb_toolbar);
+        Toolbar mToolbarTb = (Toolbar) findViewById(R.id.dustbin_manage_toolbar);
         setSupportActionBar(mToolbarTb);
 
         mToolbarTb.setNavigationOnClickListener(new View.OnClickListener(){
@@ -160,13 +195,19 @@ public class DustbinManageActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
+            case R.id.dustbin_menu_afresh_calibration:
+                startActivity(new Intent(DustbinManageActivity.this,WeightCalibrationActivity.class));
+                break;
+            case R.id.dustbin_menu_debug:
+                startActivity(new Intent(DustbinManageActivity.this,DebugActivity.class));
+                break;
             case R.id.dustbin_menu_check:
                 break;
             case R.id.dustbin_menu_clear:
-                DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().deleteAll();
-
+                DataBaseUtil.getInstance(this).getDaoSession().getAllDaos().clear();
                 break;
             case R.id.dustbin_menu_exit:
+                System.exit(0);
                 break;
         }
         return super.onOptionsItemSelected(item);

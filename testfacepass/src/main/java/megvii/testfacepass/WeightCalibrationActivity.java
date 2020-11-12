@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -65,6 +66,9 @@ public class WeightCalibrationActivity extends AppCompatActivity {
         });
 
         awc_weight_btn = (Button) findViewById(R.id.awc_weight_btn);
+
+
+
 
 
         EventBus.getDefault().register(this);

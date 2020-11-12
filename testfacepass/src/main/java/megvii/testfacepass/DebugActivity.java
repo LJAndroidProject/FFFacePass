@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import com.lgh.uvccamera.UVCCameraProxy;
 import com.lgh.uvccamera.bean.PicturePath;
@@ -63,6 +64,14 @@ public class DebugActivity extends AppCompatActivity {
         debug_camera_textTueView = (TextView)findViewById(R.id.debug_camera_textTueView);
 
 
+        Toolbar debug_toolbar = (Toolbar)findViewById(R.id.debug_toolbar);
+        debug_toolbar.setNavigationOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                finish();
+            }
+        });
+
+
         mUVCCamera = new UVCCameraProxy(this);
         mUVCCamera.getConfig()
                 .isDebug(true) // 是否调试
@@ -74,7 +83,7 @@ public class DebugActivity extends AppCompatActivity {
         mUVCCamera.setPreviewTexture(debug_textTueView); // TextureView
 
         //  默认摄像头
-        mUsbDevice = getUsbCameraDevice(ControlActivity.hexToInt(1));
+        mUsbDevice = getUsbCameraDevice(ControlActivity.doorNumberToPid(1));
         mUVCCamera.requestPermission(mUsbDevice);
 
 
@@ -133,7 +142,7 @@ public class DebugActivity extends AppCompatActivity {
                     mUVCCamera.closeCamera();
 
                     //  切换摄像头
-                    mUsbDevice = getUsbCameraDevice(ControlActivity.hexToInt(doorNumber));
+                    mUsbDevice = getUsbCameraDevice(ControlActivity.doorNumberToPid(doorNumber));
                     mUVCCamera.requestPermission(mUsbDevice);
 
                     Toast.makeText(DebugActivity.this, "切换摄像头" + doorNumber, Toast.LENGTH_SHORT).show();

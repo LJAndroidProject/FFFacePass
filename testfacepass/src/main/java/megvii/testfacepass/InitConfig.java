@@ -131,7 +131,7 @@ public class InitConfig extends AppCompatActivity {
                                 String typeNumber = listBean.getBin_type();
 
 
-                                list.add(new DustbinStateBean(id,number,typeString,typeNumber,0,0,0,false,false,false,false,false,false,false,false));
+                                list.add(new DustbinStateBean(id,number,typeString,typeNumber,0,0,0,0,false,false,false,false,false,false,false,false));
                             }
 
                             //  保存箱体配置
@@ -363,12 +363,26 @@ public class InitConfig extends AppCompatActivity {
                 DataBaseUtil.getInstance(InitConfig.this).getDaoSession().getCommodityAlternativeBeanDao().insertOrReplaceInTx(commodityAlternativeBeans);
 
                 progressDialog.dismiss();
-                Toast.makeText(InitConfig.this, "获取售货机备选成功", Toast.LENGTH_SHORT).show();
+                Toast.makeText(InitConfig.this, "获取售货机备选商品成功！", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void fail(Call call, IOException e) {
                 Toast.makeText(InitConfig.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder alert = new AlertDialog.Builder(InitConfig.this);
+                alert.setCancelable(false);
+                alert.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                        finish();
+                    }
+                });
+                alert.setMessage("没有网络，请连网后再试。");
+                alert.create();
+                alert.show();
                 progressDialog.dismiss();
             }
 

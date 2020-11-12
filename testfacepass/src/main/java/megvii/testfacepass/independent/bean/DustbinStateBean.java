@@ -47,6 +47,8 @@ public class DustbinStateBean {
      * */
 
 
+    //  关闭失败次数
+    private int closeFailNumber;
     //  电机是否开启，也就是垃圾门是否开启
     private boolean doorIsOpen;
     //  接近开关
@@ -63,12 +65,12 @@ public class DustbinStateBean {
     private boolean deliverLock;
     //  人工门锁
     private boolean artificialDoorLock;
-    @Generated(hash = 102999780)
+    @Generated(hash = 1745814078)
     public DustbinStateBean(Long id, int doorNumber, String dustbinBoxType,
             String dustbinBoxNumber, double dustbinWeight, double temperature,
-            double humidity, boolean doorIsOpen, boolean proximitySwitch,
-            boolean artificialDoor, boolean isFull, boolean pushRod,
-            boolean abnormalCommunication, boolean deliverLock,
+            double humidity, int closeFailNumber, boolean doorIsOpen,
+            boolean proximitySwitch, boolean artificialDoor, boolean isFull,
+            boolean pushRod, boolean abnormalCommunication, boolean deliverLock,
             boolean artificialDoorLock) {
         this.id = id;
         this.doorNumber = doorNumber;
@@ -77,6 +79,7 @@ public class DustbinStateBean {
         this.dustbinWeight = dustbinWeight;
         this.temperature = temperature;
         this.humidity = humidity;
+        this.closeFailNumber = closeFailNumber;
         this.doorIsOpen = doorIsOpen;
         this.proximitySwitch = proximitySwitch;
         this.artificialDoor = artificialDoor;
@@ -131,6 +134,12 @@ public class DustbinStateBean {
     public void setHumidity(double humidity) {
         this.humidity = humidity;
     }
+    public int getCloseFailNumber() {
+        return this.closeFailNumber;
+    }
+    public void setCloseFailNumber(int closeFailNumber) {
+        this.closeFailNumber = closeFailNumber;
+    }
     public boolean getDoorIsOpen() {
         return this.doorIsOpen;
     }
@@ -180,6 +189,7 @@ public class DustbinStateBean {
         this.artificialDoorLock = artificialDoorLock;
     }
 
+
     @Override
     public String toString() {
         return "DustbinStateBean{" +
@@ -190,6 +200,7 @@ public class DustbinStateBean {
                 ", dustbinWeight=" + dustbinWeight +
                 ", temperature=" + temperature +
                 ", humidity=" + humidity +
+                ", closeFailNumber=" + closeFailNumber +
                 ", doorIsOpen=" + doorIsOpen +
                 ", proximitySwitch=" + proximitySwitch +
                 ", artificialDoor=" + artificialDoor +
