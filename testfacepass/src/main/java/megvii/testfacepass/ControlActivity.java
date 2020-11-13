@@ -1042,6 +1042,8 @@ public class ControlActivity extends AppCompatActivity{
                 //  关门
                 SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
 
+
+
                 hasMatchCondition ++;
 
 

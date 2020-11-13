@@ -157,6 +157,7 @@ import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.UserMessage;
 import megvii.testfacepass.independent.bean.UserMessageDao;
 import megvii.testfacepass.network.ByteRequest;
+import megvii.testfacepass.utils.AndroidDeviceSDK;
 import megvii.testfacepass.utils.DownloadUtil;
 import megvii.testfacepass.utils.FileUtil;
 import okhttp3.Call;
@@ -406,27 +407,14 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  开启友盟推送
         //PushAgent.getInstance(this).onAppStart();
 
+        //  注册事件总线
         EventBus.getDefault().register(this);
-
         //  隐藏状态栏，也就是 app 打开后不能退出
-        Intent intent = new Intent("android.q_zheng.action.statusbar");
-        intent.putExtra("forbidden",hide_status_bar);
-        intent.putExtra("status_bar",hide_status_bar);
-        intent.putExtra("navigation_bar",hide_status_bar);
-        sendBroadcast(intent);
-
-        //  监听 app 是否在前台
-        Intent intent2 = new Intent("android.q_zheng.action.APPMONITOR");
-        intent2.putExtra("package_name","megvii.testfacepass"); //设置所监控应用的包名为 com.xxx.yyy
-        intent2.putExtra("self_starting", true); //设置开机自启动
-        intent2.putExtra("period", 0); //设置监控应有的周期，秒为单位，最小值为 15 秒，如果不设置
-        //或者为 0，表示不需要系统对应用是否在前台进行监控
-        sendBroadcast(intent2);
-
-
+        AndroidDeviceSDK.hideStatus(MainActivity.this,false);
+        //  检查是否在前台
+        AndroidDeviceSDK.checkForeground(MainActivity.this,true);
         //  必须在第一次语音播报前 先初始化对象，否则可能出现第一次语音播报无声音的情况
         VoiceUtil.getInstance(MainActivity.this);
-
         //  初始化 greenDao 数据库，以及数据库操作对象
         userMessageDao = DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao();
 

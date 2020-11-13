@@ -196,7 +196,7 @@ public class DebugActivity extends AppCompatActivity {
             }
         }).start();
 
-        new Handler().postDelayed(new Runnable() {
+        /*new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0){
@@ -208,7 +208,7 @@ public class DebugActivity extends AppCompatActivity {
                 String str = "F3 3F 00 01 02 02 05 00 00 01 00 40 86 F4 4F".replaceAll(" ","");
                 SerialPortResponseManage.inOrderString(DebugActivity.this,ByteStringUtil.hexStrToByteArray(str));
             }
-        },3000);
+        },3000);*/
 
 
         // 如果垃圾箱为 null 则创建
