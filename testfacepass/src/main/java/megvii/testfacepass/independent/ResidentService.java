@@ -134,7 +134,7 @@ public class ResidentService extends Service {
         };
 
         Timer timer2 = new Timer();
-        timer2.schedule(getDustbinState,1,500);
+        timer2.schedule(getDustbinState,1,700);
     }
 
 

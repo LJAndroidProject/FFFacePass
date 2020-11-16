@@ -14,6 +14,15 @@ android {
         versionName "2.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        //  事件总线索引
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ eventBusIndex : 'megvii.testfacepass.MyEventBusIndex' ]
+            }
+        }
+
+
     }
     packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
@@ -86,7 +95,8 @@ dependencies {
 
     compile 'com.github.xiaohaibin:XBanner:1.6.1'   //第三方框架XBanner轮播
 
-    compile 'org.greenrobot:eventbus:3.1.1'
+    implementation 'org.greenrobot:eventbus:3.2.0'
+    annotationProcessor 'org.greenrobot:eventbus-annotation-processor:3.2.0'
 
 
     compile 'com.google.zxing:core:3.3.0'

@@ -3,6 +3,7 @@ package megvii.testfacepass.independent.manage;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.serialport.SerialPort;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -13,6 +14,7 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.Arrays;
 
 import megvii.testfacepass.APP;
+import megvii.testfacepass.ControlActivity;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.ErrorReportBean;
 import megvii.testfacepass.independent.bean.ICCard;
@@ -22,6 +24,7 @@ import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.DustbinUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.OrderUtil;
+import megvii.testfacepass.independent.util.SerialPortUtil;
 
 import static megvii.testfacepass.MainActivity.MY_ORDER;
 
@@ -34,7 +37,7 @@ public class SerialPortResponseManage {
     private final static byte ORDER_FAIL = 0x11;
     public static void inOrderString(Context context , byte[] order) {
         //  打印收到的指令
-        Log.i(APP.TAG, "接收:" + ByteStringUtil.byteArrayToHexStr(order));
+        Log.i(APP.TAG, "接收: " + ByteStringUtil.byteArrayToHexStr(order));
 
         if(order.length < 4){
             Log.i(APP.TAG,ByteStringUtil.byteArrayToHexStr(order) + "长度过小");
@@ -47,17 +50,18 @@ public class SerialPortResponseManage {
             //  指令解析
             OrderMessage orderMessage = OrderUtil.orderAnalysis(order);
 
-            Log.i("串口",ByteStringUtil.byteArrayToHexStr(new byte[]{orderMessage.getOrder()[0]}));
+            Log.i("结算",ByteStringUtil.byteArrayToHexStr(order));
 
             //  如果是开门相关
             if (orderMessage.getOrder()[0] == OrderUtil.DOOR_BYTE) {
 
-                Log.i("结算调试",ByteStringUtil.byteArrayToHexStr(order));
+                Log.i("结算调试","接受串口数据:" + ByteStringUtil.byteArrayToHexStr(order));
 
                 //  数据位
                 if (orderMessage.getDataContent()[0] == 0x10) {
                     //开成功
                     toast(context, "开成功");
+
 
                     Log.i("结算调试","开成功");
 
@@ -81,14 +85,27 @@ public class SerialPortResponseManage {
                     //  关成功
                     toast(context, "关成功");
 
-                    Log.i("结算调试","关闭成功");
+                    Log.i("结算调试",orderMessage.getOrder()[1] + "门，关闭成功");
 
                     //  获取门板号
                     DustbinStateBean dustbinStateBean = DustbinUtil.getDustbinState(orderMessage.getOrder()[1]);
+
+
                     if (dustbinStateBean != null) {
-                        Log.i("结果", "切换的桶" + dustbinStateBean.toString());
+                        Log.i("结算调试",orderMessage.getOrder()[1] + "收到关闭成功后，门状态是否还是为开启:" + dustbinStateBean.getDoorIsOpen());
+
+                        //  改变状态
+                        dustbinStateBean.setDoorIsOpen(false);
+                        //  改变状态
+                        APP.setDustbinState(context,dustbinStateBean);
+
+                        Log.i("结算调试","开始通过事件总线通知控制台关门成功");
                         //  通知开启闪关灯并拍照
                         EventBus.getDefault().post(dustbinStateBean);
+
+
+
+                        //SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(2));
                     }
 
                 } else if (orderMessage.getDataContent()[0] == 0x01) {
@@ -103,10 +120,13 @@ public class SerialPortResponseManage {
                         DustbinStateBean dustbinStateBean = DustbinUtil.getDustbinState(orderMessage.getOrder()[1]);
 
                         if(dustbinStateBean != null){
+                            dustbinStateBean.setCloseFailNumber(dustbinStateBean.getCloseFailNumber() + 1);
+
+                            //  修改状态
+                            APP.setDustbinState(context,dustbinStateBean);
+
                             //  关门失败照样发送
                             EventBus.getDefault().post(dustbinStateBean);
-
-                            dustbinStateBean.setCloseFailNumber(dustbinStateBean.getCloseFailNumber() + 1);
                         }
                     }
 
@@ -186,6 +206,8 @@ public class SerialPortResponseManage {
 
                 APP.setDustbinState(context,dustbinStateBean);
 
+                Log.i("结算调试",dustbinStateBean.getDoorNumber() + ", 门状态:" + dustbinStateBean.getDoorIsOpen());
+
 
                 //  人接近 与离开
                     /*DustbinStateBean oldDustbinStateBean =  DustbinUtil.getDustbinState(dustbinStateBean.getDoorNumber());
@@ -249,6 +271,7 @@ public class SerialPortResponseManage {
                 //OrderMessage orderMessage = OrderUtil.orderAnalysis(ByteStringUtil.hexStrToByteArray(order));
 
             } else if (orderMessage.getOrder()[0] == OrderUtil.IC_CARD_BYTE) {
+                Log.i("卡","接收到:" + ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
                 //  IC 卡
                 ICCard icCard = new ICCard(0, ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
                 EventBus.getDefault().post(icCard);

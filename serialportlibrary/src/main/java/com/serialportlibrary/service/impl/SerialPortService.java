@@ -164,7 +164,7 @@ public class SerialPortService implements ISerialPortService {
                         //Thread.sleep(1);
 
                     } catch (Exception e) {
-                        Log.i("硬件对接串口日志","串口接收发生异常:" + e.getMessage());
+                        Log.i("结算调试","串口接收发生异常:" + e.getMessage());
                         e.printStackTrace();
                     }
                 }

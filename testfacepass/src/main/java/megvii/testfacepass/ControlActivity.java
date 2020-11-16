@@ -97,6 +97,11 @@ public class ControlActivity extends AppCompatActivity{
     private ProgressDialog bottleDialog;
     public int bottleNumber = 0;
 
+    public TextView control_exit_btn;
+
+
+    //  投递之前记录
+    public List<DustbinStateBean> beforeDustbinStateBeans;
 
 
     @Override
@@ -104,6 +109,8 @@ public class ControlActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_control);
 
+        //  投递之前
+        beforeDustbinStateBeans = APP.dustbinBeanList;
 
         //  更新商品列表
         getGoodsPos();
@@ -123,10 +130,13 @@ public class ControlActivity extends AppCompatActivity{
 
 
 
+        control_exit_btn= (TextView) findViewById(R.id.control_exit_btn);
         textTueView = (TextureView) findViewById(R.id.textTueView);
         control_image = (ImageView) findViewById(R.id.control_image);
         control_recyclerview = (RecyclerView)findViewById(R.id.control_recyclerview);
         textView = (TextView) findViewById(R.id.textView);
+
+
 
         mUVCCamera = new UVCCameraProxy(this);
         mUVCCamera.getConfig()
@@ -139,8 +149,18 @@ public class ControlActivity extends AppCompatActivity{
         mUVCCamera.setPreviewTexture(textTueView); // TextureView
 
         //  默认摄像头
-        mUsbDevice = getUsbCameraDevice(doorNumberToPid(1));
+        /*
+         * 默认应该开启厨余 和 其它垃圾箱
+         * */
+        mUsbDevice = getUsbCameraDevice(doorNumberToPid(openDefaultDoor()));
 
+        //  6 秒后才显示退出按钮
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                control_exit_btn.setVisibility(View.VISIBLE);
+            }
+        },6000);
 
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
 
@@ -341,7 +361,7 @@ public class ControlActivity extends AppCompatActivity{
                         //  获取合适的垃圾箱类型
                         DustbinStateBean dustbinStateBean = openDoorByType(data.getDustbinBoxType());
                         if(dustbinStateBean == null){
-
+                            Toast.makeText(ControlActivity.this, "没有合适的垃圾箱", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -358,10 +378,6 @@ public class ControlActivity extends AppCompatActivity{
         control_recyclerview.setLayoutManager(new GridLayoutManager(this,3));
         control_recyclerview.setAdapter(controlItemAdapter);
 
-        /*
-         * 默认应该开启厨余 和 其它垃圾箱
-         * */
-        openDefaultDoor();
 
         mUVCCamera.setPictureTakenCallback(new PictureCallback() {
             @Override
@@ -491,10 +507,13 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 默认开启的门
+     * 同时 返回 默认开启的摄像头
      * */
-    private void openDefaultDoor(){
-        List<DustbinStateBean> kitchens = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.KITCHEN);
-        List<DustbinStateBean> others = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.OTHER);
+    private int defaultCamera = 1;
+    private int openDefaultDoor(){
+
+        final List<DustbinStateBean> kitchens = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.KITCHEN);
+        final List<DustbinStateBean> others = DataBaseUtil.getInstance(this).getDustbinByType(DustbinENUM.OTHER);
 
         /*
         * 开厨余
@@ -503,6 +522,7 @@ public class ControlActivity extends AppCompatActivity{
             for(DustbinStateBean dustbinStateBean : kitchens){
                 if(!dustbinStateBean.getIsFull()){
                     SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+                    defaultCamera = dustbinStateBean.getDoorNumber();
                     break;
                 }else{
                     Toast.makeText(this, dustbinStateBean.getDustbinBoxType() + "垃圾箱已满", Toast.LENGTH_SHORT).show();
@@ -517,16 +537,27 @@ public class ControlActivity extends AppCompatActivity{
         * 开其它
         * */
         if (others != null && others.size() > 0){
-            for(DustbinStateBean dustbinStateBean : others){
+            for(final DustbinStateBean dustbinStateBean : others){
                 if(!dustbinStateBean.getIsFull()){
-                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+                            if(defaultCamera != 0){
+                                defaultCamera = dustbinStateBean.getDoorNumber();
+                            }
+                        }
+                    },500);
+
                     break;
                 }else{
-                    Toast.makeText(this, dustbinStateBean.getDustbinBoxType() + "垃圾箱已满", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ControlActivity.this, dustbinStateBean.getDustbinBoxType() + "垃圾箱已满", Toast.LENGTH_SHORT).show();
                 }
             }
         }
 
+
+        return defaultCamera;
     }
 
 
@@ -638,6 +669,14 @@ public class ControlActivity extends AppCompatActivity{
         int i = Integer.parseInt(hex);
 
         return i / 1111;
+    }
+
+
+    /**
+     * 获取餐厨和其它
+     * */
+    public void getDefaultCamera(){
+
     }
 
 
@@ -936,19 +975,6 @@ public class ControlActivity extends AppCompatActivity{
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * 退出投递
      * */
@@ -984,12 +1010,12 @@ public class ControlActivity extends AppCompatActivity{
                         long timeDiff = (System.currentTimeMillis()  - beginExitTime) / 1000;
                         exitProgressDialog.setTitle("结算中 ( " + timeDiff + "s )");
 
-                        //  超过 60 s还没有结算完毕，就直接退出了
-                        if(timeDiff > 60){
+                        //  一般一个桶 6-7 s就可以关闭了，所有桶位的数量 * 8
+                        if(timeDiff > APP.dustbinBeanList.size() * 9){
                             timer.cancel();
                             timerTask.cancel();
                             Toast.makeText(ControlActivity.this, "结算超时", Toast.LENGTH_SHORT).show();
-                            exitEnd();
+                            exitEnd(1);
                         }
                     }
                 });
@@ -1006,18 +1032,59 @@ public class ControlActivity extends AppCompatActivity{
 
 
     /**
-     * 关闭已经开启的门
+     * 关闭已经开启 且没有关闭失败记录过 的门
      * */
     public final static String DEBUG_TAG = "结算调试";
     public void closeOpenedDoor(){
-        //  计算符合条件的门
+        /*//  计算符合条件的门
         int hasMatchCondition = 0;
 
         Log.i(DEBUG_TAG,"开始寻找开启的门");
         List<DustbinStateBean> dustbinStateBeans = APP.dustbinBeanList;
-        for(final DustbinStateBean dustbinStateBean : dustbinStateBeans){
+        for(DustbinStateBean dustbinStateBean:dustbinStateBeans){
+            Log.i(DEBUG_TAG,"当前垃圾箱状态：" + dustbinStateBean.getDoorNumber() + "门：" +dustbinStateBean.getDoorIsOpen());
+        }*/
+
+
+        DustbinStateBean dustbinStateBean = getOpenedDoor();
+
+
+        if(dustbinStateBean == null){
+            Log.i(DEBUG_TAG,"结算完毕");
+            exitEnd(0);
+        }else{
+
+            Log.i(DEBUG_TAG,"寻找到合适的门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen());
+
+            //  首先设备不能为 null
+            if(mUsbDevice != null){
+
+                //  如果摄像头就是正在关闭的门就不用切换
+                if(pidToDoorNumber(mUsbDevice.getProductId()) == dustbinStateBean.getDoorNumber()){
+                    Log.i(DEBUG_TAG,"不用切换摄像头");
+                }else{
+                    Log.i(DEBUG_TAG,"切换摄像头为" + dustbinStateBean.getDoorNumber());
+                    //  先关闭当前摄像头
+                    mUVCCamera.closeCamera();
+
+                    //  切换摄像头
+                    mUsbDevice = getUsbCameraDevice(doorNumberToPid(dustbinStateBean.getDoorNumber()));
+                    mUVCCamera.requestPermission(mUsbDevice);
+                }
+
+            }
+
+            Log.i(DEBUG_TAG,"发送指令,关" + dustbinStateBean.getDoorNumber() + "号门");
+
+            //  关门
+            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
+        }
+
+        /*for(final DustbinStateBean dustbinStateBean : dustbinStateBeans){
             // 寻找门已经开启 且没有关闭失败次数的门 进行关闭
+            Log.i(DEBUG_TAG, "门板：" + dustbinStateBean.getDoorNumber() + "，是否开启：" +  dustbinStateBean.getDoorIsOpen() + " 关闭次数为 0 ?：" + (dustbinStateBean.getCloseFailNumber() == 0));
             if(dustbinStateBean.getDoorIsOpen() && dustbinStateBean.getCloseFailNumber() == 0){
+                Log.i(DEBUG_TAG,"符合关门条件的垃圾箱状态:" + dustbinStateBean.getDoorNumber() + "门是否开启:" +dustbinStateBean.getDoorIsOpen());
 
                 //  首先设备不能为 null
                 if(mUsbDevice != null){
@@ -1037,9 +1104,10 @@ public class ControlActivity extends AppCompatActivity{
 
                 }
 
-                Log.i(DEBUG_TAG,"发送关门指令" + dustbinStateBean.getDoorNumber());
+                Log.i(DEBUG_TAG,"发送指令,关" + dustbinStateBean.getDoorNumber() + "号门");
 
                 //  关门
+                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
                 SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
 
 
@@ -1047,7 +1115,7 @@ public class ControlActivity extends AppCompatActivity{
                 hasMatchCondition ++;
 
 
-                /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                *//*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         Log.i(DEBUG_TAG,"发送关门成功指令");
@@ -1056,7 +1124,7 @@ public class ControlActivity extends AppCompatActivity{
 
 
                     }
-                },6000);*/
+                },6000);*//*
 
 
                 break;
@@ -1065,24 +1133,26 @@ public class ControlActivity extends AppCompatActivity{
             }
         }
 
+        Log.i(DEBUG_TAG,String.valueOf(hasMatchCondition));
+
         //  说明没有符合条件的需要关闭的门了，现在可以退出了
         if(hasMatchCondition == 0){
             Log.i(DEBUG_TAG,"结算完成");
             exitEnd();
-        }
+        }*/
 
     }
 
     /**
-     * 真正开始退出
+     * 退出清算
+     * @param exitCode 1为结算超时 ， 0 为结算正常
      * */
-    private void exitEnd(){
+    private void exitEnd(int exitCode){
         //  用户id设置为0
         APP.userId = 0;
         //  投递瓶子数量设置为 0
         bottleNumber = 0;
-
-        //  管理员登陆
+        //  管理员登陆 保存的信息设置为 null
         phoneCodeVerifyBean = null;
 
         //  将关门失败清空
@@ -1091,19 +1161,27 @@ public class ControlActivity extends AppCompatActivity{
             APP.setDustbinState(ControlActivity.this,dustbinStateBean);
         }
 
-
-        exitProgressDialog.dismiss();
-
+        //  因为可能在子线程中被调用
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                exitProgressDialog.dismiss();
+            }
+        });
 
         //startActivity(new Intent(ControlActivity.this,MainActivity.class));
+        Intent intent = new Intent(ControlActivity.this,MainActivity.class);
+        intent.putExtra("exitCode",exitCode);
+        setResult(MainActivity.CONTROL_RESULT_CODE,intent);
         finish();
     }
 
     /**
-     * 垃圾箱关闭成功
+     * 垃圾箱关闭回调，关闭成功或关闭失败都会回调
      * */
-    @Subscribe(threadMode = ThreadMode.POSTING)
-    public void closeDoor1(final DustbinStateBean dustbinStateBean){
+    @Subscribe(threadMode = ThreadMode.POSTING,sticky = true)
+    public void closeDoorCall(final DustbinStateBean dustbinStateBean){
+        Log.i(DEBUG_TAG,"进入closeDoorCall()");
         //  时间
         long time = System.currentTimeMillis() / 1000;
         //  文件名称
@@ -1115,7 +1193,9 @@ public class ControlActivity extends AppCompatActivity{
         //  拍照
         mUVCCamera.takePicture(imageName);
 
-        Log.i(DEBUG_TAG,"收到关门识别，拍照");
+        Log.i(DEBUG_TAG,"收到关门回调，添加投递记录和拍照");
+
+        Log.i(DEBUG_TAG,"关闭反馈，打印事件总线传过来的对象" + dustbinStateBean.toString());
 
 
         //  添加一条用户投递记录
@@ -1201,8 +1281,7 @@ public class ControlActivity extends AppCompatActivity{
                     @Override
                     public void success(String response) {
 
-
-
+                        Log.i(DEBUG_TAG,response);
                         //  如果是瓶子类型,则清空瓶子
                         if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())){
                             bottleNumber = 0;
@@ -1223,14 +1302,26 @@ public class ControlActivity extends AppCompatActivity{
             }
         }
 
-
-
-
-        //  关闭开启的门
+        //  寻找并关闭已开启的门
         closeOpenedDoor();
 
     }
 
+
+    /**
+     * 获取还在开着的门
+     * */
+    private DustbinStateBean getOpenedDoor(){
+        Log.i(DEBUG_TAG,"扫描之前打印所有的门状态" + APP.dustbinBeanList.toString());
+        for(DustbinStateBean dustbinStateBean:APP.dustbinBeanList){
+            if(dustbinStateBean.getDoorIsOpen() && dustbinStateBean.getCloseFailNumber() == 0 ){
+                Log.i(DEBUG_TAG,"找到的合适门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen() + "," + dustbinStateBean.getCloseFailNumber());
+                return dustbinStateBean;
+            }
+        }
+
+        return null;
+    }
 
 
 

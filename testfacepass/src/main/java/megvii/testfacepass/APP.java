@@ -12,6 +12,7 @@ import com.serialportlibrary.service.impl.SerialPortService;
 import com.serialportlibrary.util.ByteStringUtil;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +28,7 @@ import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.TCPConnectUtil;
 
+
 public class APP extends Application {
 
     public final static String TAG = "硬件串口对接日志";
@@ -35,7 +37,7 @@ public class APP extends Application {
 
     private String deviceToken;
 
-    public static List<DustbinStateBean> dustbinBeanList;
+    public volatile static List<DustbinStateBean> dustbinBeanList;
 
     private static DustbinConfig dustbinConfig;
 
@@ -50,6 +52,10 @@ public class APP extends Application {
         super.onCreate();
 
         handler = new Handler(Looper.getMainLooper());
+
+
+        /*EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
+        EventBus.getDefault().register(this);*/
 
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
@@ -70,7 +76,7 @@ public class APP extends Application {
             APP.dustbinBeanList = dustbinStateBeans;
         }*/
 
-        Log.i("改变","改变1");
+        Log.i("改变","改变2");
 
         //  注册串口监听,与硬件进行通信
         SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseByteListener() {
@@ -251,6 +257,7 @@ public class APP extends Application {
                 //  之前没有设置 垃圾箱  id 导致为 null
 
                 dustbinStateBean.setId(dustbinBeanList.get(i).getId());
+                dustbinStateBean.setDustbinBoxType(dustbinBeanList.get(i).getDustbinBoxType());
                 dustbinBeanList.set(i,dustbinStateBean);
 
                 if(dustbinStateBean.getDustbinBoxType() != null && dustbinStateBean.getDustbinBoxType() != null){
