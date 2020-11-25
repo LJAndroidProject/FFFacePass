@@ -123,7 +123,7 @@ public class ResidentService extends Service {
 
 
         //  获取垃圾箱状态
-        TimerTask getDustbinState = new TimerTask() {
+        /*TimerTask getDustbinState = new TimerTask() {
             @Override
             public void run() {
                 if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0){
@@ -134,7 +134,7 @@ public class ResidentService extends Service {
         };
 
         Timer timer2 = new Timer();
-        timer2.schedule(getDustbinState,1,700);
+        timer2.schedule(getDustbinState,1,2000);*/
     }
 
 

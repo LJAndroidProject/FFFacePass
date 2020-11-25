@@ -68,6 +68,10 @@ public class ServerAddress {
     public final static String UPDATE_DEVICE_LOCATION = IP + "api/Android/equipmentLocationPost";
 
 
+    //  获取设备工作时间
+    public final static String GET_BINS_WORK_TIME = IP + "api/Android/getBinsWorkTime";
+
+
 
 
 }

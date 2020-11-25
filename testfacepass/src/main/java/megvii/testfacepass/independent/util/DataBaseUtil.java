@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.util.List;
 
+import megvii.testfacepass.APP;
 import megvii.testfacepass.independent.bean.DaoMaster;
 import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.DustbinBean;
@@ -175,6 +176,8 @@ public class DataBaseUtil {
             userMessage = new UserMessage();
             //  对应底库中的faceToken
             userMessage.setFaceToken(faceToken);
+            //  设置用户类型
+            userMessage.setUserType(APP.userType);
             //  上次使用时间
             userMessage.setLastUsedTime(System.currentTimeMillis());
             //  在数据库中的注册时间

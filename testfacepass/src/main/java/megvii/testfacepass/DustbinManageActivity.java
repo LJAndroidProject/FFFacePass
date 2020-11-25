@@ -188,9 +188,9 @@ public class DustbinManageActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.dustbin_menu_afresh_calibration:
+            /*case R.id.dustbin_menu_afresh_calibration:
                 startActivity(new Intent(DustbinManageActivity.this,WeightCalibrationActivity.class));
-                break;
+                break;*/
             case R.id.dustbin_menu_debug:
                 startActivity(new Intent(DustbinManageActivity.this,DebugActivity.class));
                 break;
@@ -200,7 +200,7 @@ public class DustbinManageActivity extends AppCompatActivity {
                 DataBaseUtil.getInstance(this).getDaoSession().getAllDaos().clear();
                 break;
             case R.id.dustbin_menu_exit:
-                System.exit(0);
+                APP.exit();
                 break;
         }
         return super.onOptionsItemSelected(item);

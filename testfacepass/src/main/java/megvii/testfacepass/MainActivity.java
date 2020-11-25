@@ -5,10 +5,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
@@ -73,11 +75,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.google.gson.Gson;
 import com.littlegreens.netty.client.listener.NettyClientListener;
-import com.serialportlibrary.service.impl.SerialPortService;
-import com.serialportlibrary.util.ByteStringUtil;
-import com.umeng.message.PushAgent;
 import com.umeng.message.entity.UMessage;
-
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
@@ -108,6 +106,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import mcv.facepass.FacePassException;
 import mcv.facepass.FacePassHandler;
 import mcv.facepass.types.FacePassAddFaceResult;
+import mcv.facepass.types.FacePassAgeGenderResult;
 import mcv.facepass.types.FacePassConfig;
 import mcv.facepass.types.FacePassDetectionFeedback;
 import mcv.facepass.types.FacePassDetectionResult;
@@ -121,7 +120,6 @@ import mcv.facepass.types.FacePassImageType;
 import mcv.facepass.types.FacePassModel;
 import mcv.facepass.types.FacePassPose;
 import mcv.facepass.types.FacePassRecognitionResult;
-import mcv.facepass.types.FacePassAgeGenderResult;
 import mcv.facepass.types.FacePassRecognitionResultType;
 import mcv.facepass.types.FacePassSyncResult;
 import megvii.testfacepass.adapter.FaceTokenAdapter;
@@ -130,7 +128,12 @@ import megvii.testfacepass.camera.CameraManager;
 import megvii.testfacepass.camera.CameraPreview;
 import megvii.testfacepass.camera.CameraPreviewData;
 import megvii.testfacepass.independent.ResidentService;
+import megvii.testfacepass.independent.ServerAddress;
+import megvii.testfacepass.independent.UploadImageService;
+import megvii.testfacepass.independent.bean.BinsWorkTimeBean;
 import megvii.testfacepass.independent.bean.BuySuccessMsg;
+import megvii.testfacepass.independent.bean.DaoMaster;
+import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.GetNfcUserBean;
@@ -141,28 +144,21 @@ import megvii.testfacepass.independent.bean.NfcActivityBean;
 import megvii.testfacepass.independent.bean.ResultMould;
 import megvii.testfacepass.independent.bean.TCPVerify;
 import megvii.testfacepass.independent.bean.TCPVerifyResponse;
-import megvii.testfacepass.independent.bean.VXLoginCall;
-import megvii.testfacepass.independent.bean.VXLoginResult;
-import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
-import megvii.testfacepass.independent.manage.SerialPortResponseManage;
-import megvii.testfacepass.independent.util.DataBaseUtil;
-import megvii.testfacepass.independent.util.NetWorkUtil;
-import megvii.testfacepass.independent.util.VendingUtil;
-import megvii.testfacepass.independent.util.VoiceUtil;
-import megvii.testfacepass.independent.view.AdminLoginDialog;
-import megvii.testfacepass.independent.util.QRCodeUtil;
-import megvii.testfacepass.independent.util.SerialPortUtil;
-import megvii.testfacepass.independent.ServerAddress;
-import megvii.testfacepass.independent.util.TCPConnectUtil;
-import megvii.testfacepass.independent.bean.DaoMaster;
-import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.UserMessage;
 import megvii.testfacepass.independent.bean.UserMessageDao;
+import megvii.testfacepass.independent.bean.VXLoginCall;
+import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
+import megvii.testfacepass.independent.util.BinsWorkTimeUntil;
+import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.independent.util.QRCodeUtil;
+import megvii.testfacepass.independent.util.SerialPortUtil;
+import megvii.testfacepass.independent.util.TCPConnectUtil;
+import megvii.testfacepass.independent.util.VoiceUtil;
+import megvii.testfacepass.independent.view.AdminLoginDialog;
 import megvii.testfacepass.network.ByteRequest;
 import megvii.testfacepass.utils.AndroidDeviceSDK;
-import megvii.testfacepass.utils.DownloadUtil;
 import megvii.testfacepass.utils.FileUtil;
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -307,32 +303,37 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     private CameraPreviewData mCurrentImage;
 
-
     private Button mSDKModeBtn;
-    int mId = 0;
-
-    private String loginToken;
-
     private UserMessageDao userMessageDao;
-
     private AdminLoginDialog adminLoginDialog;
 
     //  调试模式
     private boolean debug = false;
-
-    //  是否隐藏状态栏
-    private boolean hide_status_bar = false;
-
     private APP app ;
-
-
     private Handler mainHandler;
-
-
     private Gson gson = new Gson();
-
     //  从控制台返回的值
     public final static int CONTROL_RESULT_CODE = 300;
+
+    BinsWorkTimeBean binsWorkTimeBean;
+
+    /**
+     * 与 IC 卡相关
+     *
+     * 事件总线经常无效，所以使用广播发送与接收
+     * */
+    public class MyBroadcastReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent != null){
+                String icCardContent = intent.getStringExtra("content");
+                if(icCardContent != null){
+                    ICCard icCard = new ICCard(0,icCardContent);
+                    icCard(icCard);
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -345,12 +346,32 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         app = (APP) getApplication();
         mainHandler = new Handler(Looper.getMainLooper());
 
-        //Log.i("结果",ByteStringUtil.byteArrayToHexStr(new byte[]{VendingUtil.getXor(new byte[]{0x28, 0X00, 0x60, 0x00 ,(byte)(0xff) ,0x0a ,0x0a ,0x31 ,0x32,0x33 ,0x34,0x35 ,0x36 ,0x37 ,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00 ,0x00,0x00,0x00,0x00 ,0x00 ,0x00,0x00,0x00,0x00,0x00,0x00,0x00 ,0x00})}));
+        //  注册IC卡广播
+        registerReceiver(new MyBroadcastReceiver(),new IntentFilter("icCard"));
 
 
+        //  请求开放时间
+        NetWorkUtil.getInstance().doGetThread(ServerAddress.GET_BINS_WORK_TIME, null, new NetWorkUtil.NetWorkListener() {
+            @Override
+            public void success(String response) {
+                binsWorkTimeBean  = gson.fromJson(response,BinsWorkTimeBean.class);
+            }
+
+            @Override
+            public void fail(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void error(Exception e) {
+
+            }
+        });
+
+
+
+        //  启动APP默认关闭所有门
         closeAllDoor();
-
-
 
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
@@ -358,57 +379,15 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  代表 全局 垃圾桶 list 对象
         app.setDustbinBeanList(DataBaseUtil.getInstance(MainActivity.this).getDustbinByType(null));
 
-
+        //  开启读取数据服务，定时器
         startService(new Intent(this,ResidentService.class));
-
-
-        //                                   |
-        /*String order = "F3 3F 00 01 01 01 01 01 00 F4 4F".replace(" ","");
-        //String order = "F3 3F 00 01 02 01 04 32 1A 1B 1C 00 F4 4F".replace(" ","");
-        SerialPortResponseManage.inOrderString(this, ByteStringUtil.hexStrToByteArray(order));*/
+        //  开启图片上传服务
+        startService(new Intent(this, UploadImageService.class));
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("加载中...。。");
         progressDialog.create();
-
-        /*new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                long nowTime = System.currentTimeMillis() / 1000 ;
-
-                String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-                APP app = (APP) getApplication();
-                Map<String,String> map = new HashMap<>();
-                map.put("device_id", androidID);
-                map.put("device_token",app.getDeviceToken());
-                map.put("sign",md5(androidID + nowTime + key).toUpperCase());
-                map.put("timestamp",String.valueOf(nowTime));
-
-                Log.i(MY_TAG,map.toString());
-                NetWorkUtil.getInstance().doPost(ServerAddress.DEVICE_REGISTER, map, new NetWorkUtil.NetWorkListener() {
-                    @Override
-                    public void success(String response) {
-                        Log.i(MY_TAG, "success: " + response);
-                    }
-
-                    @Override
-                    public void fail(Call call, IOException e) {
-                        Log.i(MY_TAG, "fail: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void error(Exception e) {
-                        Log.i(MY_TAG, "error: " + e.getMessage());
-                    }
-                });
-
-
-            }
-        },2000);*/
-
-
 
         //  开启友盟推送
         //PushAgent.getInstance(this).onAppStart();
@@ -420,13 +399,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  检查是否在前台
         AndroidDeviceSDK.checkForeground(MainActivity.this,true);
         //  必须在第一次语音播报前 先初始化对象，否则可能出现第一次语音播报无声音的情况
-        VoiceUtil.getInstance(MainActivity.this);
+        VoiceUtil.getInstance();
         //  初始化 greenDao 数据库，以及数据库操作对象
         userMessageDao = DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao();
 
-
-
-        //  初始化 TCP 连接，与服务器进行通信
+        //  初始化 TCP 连接，与服务器进行 TCP 通信
         initTCP();
 
         if (SDK_MODE == FacePassSDKMode.MODE_ONLINE) {
@@ -481,13 +458,18 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             @Override
             public void run() {
                 super.run();
-
-
                 for(DustbinStateBean dustbinStateBean:APP.dustbinBeanList){
-                    Log.i("关门","关门" + dustbinStateBean.getDoorNumber());
                     SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(250);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                    //  开排气扇
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openExhaustFan(dustbinStateBean.getDoorNumber()));
+                    try {
+                        Thread.sleep(250);
                     }catch (Exception e){
                         e.printStackTrace();
                     }
@@ -524,7 +506,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     }
 
     private void initAndroidHandler() {
-
         mAndroidHandler = new Handler();
 
     }
@@ -539,7 +520,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     }
 
 
-    //  从服务器传过来的内容
+    //  友盟推送 ，从服务器传过来的,不过用了 TCP 后就不用了
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void ServerToAndroid(UMessage msg){
         Log.i(PUSH,"服务器传过来的结果" + msg.custom);
@@ -561,6 +542,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 Log.i(NOW_TAG,"设置用户 id 之前的用户 id " + app.getUserId());
                 //  修改当前设置的用户id
                 app.setUserId(vxLoginCall.getInfo().getUser_id());
+                APP.userType = vxLoginCall.getInfo().getUser_type();
                 Log.i(NOW_TAG,"设置用户 id 之后 的用户 id" + app.getUserId());
 
                 //  隐藏二维码扫码
@@ -587,10 +569,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         //  facetoken 和用户id 绑定
                         DataBaseUtil.getInstance(this).insertUserIdAndFaceToken(app.getUserId(),faceToken);
 
-                        //  跳转到垃圾箱控制台
-                        Intent intent = new Intent(MainActivity.this,ControlActivity.class);
-                        intent.putExtra("userId",app.getUserId());
-                        startActivityForResult(intent,CONTROL_RESULT_CODE);
+                        goControlActivity();
 
 
                         //  将用户id和特征、图片上传至服务器   ===========================================
@@ -623,9 +602,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     }
 
 
-    private String tcp_client_id;
-
-    private String cache;
+    private String tcp_client_id;   //  服务器分配的连接 id
+    private String cache;   //  字符串缓存，当从服务器传输过来的内容太多可能会被分段发送，所以这里用一个缓存字符串拼接原本 分段的内容
     private String tcpResponse;
     private void initTCP(){
         TCPConnectUtil.getInstance().connect();
@@ -730,6 +708,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             Log.i(NOW_TAG,"设置用户 id 之前的用户 id " + app.getUserId());
                             //  修改当前设置的用户id
                             app.setUserId(vxLoginCall.getInfo().getUser_id());
+                            APP.userType = vxLoginCall.getInfo().getUser_type();
                             Log.i(NOW_TAG,"设置用户 id 之后 的用户 id" + app.getUserId());
 
 
@@ -763,9 +742,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                     DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(app.getUserId(),faceToken);
 
                                     //  跳转到垃圾箱控制台
-                                    Intent intent = new Intent(MainActivity.this,ControlActivity.class);
-                                    intent.putExtra("userId",app.getUserId());
-                                    startActivityForResult(intent,CONTROL_RESULT_CODE);
+                                    goControlActivity();
 
 
                                     //  将用户id和特征、图片上传至服务器   ===========================================
@@ -796,11 +773,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             if(nfcActivityBean.getData().getCode() == 1){
                                 //  设置用户id
                                 APP.setUserId(nfcActivityBean.getData().getInfo().getUser_id());
+                                APP.userType = nfcActivityBean.getData().getInfo().getUser_type();
 
                                 //  跳转到垃圾箱控制台
-                                Intent intent = new Intent(MainActivity.this,ControlActivity.class);
-                                intent.putExtra("userId",app.getUserId());
-                                startActivityForResult(intent,CONTROL_RESULT_CODE);
+                                goControlActivity();
 
                             }
                         }else if(type.equals("nearByFeatrueSend")){
@@ -976,31 +952,77 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         super.onResume();
     }
 
+
+    /**
+     * 跳转控制台投递界面
+     * */
+    private void goControlActivity(){
+
+        APP.hasManTime = System.currentTimeMillis();
+
+        //  是特殊用户 userType 为 1 ， 普通用户则为 0
+        Log.i(CARD_DEBUG,String.valueOf(APP.userType));
+        //  特殊用户就直接跳转了
+        if(APP.userType == 1){
+            //  跳转到垃圾箱控制台
+            Intent intent = new Intent(MainActivity.this,ControlActivity.class);
+            intent.putExtra("userId",app.getUserId());
+            startActivityForResult(intent,CONTROL_RESULT_CODE);
+        }else{
+            //  非特殊用户
+            if(BinsWorkTimeUntil.getBinsWorkTime(binsWorkTimeBean)){
+                //  是投放时间，跳转到垃圾箱控制台
+                Intent intent = new Intent(MainActivity.this,ControlActivity.class);
+                intent.putExtra("userId",app.getUserId());
+                startActivityForResult(intent,CONTROL_RESULT_CODE);
+            }else{
+                //  非投放时间
+                VoiceUtil.getInstance().openAssetMusics(MainActivity.this,"no_work_time.aac");
+            }
+        }
+    }
+
     AlertDialog icAlert;
+    public long icCardTime;
+    private final static String CARD_DEBUG = "ic卡调试";
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void icCard(final ICCard icCard){
 
-        Log.i("卡 ",icCard.toString());
+        Log.i(CARD_DEBUG,"进入刷卡");
+
+        if(System.currentTimeMillis() - icCardTime < 2000){
+            Toast.makeText(MainActivity.this, "刷卡太过频繁", Toast.LENGTH_SHORT).show();
+            return;
+        }else{
+            icCardTime = System.currentTimeMillis();
+        }
+
+        Log.i(CARD_DEBUG,icCard.toString());
 
         Map<String,String> map = new HashMap<>();
         map.put("card_code",icCard.getCardCode());
         NetWorkUtil.getInstance().doPost(ServerAddress.IC_GetNfcUserBean, map, new NetWorkUtil.NetWorkListener() {
             @Override
             public void success(String response) {
-                Log.i("卡",response);
+                Log.i(CARD_DEBUG,"刷卡接收" + response);
                 GetNfcUserBean getNfcUserBean = gson.fromJson(response,GetNfcUserBean.class);
                 if(getNfcUserBean.getCode() == 1){
                     if(getNfcUserBean.getData().getState() == 1){
-                        //  已经绑定好了
-                        //  设置用户id
-                        APP.setUserId(getNfcUserBean.getData().getUser_id());
 
-                        //  跳转到垃圾箱控制台
-                        Intent intent = new Intent(MainActivity.this,ControlActivity.class);
-                        intent.putExtra("userId",app.getUserId());
-                        startActivityForResult(intent,CONTROL_RESULT_CODE);
+                        if(!APP.controlActivityIsRun){
+                            //  已经绑定好了
+                            //  设置用户id
+                            APP.setUserId(getNfcUserBean.getData().getUser_id());
+                            APP.userType = getNfcUserBean.getData().getUser_type();
+
+                            //  跳转到垃圾箱控制台
+                            goControlActivity();
+                        }else{
+                            Toast.makeText(MainActivity.this, "请不要重复刷卡！", Toast.LENGTH_SHORT).show();
+                        }
 
                     }else{
+                        VoiceUtil.getInstance().openAssetMusics(MainActivity.this,"bind_ic_voice.aac");
                         //  卡片未激活，弹出绑定窗口
                         //  二维码弹窗
                         if(qrCodeDialog != null && qrCodeDialog.isShowing()){
@@ -1033,12 +1055,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
             @Override
             public void fail(Call call, IOException e) {
-
+                Log.i(CARD_DEBUG,e.getMessage());
             }
 
             @Override
             public void error(Exception e) {
-
+                Log.i(CARD_DEBUG,e.getMessage());
             }
         });
 
@@ -1728,7 +1750,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             mFacePassHandler.release();
         }
 
-        EventBus.getDefault().unregister(this);
+
 
         TCPConnectUtil.getInstance().disconnect();
 
@@ -2057,7 +2079,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         }
 
 
-        //VoiceUtil.getInstance(MainActivity.this).startAuto("qing yong wei xin sao miao er wei ma ");
+        VoiceUtil.getInstance().openAssetMusics(MainActivity.this,"bind_face_voice.aac");
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
         alert.setCancelable(false);
@@ -2067,11 +2089,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  获取安卓设备唯一标识符
         String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         //  添加时间戳
-        loginToken =  androidID;
-        //  生成token 二维码
-
-
-        Log.i(PUSH,loginToken);
 
         //  拼接地址 传递 token
         qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId()));
@@ -2236,9 +2253,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                 }
 
 
-                                Intent intent = new Intent(MainActivity.this,ControlActivity.class);
-                                intent.putExtra("userId",app.getUserId());
-                                startActivityForResult(intent,CONTROL_RESULT_CODE);
+                                goControlActivity();
 
 
                             }
@@ -2285,6 +2300,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             return;
         }
 
+
+
+
         UserMessage userMessage = userMessageDao.queryBuilder().where(UserMessageDao.Properties.FaceToken.eq(faceToken)).build().unique();
 
         //  如果人脸底库中存在该人脸，且有登陆记录，则直接进入垃圾控制台
@@ -2296,13 +2314,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             }
 
             app.setUserId(userMessage.getUserId());
+            APP.userType = userMessage.getUserType();
 
             if(!isHasShowDialog()){
                 lastPassTime = System.currentTimeMillis();
                 //  跳转到垃圾箱控制台
-                Intent intent = new Intent(MainActivity.this,ControlActivity.class);
-                intent.putExtra("userId",userMessage.getUserId());
-                startActivityForResult(intent,CONTROL_RESULT_CODE);
+                goControlActivity();
 
             }
 
@@ -2405,6 +2422,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 app.setUserId(0);
+                APP.userType = 0;
 
                 dialog.dismiss();
             }

@@ -78,6 +78,8 @@ public class VendingMachineActivity extends AppCompatActivity {
     //  购买弹窗
     private AlertDialog alertDialog;
 
+    private final static String TAG = "售卖机调试";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -110,39 +112,6 @@ public class VendingMachineActivity extends AppCompatActivity {
                 .where(CommodityBeanDao.Properties.CommodityID.notEq(0))
                 .where(CommodityBeanDao.Properties.TierChildrenCommodityNumber.eq(1))
                 .list();
-
-
-
-        //  更新商品列表
-        /*new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                List<CommodityAlternativeBean> commodityAlternativeBeans = new ArrayList<>();
-                commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 1,28,"面包",false,0,true,"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2383288134,2143816432&fm=15&gp=0.jpg",360));
-                commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 2,60,"法式小面包",false,0,true,"https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=1637694247,2029374163&fm=26&gp=0.jpg",360));
-                commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 3,7.5,"方便面",true,500,true,"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=3214305998,151990978&fm=26&gp=0.jpg",180));
-                commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 4,10,"瑞士卷",false,0,false,"https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=2975923086,1932516814&fm=26&gp=0.jpg",90));
-                commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 5,8,"纯牛奶",true,400,false,"https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2336638272,2853397711&fm=26&gp=0.jpg",90));
-                commodityAlternativeBeans.add(new CommodityAlternativeBean((long) 6,4,"矿泉水",true,200,false,"https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1132615959,1940036971&fm=26&gp=0.jpg",360));
-
-
-                updateCommodity(commodityAlternativeBeans);
-            }
-        },5000);*/
-
-        if(APP.isDebugMode()){
-            /*SerialPortUtil.getInstance().receiveListener(new SerialPortService.SerialResponseListener() {
-                @Override
-                public void response(String response) {
-                    //  通过事件总线发送出去
-                    Log.i("串口","串口接收" + response);
-
-                    //SerialPortResponseManage.inOrderString(MainActivity.this,response);
-                }
-            });*/
-        }
-
 
 
         //  设置适配器
@@ -221,11 +190,13 @@ public class VendingMachineActivity extends AppCompatActivity {
 
 
 
+        //  查询是否有备选商品
         List<CommodityAlternativeBean> commodityAlternativeBean = DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().build().list();
         if(commodityAlternativeBean != null && commodityAlternativeBean.size() > 0 ){
-            Toast.makeText(this, "存在备选商品列表", Toast.LENGTH_SHORT).show();
+            Log.i(TAG,"存在商品备选列表");
         }else{
 
+            //  如果没有则请求，一般在初始化界面就会请求了
             NetWorkUtil.getInstance().doGet(ServerAddress.GET_GOODS_POS, null, new NetWorkUtil.NetWorkListener() {
                 @Override
                 public void success(String response) {
@@ -269,20 +240,6 @@ public class VendingMachineActivity extends AppCompatActivity {
     }
 
 
-
-    /**
-     * 售卖机校验位 异或 运算
-     * */
-    public static byte getXor(byte[] datas){
-
-        byte temp=datas[0];
-
-        for (int i = 1; i <datas.length; i++) {
-            temp ^=datas[i];
-        }
-
-        return temp;
-    }
 
 
     @Override
@@ -375,15 +332,14 @@ public class VendingMachineActivity extends AppCompatActivity {
         vendingMachineAdapter.setNewData(removeDuplicateUser(list));
     }
 
+    //  TCP 通知购买
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void buy(BuySuccessMsg buySuccessMsg){
 
         /*
          * 如果到这里就停了，说明没有显示二维码
          * */
-        Log.i("结果","进入下单");
-
-
+        Log.i(TAG,"TCP 通知 下单");
 
         //  查询该商品id数量
         buyResult = DataBaseUtil.getInstance(VendingMachineActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.CommodityID.eq(buySuccessMsg.getGoods_id())).list();
@@ -402,7 +358,7 @@ public class VendingMachineActivity extends AppCompatActivity {
             return;
         }
 
-        Log.i("结果","不为空");
+        Log.i(TAG,"不为空");
 
         //  清空货道，从后向前减 商品
         CommodityBean c = buyResult.get(buyResult.size()-1);
@@ -420,43 +376,10 @@ public class VendingMachineActivity extends AppCompatActivity {
         if(buyResult.size() == 1){
             vendingMachineAdapter.remove(buyPosition);
         }
-        Log.i("结果","开始指令");
-
-        //  发送指令
-        //String tierChildrenNumberHEX = Integer.toHexString(c .getTierChildrenNumber());
-
-        //  货道
-        //byte[] number = ByteStringUtil.hexStrToByteArray(Integer.toHexString(c .getTierChildrenNumber()));
-
-        //Log.i("串口",Integer.toHexString(c .getTierChildrenNumber()));
+        Log.i(TAG,"开始指令");
 
 
         SerialPortUtil.getInstance().sendData(VendingUtil.transmitJoint(VendingUtil.getDeliveryByte(c .getTierChildrenNumber()),1));
-        //VendingUtil.delivery(c .getTierChildrenNumber());
-
-        /*byte[] headBytes = new byte[]{0x0D,0x24};
-        byte[] order = new byte[]{0x28,0x00,0x60,0x00,(byte) (c .getTierChildrenNumber() & 0xff)*//*,number[0]*//*,0x05,0x03,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,0x30,0x31,0x32,0x33,0x34,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,};
-        byte[] sumBytes = new byte[]{getXor(order)};
-        byte[] endBytes = new byte[]{0x0D,0x0A};
-
-        //VendingUtil.delivery(buySuccessMsg.getGoods_id());
-
-        byte[] newBytes = new byte[headBytes.length + order.length + sumBytes.length + endBytes.length];
-
-
-        //  需要复制的数组、复制源的起始位置，目标数组，目标数组的起始位置，复制的长度
-        //  首先添加帧头
-        System.arraycopy(headBytes,0,newBytes,0,headBytes.length);
-        //  添加中间
-        System.arraycopy(order,0,newBytes,headBytes.length,order.length);
-        //  添加校验位
-        System.arraycopy(sumBytes,0,newBytes,headBytes.length + order.length,sumBytes.length);
-        //  添加帧尾部
-        System.arraycopy(endBytes,0,newBytes,headBytes.length + order.length + sumBytes.length,endBytes.length);
-
-        SerialPortUtil.getInstance().sendData(newBytes);
-
-        Log.i("结果","串口发送:" + ByteStringUtil.byteArrayToHexStr(newBytes));*/
 
 
         VendingUtil.theOrderCall(buySuccessMsg.getOut_trade_no(), VendingUtil.VENDING_RESULT.SUCCESS);
@@ -467,15 +390,9 @@ public class VendingMachineActivity extends AppCompatActivity {
         }
     }
 
-
-    /**
-     * 拼接指令
-     * */
-    /*private void joint(int target){
-        byte[] head = new byte[]{0xf,0x1,0x1,0xf};
-        byte[] version = new byte[]{0x00,0x01};
-        byte[] version = new byte[]{0x00,0x01};
-    }*/
+    public void back(View view){
+        finish();
+    }
 
     /**
      * 售货机选购界面 适配器

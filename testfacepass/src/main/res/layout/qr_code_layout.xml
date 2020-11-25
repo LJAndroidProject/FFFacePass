@@ -16,7 +16,7 @@
     <TextView
         android:gravity="center"
         android:layout_marginTop="50dp"
-        android:text="使用微信扫描二维码登陆"
+        android:text="请用微信扫描二维码"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

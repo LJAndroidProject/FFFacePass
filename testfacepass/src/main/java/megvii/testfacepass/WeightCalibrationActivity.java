@@ -31,6 +31,8 @@ public class WeightCalibrationActivity extends AppCompatActivity {
     private EditText awc_weight_edit,awc_weight_doorNumber;
     private Button awc_weight_btn;
 
+    private int targetDoorNumber = 1;
+
     //  校准次数
     private int calibrationNumber = 0;
 
@@ -61,13 +63,20 @@ public class WeightCalibrationActivity extends AppCompatActivity {
                 awc_weight_btn.setText("开始校准");
                 awc_weight_edit.setText("0");
 
+                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().exitWeightCalibrationMode(targetDoorNumber));
+
                 Toast.makeText(WeightCalibrationActivity.this, "文本改变，切换校准桶", Toast.LENGTH_SHORT).show();
             }
         });
 
         awc_weight_btn = (Button) findViewById(R.id.awc_weight_btn);
 
-
+        Toolbar weight_calibration_toolbar = (Toolbar)findViewById(R.id.weight_calibration_toolbar);
+        weight_calibration_toolbar.setNavigationOnClickListener(new View.OnClickListener(){
+            public void onClick(View view){
+                finish();
+            }
+        });
 
 
 
@@ -110,6 +119,9 @@ public class WeightCalibrationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        //  退出校准
+        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().exitWeightCalibrationMode(targetDoorNumber));
 
         EventBus.getDefault().unregister(this);
     }

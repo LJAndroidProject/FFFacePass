@@ -157,11 +157,11 @@ public class SerialPortService implements ISerialPortService {
                             byte[] readBytes = new byte[size];
                             System.arraycopy(buffer, 0, readBytes, 0, size);
 
-
-                            serialResponseByteListener.response(readBytes);
+                            if(readBytes != null){
+                                serialResponseByteListener.response(readBytes);
+                                Thread.sleep(100);
+                            }
                         }
-
-                        //Thread.sleep(1);
 
                     } catch (Exception e) {
                         Log.i("结算调试","串口接收发生异常:" + e.getMessage());

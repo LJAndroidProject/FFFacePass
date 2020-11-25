@@ -16,7 +16,14 @@
         android:background="@color/colorPrimary"
         android:layout_height="100dp"/>
     <android.support.v7.widget.RecyclerView
+        android:layout_weight="1"
         android:id="@+id/vendingMachineActivity_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"/>
+    <TextView
+        android:onClick="back"
+        android:text="返回投递界面"
+        android:padding="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

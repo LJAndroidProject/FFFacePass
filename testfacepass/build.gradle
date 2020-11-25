@@ -144,4 +144,5 @@ dependencies {
 
 
     compile 'com.github.Liuguihong:AndroidUVCCamera:1.0.0'
+
 }

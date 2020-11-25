@@ -45,9 +45,10 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
 
     private Intent intent;
 
+    //  货道 商品头部标题
     private CommodityAlternativeBean commodityAlternativeBean;
+    //  商品列表 (从数据库中查询到的，或即将保存到数据库的)
     private List<CommodityBean> list;
-    private CommodityAlternativeBean commodityAlternativeBeanTitle;
     private ImageView replenishment_details_image;
     private TextView replenishment_details_message,replenishment_details_title;
     private Button replenishment_details_add_btn;
@@ -249,7 +250,18 @@ public class ReplenishmentDetailsActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 if(commodityBean != null && commodityBean.getCommodityAlternativeBean() != null){
-
+                    
+                    //  每一个货道的商品类型都要保持一致
+                    long commodityId = list.get(0).getCommodityID();
+                    for(CommodityBean commodityBean :list){
+                        //  因为没有商品默认是 0 ，所以不为0且有不一样的说明货到商品不一致
+                        if(commodityBean.getCommodityID() != commodityId && commodityBean.getCommodityID() != 0){
+                            Toast.makeText(ReplenishmentDetailsActivity.this, "货道商品需要保持一致！", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+                    
+                    //  保存到数据库
                     DataBaseUtil.getInstance(ReplenishmentDetailsActivity.this).getDaoSession().getCommodityBeanDao().insertOrReplaceInTx(list);
 
                     Intent intent = new Intent(ReplenishmentDetailsActivity.this,ReplenishmentActivity.class);

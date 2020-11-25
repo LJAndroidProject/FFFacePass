@@ -1,7 +1,10 @@
 package megvii.testfacepass.independent.manage;
 
+import android.serialport.SerialPort;
+
 import megvii.testfacepass.independent.iml.ImlSerialPortRequest;
 import megvii.testfacepass.independent.util.OrderUtil;
+import megvii.testfacepass.independent.util.SerialPortUtil;
 
 public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX {
 
@@ -29,11 +32,17 @@ public class SerialPortRequestByteManage implements ImlSerialPortRequest.ByteHEX
 
     @Override
     public byte[] openDoor(int doorNumber) {
+        //  开启投料口锁
+        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDogHouse(doorNumber));
+
         return OrderUtil.generateOrder(OrderUtil.DOOR_BYTE,doorNumber,OPEN_PARAMETER);
     }
 
     @Override
     public byte[] closeDoor(int doorNumber) {
+        //  关闭投料口
+        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDogHouse(doorNumber));
+
         return OrderUtil.generateOrder(OrderUtil.DOOR_BYTE,doorNumber,CLOSE_PARAMETER);
     }
 

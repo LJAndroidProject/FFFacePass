@@ -25,9 +25,10 @@ public class UserMessageDao extends AbstractDao<UserMessage, Long> {
         public final static Property LocalId = new Property(0, Long.class, "localId", true, "_id");
         public final static Property UserId = new Property(1, long.class, "userId", false, "USER_ID");
         public final static Property FaceToken = new Property(2, String.class, "faceToken", false, "FACE_TOKEN");
-        public final static Property LastUsedTime = new Property(3, long.class, "lastUsedTime", false, "LAST_USED_TIME");
-        public final static Property UsedNumber = new Property(4, int.class, "usedNumber", false, "USED_NUMBER");
-        public final static Property RegisterTime = new Property(5, long.class, "registerTime", false, "REGISTER_TIME");
+        public final static Property UserType = new Property(3, long.class, "userType", false, "USER_TYPE");
+        public final static Property LastUsedTime = new Property(4, long.class, "lastUsedTime", false, "LAST_USED_TIME");
+        public final static Property UsedNumber = new Property(5, int.class, "usedNumber", false, "USED_NUMBER");
+        public final static Property RegisterTime = new Property(6, long.class, "registerTime", false, "REGISTER_TIME");
     }
 
 
@@ -46,9 +47,10 @@ public class UserMessageDao extends AbstractDao<UserMessage, Long> {
                 "\"_id\" INTEGER PRIMARY KEY AUTOINCREMENT ," + // 0: localId
                 "\"USER_ID\" INTEGER NOT NULL UNIQUE ," + // 1: userId
                 "\"FACE_TOKEN\" TEXT UNIQUE ," + // 2: faceToken
-                "\"LAST_USED_TIME\" INTEGER NOT NULL ," + // 3: lastUsedTime
-                "\"USED_NUMBER\" INTEGER NOT NULL ," + // 4: usedNumber
-                "\"REGISTER_TIME\" INTEGER NOT NULL );"); // 5: registerTime
+                "\"USER_TYPE\" INTEGER NOT NULL ," + // 3: userType
+                "\"LAST_USED_TIME\" INTEGER NOT NULL ," + // 4: lastUsedTime
+                "\"USED_NUMBER\" INTEGER NOT NULL ," + // 5: usedNumber
+                "\"REGISTER_TIME\" INTEGER NOT NULL );"); // 6: registerTime
     }
 
     /** Drops the underlying database table. */
@@ -71,9 +73,10 @@ public class UserMessageDao extends AbstractDao<UserMessage, Long> {
         if (faceToken != null) {
             stmt.bindString(3, faceToken);
         }
-        stmt.bindLong(4, entity.getLastUsedTime());
-        stmt.bindLong(5, entity.getUsedNumber());
-        stmt.bindLong(6, entity.getRegisterTime());
+        stmt.bindLong(4, entity.getUserType());
+        stmt.bindLong(5, entity.getLastUsedTime());
+        stmt.bindLong(6, entity.getUsedNumber());
+        stmt.bindLong(7, entity.getRegisterTime());
     }
 
     @Override
@@ -90,9 +93,10 @@ public class UserMessageDao extends AbstractDao<UserMessage, Long> {
         if (faceToken != null) {
             stmt.bindString(3, faceToken);
         }
-        stmt.bindLong(4, entity.getLastUsedTime());
-        stmt.bindLong(5, entity.getUsedNumber());
-        stmt.bindLong(6, entity.getRegisterTime());
+        stmt.bindLong(4, entity.getUserType());
+        stmt.bindLong(5, entity.getLastUsedTime());
+        stmt.bindLong(6, entity.getUsedNumber());
+        stmt.bindLong(7, entity.getRegisterTime());
     }
 
     @Override
@@ -106,9 +110,10 @@ public class UserMessageDao extends AbstractDao<UserMessage, Long> {
             cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0), // localId
             cursor.getLong(offset + 1), // userId
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // faceToken
-            cursor.getLong(offset + 3), // lastUsedTime
-            cursor.getInt(offset + 4), // usedNumber
-            cursor.getLong(offset + 5) // registerTime
+            cursor.getLong(offset + 3), // userType
+            cursor.getLong(offset + 4), // lastUsedTime
+            cursor.getInt(offset + 5), // usedNumber
+            cursor.getLong(offset + 6) // registerTime
         );
         return entity;
     }
@@ -118,9 +123,10 @@ public class UserMessageDao extends AbstractDao<UserMessage, Long> {
         entity.setLocalId(cursor.isNull(offset + 0) ? null : cursor.getLong(offset + 0));
         entity.setUserId(cursor.getLong(offset + 1));
         entity.setFaceToken(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
-        entity.setLastUsedTime(cursor.getLong(offset + 3));
-        entity.setUsedNumber(cursor.getInt(offset + 4));
-        entity.setRegisterTime(cursor.getLong(offset + 5));
+        entity.setUserType(cursor.getLong(offset + 3));
+        entity.setLastUsedTime(cursor.getLong(offset + 4));
+        entity.setUsedNumber(cursor.getInt(offset + 5));
+        entity.setRegisterTime(cursor.getLong(offset + 6));
      }
     
     @Override

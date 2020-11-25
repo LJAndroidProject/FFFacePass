@@ -12,6 +12,8 @@ public class GetNfcUserBean {
      * data : {"state":1,"user_id":63}
      */
 
+    //
+
     private int code;
     private String msg;
     private String time;
@@ -57,6 +59,7 @@ public class GetNfcUserBean {
 
         private int state;
         private int user_id;
+        private int user_type;
 
         public int getState() {
             return state;
@@ -72,6 +75,14 @@ public class GetNfcUserBean {
 
         public void setUser_id(int user_id) {
             this.user_id = user_id;
+        }
+
+        public int getUser_type() {
+            return user_type;
+        }
+
+        public void setUser_type(int user_type) {
+            this.user_type = user_type;
         }
     }
 }

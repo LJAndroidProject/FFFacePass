@@ -49,12 +49,11 @@ public class RecyclerAdminActivity extends AppCompatActivity {
                 if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString()) || dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.WASTE_PAPER.toString())){
                     //  开启电磁人工门
                     SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openElectromagnetism(dustbinStateBean.getDoorNumber()));
-
-
-                    //  删除所有投递记录
-                    DataBaseUtil.getInstance(RecyclerAdminActivity.this).getDaoSession().getDeliveryRecordDao().deleteAll();
                 }
             }
+
+            //  删除所有投递记录
+            DataBaseUtil.getInstance(RecyclerAdminActivity.this).getDaoSession().getDeliveryRecordDao().deleteAll();
         }else{
             Toast.makeText(this, "垃圾箱列表为null，或数量为 0 ", Toast.LENGTH_SHORT).show();
         }
@@ -70,11 +69,10 @@ public class RecyclerAdminActivity extends AppCompatActivity {
                 if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString()) || dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.WASTE_PAPER.toString())){
                     //  开启电磁人工门
                     SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeElectromagnetism(dustbinStateBean.getDoorNumber()));
-
-                    //  删除所有投递记录
-                    DataBaseUtil.getInstance(RecyclerAdminActivity.this).getDaoSession().getDeliveryRecordDao().deleteAll();
                 }
             }
+            //  删除所有投递记录
+            DataBaseUtil.getInstance(RecyclerAdminActivity.this).getDaoSession().getDeliveryRecordDao().deleteAll();
         }else{
             Toast.makeText(this, "垃圾箱列表为null，或数量为 0 ", Toast.LENGTH_SHORT).show();
         }

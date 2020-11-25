@@ -35,6 +35,8 @@ public class APP extends Application {
 
     public static long userId;
 
+    public static long userType;
+
     private String deviceToken;
 
     public volatile static List<DustbinStateBean> dustbinBeanList;
@@ -46,6 +48,10 @@ public class APP extends Application {
     //  apk 类型 例如 智能款、智能简易款
     public final static int ApkType = 1;
 
+    public static boolean controlActivityIsRun;
+
+    //  有人存在的时间戳
+    public static long hasManTime = 0 ;
 
     @Override
     public void onCreate() {
@@ -98,7 +104,7 @@ public class APP extends Application {
                     });
                 }
 
-                SerialPortResponseManage.inOrderString(APP.this,response);
+                SerialPortResponseManage.getInstance().inOrderString(APP.this,response);
             }
         });
 
@@ -245,20 +251,26 @@ public class APP extends Application {
         return dustbinConfig.getDustbinDeviceId();
     }
 
+    public static void exit(){
+        System.exit(0);
+    }
 
     /**
      * 修改垃圾箱
      * */
     public static void setDustbinState(Context context,DustbinStateBean dustbinStateBean){
         // 1. boolean hasMan = false;
-        for(int i = 1 ; i < dustbinBeanList.size(); i++){
+        for(int i = 0 ; i < dustbinBeanList.size(); i++){
             if(dustbinBeanList.get(i).getDoorNumber() == dustbinStateBean.getDoorNumber()){
 
                 //  之前没有设置 垃圾箱  id 导致为 null
 
                 dustbinStateBean.setId(dustbinBeanList.get(i).getId());
                 dustbinStateBean.setDustbinBoxType(dustbinBeanList.get(i).getDustbinBoxType());
+                dustbinStateBean.setDustbinBoxNumber(dustbinBeanList.get(i).getDustbinBoxNumber());
                 dustbinBeanList.set(i,dustbinStateBean);
+
+                Log.i("设置结算调试",dustbinStateBean.toString());
 
                 if(dustbinStateBean.getDustbinBoxType() != null && dustbinStateBean.getDustbinBoxType() != null){
                     //  如果是厨余垃圾 和 其它垃圾 ，人工门被开启或关闭 ，则删除所有记录

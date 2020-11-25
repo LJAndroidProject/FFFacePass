@@ -34,9 +34,12 @@ public class SerialPortUtil {
                     serialPortService = new SerialPortBuilder()
                             .setTimeOut(100L)
                             .setBaudrate(115200)
-                            .setDevicePath("dev/ttyS2") //  售卖机的 232是 ttyS1 、 垃圾箱的ttl 是 ttyS2
+                            .setDevicePath("dev/ttyS2") //  售卖机的 232是 ttyS1 、 垃圾箱的ttl 是 ttyS2  、 大屏用ttyS3
                             .createService();
-                    serialPortService.isOutputLog(true);
+
+                    if(serialPortService != null){
+                        serialPortService.isOutputLog(true);
+                    }
                 }
             }
         }
@@ -61,10 +64,10 @@ public class SerialPortUtil {
 
 
 
-    public void sendData(byte[] data){
+    public byte[] sendData(byte[] data){
 
         Log.i(APP.TAG, "发送：" + ByteStringUtil.byteArrayToHexStr(data));
-        serialPortService.sendData(data);
+        return serialPortService.sendData(data);
     }
 
 
@@ -82,6 +85,15 @@ public class SerialPortUtil {
      * 添加监听2
      * */
     public void receiveListener(SerialPortService.SerialResponseByteListener serialResponseByteListener){
+
+        if(serialResponseByteListener == null){
+            return;
+        }
+
+        if(serialPortService == null){
+            return;
+        }
+
         //  串口监听
         serialPortService.receiveThread(serialResponseByteListener);
     }

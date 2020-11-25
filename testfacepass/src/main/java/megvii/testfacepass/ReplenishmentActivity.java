@@ -44,21 +44,18 @@ import okhttp3.Call;
 
 public class ReplenishmentActivity extends AppCompatActivity {
 
-    RecyclerView replenishment_recyclerview;
+    private RecyclerView replenishment_recyclerview;
 
-    private String TAG = "结果";
+    private String TAG = "货道调试";
 
     //  查询货道列表
-    List<CommodityBean> result;
-
+    private List<CommodityBean> result;
 
     public final static int UPDATE_CODE = 100;
 
+    private ReplenishmentAdapter replenishmentAdapter;
 
-    ReplenishmentAdapter replenishmentAdapter;
-
-    Button replenishment_clear_btn;
-
+    private Button replenishment_clear_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,15 +63,8 @@ public class ReplenishmentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_replenishment);
 
 
-        /*        SharedPreferences sharedPreferences = getSharedPreferences("appConfig",MODE_PRIVATE);
-        String deviceToken = sharedPreferences.getString("deviceToken",null);*/
-
+        //  清空货道按钮
         replenishment_clear_btn = (Button)findViewById(R.id.replenishment_clear_btn);
-
-
-
-
-
 
         //  商品备选
         List<CommodityAlternativeBean> commodityAlternativeBean = DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().queryBuilder().build().list();
@@ -94,36 +84,6 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
             DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().insertInTx(commodityAlternativeBeans);
         }
-
-
-
-
-
-        /*List<CommodityBean> commodityBeanListPara = new ArrayList<>() ;
-        for(int i =0 ;i < 10 ;i ++){
-            CommodityAlternativeBean commodityAlternativeBean = new CommodityAlternativeBean((long) 1,10,"康师傅方便面",false,0,true,"https://www.norkm.com",100);
-
-            CommodityBean commodityBean = new CommodityBean();
-            commodityBean.setAddTime(System.currentTimeMillis());
-            commodityBean.setCupboardNumber(1);
-            commodityBean.setTierNumber(2);
-            commodityBean.setDateInProduced(System.currentTimeMillis());
-            commodityBean.setTierChildrenNumber(i);
-            commodityBean.setCommodityID(i);
-
-            commodityBean.setCommodityAlternativeBean(commodityAlternativeBean);
-
-
-
-
-
-            commodityBeanListPara.add(commodityBean);
-        }
-
-
-        DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().insertOrReplaceInTx(commodityBeanListPara);*/
-
-
 
 
         //  查询商品列表
@@ -150,7 +110,7 @@ public class ReplenishmentActivity extends AppCompatActivity {
                 intent.putExtra("tierChildrenNumber",result.get(position).getTierChildrenNumber());
                 intent.putExtra("commodityID",result.get(position).getCommodityID());
 
-                Log.i("结果","传递" + result.get(position).toString());
+                Log.i(TAG,"传递" + result.get(position).toString());
 
                 startActivityForResult(intent,UPDATE_CODE);
             }
@@ -162,19 +122,11 @@ public class ReplenishmentActivity extends AppCompatActivity {
 
 
         for(CommodityBean commodityBean : commodityBeanList){
-            Log.i(TAG,"已有配置：" + commodityBean.toString());
+            //  Log.i(TAG,"已有配置：" + commodityBean.toString());
         }
 
-        Log.i(TAG,"全部：" + commodityBeanList.size());
-        Log.i(TAG,"货道列表：" + result.size());
-
-        /*List<CommodityBean> commodityBeanList = DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.CommodityID.eq(2)).build().list();
-        if(commodityBeanList != null && commodityBeanList.size() > 0){
-            Log.i("结果",DataBaseUtil.getInstance(this).getDaoSession().getCommodityBeanDao().queryBuilder().list().size() + "," + commodityBeanList.toString());
-        }else{
-            Log.i("结果","空");
-        }*/
-
+        //  Log.i(TAG,"全部：" + commodityBeanList.size());
+        //  Log.i(TAG,"货道列表：" + result.size());
 
         replenishment_clear_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,9 +167,6 @@ public class ReplenishmentActivity extends AppCompatActivity {
         });
 
     }
-
-
-
 
 
     /**

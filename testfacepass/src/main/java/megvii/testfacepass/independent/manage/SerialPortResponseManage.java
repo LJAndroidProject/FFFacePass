@@ -1,6 +1,7 @@
 package megvii.testfacepass.independent.manage;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.serialport.SerialPort;
@@ -33,9 +34,39 @@ import static megvii.testfacepass.MainActivity.MY_ORDER;
  * */
 public class SerialPortResponseManage {
 
+    private DustbinStateBean dustbinStateBean;
+
     private final static byte ORDER_SUCCESS = 0x10;
     private final static byte ORDER_FAIL = 0x11;
-    public static void inOrderString(Context context , byte[] order) {
+
+    public static SerialPortResponseManage serialPortResponseManage;
+
+    private SerialPortResponseManage(){
+
+    }
+
+    public static SerialPortResponseManage getInstance(){
+        if(serialPortResponseManage == null){
+            synchronized (SerialPortResponseManage.class){
+                if(serialPortResponseManage == null){
+                    serialPortResponseManage = new SerialPortResponseManage();
+                    return serialPortResponseManage;
+                }
+            }
+        }
+        return serialPortResponseManage;
+    }
+
+
+    public DustbinStateBean getDustbinStateBean() {
+        return dustbinStateBean;
+    }
+
+    public void setDustbinStateBean(DustbinStateBean dustbinStateBean) {
+        this.dustbinStateBean = dustbinStateBean;
+    }
+
+    public void inOrderString(Context context , byte[] order) {
         //  打印收到的指令
         Log.i(APP.TAG, "接收: " + ByteStringUtil.byteArrayToHexStr(order));
 
@@ -83,12 +114,12 @@ public class SerialPortResponseManage {
 
                 } else if (orderMessage.getDataContent()[0] == 0x00) {
                     //  关成功
-                    toast(context, "关成功");
+
 
                     Log.i("结算调试",orderMessage.getOrder()[1] + "门，关闭成功");
 
                     //  获取门板号
-                    DustbinStateBean dustbinStateBean = DustbinUtil.getDustbinState(orderMessage.getOrder()[1]);
+                    final DustbinStateBean dustbinStateBean = DustbinUtil.getDustbinState(orderMessage.getOrder()[1]);
 
 
                     if (dustbinStateBean != null) {
@@ -100,9 +131,35 @@ public class SerialPortResponseManage {
                         APP.setDustbinState(context,dustbinStateBean);
 
                         Log.i("结算调试","开始通过事件总线通知控制台关门成功");
-                        //  通知开启闪关灯并拍照
-                        EventBus.getDefault().post(dustbinStateBean);
 
+
+                        //  通知开启闪关灯并拍照
+                        //  事件总线经常无效
+                        /*for(int i = 0 ; i < 10; i ++){
+                            EventBus.getDefault().post(dustbinStateBean);
+                            try {
+                                Thread.sleep(10);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }*/
+
+                        //setDustbinStateBean(dustbinStateBean);
+
+
+                        /*try {
+                            Thread.sleep(100);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        EventBus.getDefault().post(dustbinStateBean);*/
+
+                        if(closeListener != null){
+                            closeListener.closeCall(dustbinStateBean);
+                            EventBus.getDefault().post(dustbinStateBean);
+                        }
+
+                        toast(context, "关成功");
 
 
                         //SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(2));
@@ -204,9 +261,16 @@ public class SerialPortResponseManage {
                 Log.i(APP.TAG, "获取到数据的 二进制" + tString);
                 Log.i(APP.TAG, "状态解析" + dustbinStateBean.toString());
 
+                //  接近开关
+                if(dustbinStateBean.getProximitySwitch()){
+                    Log.i("定时","有人");
+                    APP.hasManTime = System.currentTimeMillis();
+                }
+
                 APP.setDustbinState(context,dustbinStateBean);
 
                 Log.i("结算调试",dustbinStateBean.getDoorNumber() + ", 门状态:" + dustbinStateBean.getDoorIsOpen());
+
 
 
                 //  人接近 与离开
@@ -273,8 +337,13 @@ public class SerialPortResponseManage {
             } else if (orderMessage.getOrder()[0] == OrderUtil.IC_CARD_BYTE) {
                 Log.i("卡","接收到:" + ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
                 //  IC 卡
-                ICCard icCard = new ICCard(0, ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
-                EventBus.getDefault().post(icCard);
+                /*ICCard icCard = new ICCard(0, ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
+                EventBus.getDefault().post(icCard);*/
+
+
+                Intent intent = new Intent("icCard");
+                intent.putExtra("content",ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
+                context.sendBroadcast(intent);
 
             } else {
                 Log.i(MY_ORDER, "未知功能");
@@ -284,6 +353,21 @@ public class SerialPortResponseManage {
             Log.i(APP.TAG,"非法指令");
         }
 
+    }
+
+
+    public CloseListener closeListener;
+
+
+    public void setCloseListener(CloseListener closeListener) {
+        this.closeListener = closeListener;
+    }
+
+    /**
+     * 关闭监听
+     * */
+    public interface CloseListener{
+        void closeCall(DustbinStateBean dustbinStateBean);
     }
 
     /**
