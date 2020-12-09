@@ -248,7 +248,7 @@ public class SerialPortResponseManage {
                 //  人工门开关
                 dustbinStateBean.setArtificialDoor(chars[2] == '0');
                 //  侧满
-                dustbinStateBean.setIsFull(chars[3] == '1');
+                dustbinStateBean.setIsFull(chars[3] == '0');
                 //  推杆过流
                 dustbinStateBean.setPushRod(chars[4] == '1');
                 //  通信异常

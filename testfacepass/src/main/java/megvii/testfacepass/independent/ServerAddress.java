@@ -71,7 +71,7 @@ public class ServerAddress {
     //  获取设备工作时间
     public final static String GET_BINS_WORK_TIME = IP + "api/Android/getBinsWorkTime";
 
-
-
+    //  传 id 获取用户头像
+    public final static String GET_USER_ICON = IP + "api/Bmxproxy/getUserAvater?user_id=";
 
 }

@@ -37,6 +37,9 @@ public class APP extends Application {
 
     public static long userType;
 
+
+    public static boolean controlImagePreview = false;
+
     private String deviceToken;
 
     public volatile static List<DustbinStateBean> dustbinBeanList;

@@ -371,6 +371,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         //  启动APP默认关闭所有门
+
         closeAllDoor();
 
         //  设置垃圾箱配置
@@ -627,8 +628,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 }
 
 
-
-                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 200){
+                //  改成 60 即可
+                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 60){
                     tcpResponse = cache + tcpResponse;
                 }
                 //  =======================================================================================
@@ -1678,6 +1679,24 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         mSDKModeBtn=(Button)findViewById(R.id.btn_mode_switch);
         mSDKModeBtn.setText(SDK_MODE.toString());
 
+
+        //  长按隐藏状态栏 和 进行后台监听
+        cameraView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+
+                //  隐藏状态栏，也就是 app 打开后不能退出
+                AndroidDeviceSDK.hideStatus(MainActivity.this,true);
+                //  检查是否在前台
+                AndroidDeviceSDK.checkForeground(MainActivity.this,true);
+
+
+                APP.controlImagePreview = true;
+
+                return false;
+            }
+        });
+
         //  切换人脸识别的有线无线状态
         mSDKModeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1907,7 +1926,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         //  faceToken 就是这里设置的
-        idTextView.setText(text);
+        //  idTextView.setText(text);
 
         if (mRecoToast == null) {
             mRecoToast = new Toast(getApplicationContext());
@@ -2082,7 +2101,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         VoiceUtil.getInstance().openAssetMusics(MainActivity.this,"bind_face_voice.aac");
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
-        alert.setCancelable(false);
+        //  alert.setCancelable(false);
         View view = View.inflate(MainActivity.this,R.layout.qr_code_layout,null);
         ImageView qr_code_login = (ImageView)view.findViewById(R.id.iv_qr_code_login);
 

@@ -12,6 +12,11 @@
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
         app:showAsAction="collapseActionView"/>
     <item
+        android:id="@+id/dustbin_menu_reBoot"
+        android:title="设备重启"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel"
+        app:showAsAction="collapseActionView"/>
+    <item
         android:id="@+id/dustbin_menu_clear"
         android:title="清空所有数据"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"

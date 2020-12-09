@@ -170,6 +170,8 @@ public class ControlActivity extends AppCompatActivity{
         hasMan();
 
 
+
+
         //  结算模式为关门迭代
         if(exit_mode == EXIT_MODE.CLOSE_ITERATION){
             EventBus.getDefault().register(this);
@@ -200,6 +202,12 @@ public class ControlActivity extends AppCompatActivity{
         textView = (TextView) findViewById(R.id.textView);
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
 
+        /*if(APP.controlImagePreview){
+            control_image.setAlpha(0.6f);
+        }else{
+            control_image.setAlpha(1f);
+        }*/
+
         //  初始化摄像头
         mUVCCamera = new UVCCameraProxy(this);
         mUVCCamera.getConfig()
@@ -215,7 +223,10 @@ public class ControlActivity extends AppCompatActivity{
         /*
          * 默认应该开启厨余 和 其它垃圾箱
          * */
+        //  餐厨默认没有
         mUsbDevice = getUsbCameraDevice(doorNumberToPid(openDefaultDoor()));
+
+        //mUsbDevice = getUsbCameraDevice(ControlActivity.doorNumberToPid(1));
         //mUVCCamera.closeCamera();
         mUVCCamera.requestPermission(mUsbDevice);
 
@@ -267,6 +278,10 @@ public class ControlActivity extends AppCompatActivity{
                         adminLoginDialog.setLoginListener(new AdminLoginDialog.LoginListener() {
                             @Override
                             public void callBack(final String editStr, final String password, android.app.AlertDialog alertDialog) {
+
+                                //  更新有人
+                                APP.hasManTime = System.currentTimeMillis();
+                                hasManIsRun = true;
 
 
                                 //  传参手机号码 和 密码 开始登陆
@@ -430,14 +445,62 @@ public class ControlActivity extends AppCompatActivity{
                             return;
                         }
 
+                        //  如果是开的则关闭
+                        if(dustbinStateBean.getDoorIsOpen()){
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
+                        }else{
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+
+                        }
+
                         //  开启垃圾箱
-                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+                        //  SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
                         //  关闭消毒紫外线灯
-                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(dustbinStateBean.getDoorNumber()));
+                        // SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(dustbinStateBean.getDoorNumber()));
                     }
 
 
                 }
+            }
+        });
+
+        //  长按关闭
+        controlItemAdapter.setOnItemChildLongClickListener(new BaseQuickAdapter.OnItemChildLongClickListener() {
+            @Override
+            public boolean onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
+                if(view.getId() == R.id.control_item_iv){
+
+                    final DustbinStateBean data = controlItemAdapter.getData().get(position);
+
+                    if("自动售卖机".equals(data.getDustbinBoxType())){
+
+                    }else{
+
+                        Toast.makeText(ControlActivity.this,"关闭" + data.getDustbinBoxType() + "垃圾箱",Toast.LENGTH_LONG).show();
+
+                        //  关闭所有该类型的垃圾箱
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(DustbinStateBean target : APP.dustbinBeanList){
+                                    if(target.getDustbinBoxType().equals(data.getDustbinBoxType())){
+                                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(target.getDoorNumber()));
+                                        try {
+                                            Thread.sleep(500);
+                                        }catch (Exception e){
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            }
+                        }).start();
+
+                    }
+
+
+                }
+
+                return true;
             }
         });
         control_recyclerview.setLayoutManager(new GridLayoutManager(this,3));
@@ -521,14 +584,14 @@ public class ControlActivity extends AppCompatActivity{
                         Log.i(DEBUG_TAG_TASK,dustbinStateBean.getDoorNumber() + "开始关门");
 
                         //  关门
-                        for(int i = 0 ; i < 3 ; i ++){
-                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
-                            try {
-                                Thread.sleep(60);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
+
+                        try {
+                            Thread.sleep(500);
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
+
                         //  开补光灯
                         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
 
@@ -570,7 +633,8 @@ public class ControlActivity extends AppCompatActivity{
                 }
 
                 Log.i("take picture","take picture 进入关闭");
-                exitEnd(0);
+                //  1为结算超时 会关闭所有门
+                exitEnd(1);
 
             }
         };
@@ -590,10 +654,10 @@ public class ControlActivity extends AppCompatActivity{
     private int openDefaultDoor(){
 
         /*
-        * 开厨余
+        * 开其它
         * */
         for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
-            if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.KITCHEN.toString())){
+            if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())){
 
                 if(!dustbinStateBean.getIsFull()){
                     byte[] result = SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
@@ -612,10 +676,10 @@ public class ControlActivity extends AppCompatActivity{
 
         /*
         *
-        * 开其它
+        * 开餐厨
         * */
         for(final DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
-            if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())){
+            if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.KITCHEN.toString())){
 
                 if(!dustbinStateBean.getIsFull()){
                     new Handler().postDelayed(new Runnable() {
@@ -831,6 +895,7 @@ public class ControlActivity extends AppCompatActivity{
             //  加载图片
             Glide.with(mContext).load(image_resource).into((ImageView) helper.getView(R.id.control_item_iv));
             helper.addOnClickListener(R.id.control_item_iv);
+            helper.addOnLongClickListener(R.id.control_item_iv);
 
         }
 
@@ -1389,7 +1454,7 @@ public class ControlActivity extends AppCompatActivity{
 
         //  计算投递重量差 ，兑换积分
         //  如果人工门不是开启的, 才计算重量
-        if(/*!dustbinStateBean.getArtificialDoor()*/true){
+        if(!dustbinStateBean.getArtificialDoor()){
 
             Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"没有开启人工门");
 

@@ -125,7 +125,7 @@ public class SerialPortService implements ISerialPortService {
 
                         serialResponseListener.response(getdata.toString());
 
-                        Thread.sleep(10);
+                        Thread.sleep(100);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -159,9 +159,10 @@ public class SerialPortService implements ISerialPortService {
 
                             if(readBytes != null){
                                 serialResponseByteListener.response(readBytes);
-                                Thread.sleep(100);
                             }
                         }
+
+                        Thread.sleep(100);
 
                     } catch (Exception e) {
                         Log.i("结算调试","串口接收发生异常:" + e.getMessage());

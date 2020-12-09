@@ -1,5 +1,7 @@
 package megvii.testfacepass;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -196,16 +198,37 @@ public class DustbinManageActivity extends AppCompatActivity {
                 break;
             case R.id.dustbin_menu_check:
                 break;
+            case R.id.dustbin_menu_reBoot:
+                AndroidDeviceSDK.reBoot(DustbinManageActivity.this);
+                break;
             case R.id.dustbin_menu_clear:
                 DataBaseUtil.getInstance(this).getDaoSession().getAllDaos().clear();
                 break;
             case R.id.dustbin_menu_exit:
-                APP.exit();
+                //APP.exit();
+                //killAppProcess();
+
+                int a = 1 / 0;
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+
+    public void killAppProcess() {
+        //注意：不能先杀掉主进程，否则逻辑代码无法继续执行，需先杀掉相关进程最后杀掉主进程
+        ActivityManager mActivityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> mList = mActivityManager.getRunningAppProcesses();
+        for (ActivityManager.RunningAppProcessInfo runningAppProcessInfo : mList)
+        {
+            if (runningAppProcessInfo.pid != android.os.Process.myPid())
+            {
+                android.os.Process.killProcess(runningAppProcessInfo.pid);
+            }
+        }
+        android.os.Process.killProcess(android.os.Process.myPid());
+        System.exit(0);
+    }
 
     public static String stampToDate(long time){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

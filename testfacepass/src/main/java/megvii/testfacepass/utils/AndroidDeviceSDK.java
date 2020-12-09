@@ -28,4 +28,12 @@ public class AndroidDeviceSDK {
         intent.putExtra("navigation_bar",hideStatus);
         context.sendBroadcast(intent);
     }
+
+    /**
+     * 重启
+     * */
+    public static void reBoot(Context context){
+        Intent intent = new Intent("android.q_zheng.action.REBOOT");
+        context.sendBroadcast(intent);
+    }
 }

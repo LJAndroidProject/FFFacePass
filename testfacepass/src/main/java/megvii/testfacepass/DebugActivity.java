@@ -138,7 +138,7 @@ public class DebugActivity extends AppCompatActivity {
                 }
 
                 int doorNumber = Integer.parseInt(s.toString());
-                if(doorNumber >= 1 && doorNumber <= 4){
+                if(doorNumber >= 1 && doorNumber <= 8){
                     mUVCCamera.closeCamera();
 
                     //  切换摄像头
@@ -180,7 +180,10 @@ public class DebugActivity extends AppCompatActivity {
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        stateBugTextView.append(dustbinStateBean.toString());
+                                        stateBugTextView.append("\n");
+                                        stateBugTextView.append("\n");
+                                        stateBugTextView.append(dustbinStateBean.toChineseString());
+                                        stateBugTextView.append("\n");
                                         stateBugTextView.append("\n");
                                     }
                                 });
@@ -214,7 +217,7 @@ public class DebugActivity extends AppCompatActivity {
         // 如果垃圾箱为 null 则创建
         if(APP.dustbinBeanList == null || APP.dustbinBeanList .size() == 0){
             List<DustbinStateBean> dustbinStateBeans = new ArrayList<>();
-            for(int i = 1 ;i <= 4 ;i++){
+            for(int i = 1 ;i <= 8 ;i++){
                 DustbinStateBean dustbinStateBean = new DustbinStateBean();
                 dustbinStateBean.setDoorNumber(i);
                 dustbinStateBeans.add(dustbinStateBean);

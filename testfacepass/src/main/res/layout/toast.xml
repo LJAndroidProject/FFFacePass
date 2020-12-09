@@ -4,6 +4,8 @@
     android:orientation="vertical"
     android:background="@drawable/toast_style"
     android:paddingBottom="20dp"
+    android:paddingStart="40dp"
+    android:paddingEnd="40dp"
     android:id="@+id/toastll">
 
     <ImageView
