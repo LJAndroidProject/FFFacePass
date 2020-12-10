@@ -5,7 +5,7 @@ apply plugin: 'mtj-circle-plugin'
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.2"
-
+    //  adb shell am force-stop megvii.testfacepass
     defaultConfig {
         applicationId "megvii.testfacepass"
         minSdkVersion 21

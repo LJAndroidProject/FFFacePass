@@ -445,13 +445,9 @@ public class ControlActivity extends AppCompatActivity{
                             return;
                         }
 
-                        //  如果是开的则关闭
-                        if(dustbinStateBean.getDoorIsOpen()){
-                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
-                        }else{
-                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
-
-                        }
+                        //  添加需要关闭的垃圾箱
+                        addNeedCloseDustbin(dustbinStateBean);
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
 
                         //  开启垃圾箱
                         //  SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
@@ -569,11 +565,11 @@ public class ControlActivity extends AppCompatActivity{
                 super.run();
 
                 Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"关门之前垃圾箱的状态：" + APP.dustbinBeanList.toString());
-                for(final DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
+                for(final DustbinStateBean dustbinStateBean : needCloseDustbin /* 之前是关闭当前状态为开的门 APP.dustbinBeanList*/){
                     Log.i(DEBUG_TAG_TASK,"正在处理的门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen());
 
                     //  如果是开门的
-                    if(dustbinStateBean.getDoorIsOpen()){
+                    if(true /* 之前是关闭当前状态为开的门 dustbinStateBean.getDoorIsOpen()*/){
                         Log.i(DEBUG_TAG_TASK,dustbinStateBean.getDoorNumber() + "是开的");
 
                         //  时间
@@ -643,6 +639,27 @@ public class ControlActivity extends AppCompatActivity{
     }
 
 
+    //  需要关闭的垃圾箱列表
+    private List<DustbinStateBean> needCloseDustbin = new ArrayList<>();
+    public void addNeedCloseDustbin(DustbinStateBean dustbinStateBean){
+        //  如果为 0 则直接添加
+        if(needCloseDustbin.size() == 0 ){
+            needCloseDustbin.add(dustbinStateBean);
+        }else{
+
+            //  查找该垃圾箱是否已经被添加进去，如果有则直接返回
+            for(DustbinStateBean dustbinStateBeanChild:needCloseDustbin){
+                if(dustbinStateBeanChild.getDoorNumber() == dustbinStateBean.getDoorNumber()){
+                    return;
+                }
+            }
+
+            //  如果能执行到这里说明还没有被加入进去，则添加该垃圾箱
+            needCloseDustbin.add(dustbinStateBean);
+
+        }
+    }
+
 
 
     /**
@@ -660,6 +677,8 @@ public class ControlActivity extends AppCompatActivity{
             if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())){
 
                 if(!dustbinStateBean.getIsFull()){
+                    //  添加需要关闭的垃圾箱
+                    addNeedCloseDustbin(dustbinStateBean);
                     byte[] result = SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
 
                     if(result != null){
@@ -685,6 +704,8 @@ public class ControlActivity extends AppCompatActivity{
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            //  添加需要关闭的垃圾箱
+                            addNeedCloseDustbin(dustbinStateBean);
                             byte[] result = SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
                             if(result != null){
                                 Log.i("开门返回2", ByteStringUtil.byteArrayToHexStr(result));
