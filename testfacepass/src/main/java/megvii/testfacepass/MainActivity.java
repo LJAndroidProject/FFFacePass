@@ -75,6 +75,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.google.gson.Gson;
 import com.littlegreens.netty.client.listener.NettyClientListener;
+import com.serialportlibrary.util.ByteStringUtil;
 import com.umeng.message.entity.UMessage;
 
 import org.apache.http.HttpEntity;
@@ -98,9 +99,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import mcv.facepass.FacePassException;
@@ -179,7 +183,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     //  默认是无线人脸识别
     private static FacePassSDKMode SDK_MODE = FacePassSDKMode.MODE_OFFLINE;
-
 
     private static final String DEBUG_TAG = "FacePassDemo";
 
@@ -371,7 +374,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         //  启动APP默认关闭所有门
-
         closeAllDoor();
 
         //  设置垃圾箱配置
@@ -396,7 +398,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  注册事件总线
         EventBus.getDefault().register(this);
         //  隐藏状态栏，也就是 app 打开后不能退出
-        AndroidDeviceSDK.hideStatus(MainActivity.this,false);
+        AndroidDeviceSDK.hideStatus(MainActivity.this,true);
         //  检查是否在前台
         AndroidDeviceSDK.checkForeground(MainActivity.this,true);
         //  必须在第一次语音播报前 先初始化对象，否则可能出现第一次语音播报无声音的情况
@@ -605,7 +607,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     private String tcp_client_id;   //  服务器分配的连接 id
     private String cache;   //  字符串缓存，当从服务器传输过来的内容太多可能会被分段发送，所以这里用一个缓存字符串拼接原本 分段的内容
-    private String tcpResponse;
+    private String tcpResponse; //  实际经过拼接处理后的 服务器字符串
+    private long lastBindTime; // 上一次TCP绑定时间
+    private long QRReturnTime; // 上一次扫码二维码返回时间
+    private final static String TCP_DEBUG = "TCP调试";
     private void initTCP(){
         TCPConnectUtil.getInstance().connect();
         TCPConnectUtil.getInstance().setListener(new NettyClientListener() {
@@ -614,7 +619,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 //  来自服务器的响应
                 tcpResponse = new String(bytes, StandardCharsets.UTF_8);
 
+
+                Log.i(TCP_DEBUG,"服务器推送内容长度：" + tcpResponse.length() + "，TCP 当前状态：" + i);
+
+
                 //  这一步解决一个返回特征值分段问题    =====================================================
+                //  以扫码推送特征值开头
                 if(tcpResponse.startsWith("{\"type\":\"QrReturn\",") && !tcpResponse.endsWith("}")){
                     cache = tcpResponse;
                     return;
@@ -622,23 +632,44 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
                 //  这一步解决一个返回特征值分段问题    =====================================================
+                //  以其它设备推送特征值开头
                 if(tcpResponse.startsWith("{\"type\":\"nearByFeatrueSend\",") && !tcpResponse.endsWith("}")){
                     cache = tcpResponse;
                     return;
                 }
 
+                //  如果 分 3段，为中间那段
+
+                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 200 && !tcpResponse.endsWith("}")){
+                    cache = cache + tcpResponse;
+                    return;
+                }
+
 
                 //  改成 60 即可
-                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 60){
+                if(!tcpResponse.startsWith("{") && /*tcpResponse.length() > 200 &&*/ tcpResponse.endsWith("}")){
                     tcpResponse = cache + tcpResponse;
                 }
+
                 //  =======================================================================================
 
+                //  分段异常
+                /*if(tcpResponse.endsWith("\"megvii_android.util.Base64\"}}}") && tcpResponse.length() < 200){
+                    tcpResponse = cache + tcpResponse;
+                    *//*mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this,"出错了，请重新扫码二维码",Toast.LENGTH_LONG).show();
+                            showToast("出错了，请重新扫描二维码",Toast.LENGTH_LONG,false,null);
+                        }
+                    });*//*
+                }*/
 
-                Log.i("响应结果3", tcpResponse + ",长度:" + tcpResponse.length() + "，状态:" + i);
+
+                Log.i(TCP_DEBUG, "服务器推送过来的内容拼接结果：" + tcpResponse + ",长度:" + tcpResponse.length() + "，状态:" + i);
 
                 //  首先判定 响应中是否存在 type 和 data 是否以 { 开头
-                if(tcpResponse.startsWith("{") && tcpResponse.contains("type") && tcpResponse.contains("data")){
+                if(tcpResponse.startsWith("{") && tcpResponse.contains("type") && tcpResponse.contains("data") && tcpResponse.endsWith("}")){
                     try {
                         JSONObject jsonObject = new JSONObject(tcpResponse);
                         String type = jsonObject.getString("type");
@@ -655,9 +686,13 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                     NetWorkUtil.getInstance().doPost(ServerAddress.REGISTER_TCP, map, new NetWorkUtil.NetWorkListener() {
                                         @Override
                                         public void success(String response) {
-                                            Log.i("结果","绑定:" + response);
+
+                                            NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + response);
+
+                                            Log.i(TCP_DEBUG,"TCP绑定结果:" + response);
+
                                             if(response.contains("设备已绑定tcp连接")){
-                                                //AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+
                                             }else if(response.contains("连接池未找到改连接ID")){
 
                                             }
@@ -666,12 +701,14 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                                         @Override
                                         public void fail(Call call, IOException e) {
-
+                                            Log.i(TCP_DEBUG,"TCP绑定发生错误" + e.getMessage());
+                                            NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + e.getMessage());
                                         }
 
                                         @Override
                                         public void error(Exception e) {
-
+                                            Log.i(TCP_DEBUG,"TCP绑定发生错误" + e.getMessage());
+                                            NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + e.getMessage());
                                         }
                                     });
 
@@ -680,15 +717,24 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         }else if(type.equals("client_connect_msgect_msg")){
                             //  连接成功注册 与 绑定
 
-                            long nowTime = System.currentTimeMillis() / 1000;
+                            NetWorkUtil.getInstance().errorUpload("TCP 绑定 client_connect_msgect_msg");
+
+                            //  TCP 发两个bug
+                            if(System.currentTimeMillis() - lastBindTime < 1000){
+                                Log.i(TCP_DEBUG,"TCP触发重复绑定，1s内多次接收到服务器传递过来的绑定信号，抛弃");
+                                return;
+                            }
+
+                            lastBindTime = System.currentTimeMillis() / 1000;
                             TCPVerify verify = new TCPVerify();
                             verify.setType("login");
                             TCPVerify.DataBean dataBean = new TCPVerify.DataBean();
-                            dataBean.setSign(md5(nowTime + key).toUpperCase());
-                            dataBean.setTimestamp(String.valueOf(nowTime));
+                            dataBean.setSign(md5(lastBindTime + key).toUpperCase());
+                            /*dataBean.setTimestamp(String.valueOf(lastBindTime-(60*1000*10)));*/
+                            dataBean.setTimestamp(String.valueOf(lastBindTime));
                             verify.setData(dataBean);
 
-                            Log.i("结果","发送" + gson.toJson(verify));
+                            Log.i(TCP_DEBUG,"发送TCP认证信息" + gson.toJson(verify));
 
                             TCPConnectUtil.getInstance().sendData(gson.toJson(verify));
 
@@ -699,26 +745,27 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         }else if(type.equals("buy_success_msg")){
                             //  购买 成功反馈
                             BuySuccessMsg buySuccessMsg = gson.fromJson(data,BuySuccessMsg.class);
-                            Log.i("结果",buySuccessMsg.toString());
 
                             EventBus.getDefault().post(buySuccessMsg);
                         }else if(type.equals("QrReturn")){
 
+                            //  扫码推送特征值太快则抛弃。
+                            if(System.currentTimeMillis() - QRReturnTime < 1000){
+                                return;
+                            }
+
                             VXLoginCall vxLoginCall = gson.fromJson(data,VXLoginCall.class);
-                            Log.i(NOW_TAG,"list 内容 : " + vxLoginCall.toString());
-                            Log.i(NOW_TAG,"设置用户 id 之前的用户 id " + app.getUserId());
                             //  修改当前设置的用户id
-                            app.setUserId(vxLoginCall.getInfo().getUser_id());
+                            APP.userId = vxLoginCall.getInfo().getUser_id();
+                            //  修改当前用户类型
                             APP.userType = vxLoginCall.getInfo().getUser_type();
-                            Log.i(NOW_TAG,"设置用户 id 之后 的用户 id" + app.getUserId());
 
 
+                            //  隐藏二维码扫码
                             mainHandler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //  隐藏二维码扫码
                                     if(qrCodeDialog != null && qrCodeDialog.isShowing()){
-                                        Log.i(NOW_TAG,"隐藏二维码弹窗");
                                         qrCodeDialog.dismiss();
                                     }
                                 }
@@ -730,24 +777,26 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                 //  获取来自服务器人脸特征 ( 字符串之前是 Base64 形式 )
                                 byte[] feature = Base64.decode(vxLoginCall.getInfo().getFeatrue(),Base64.DEFAULT);
 
+                                Log.i("特征值长度","结果:" + feature.length);
+
                                 FacePassFeatureAppendInfo facePassFeatureAppendInfo = new FacePassFeatureAppendInfo();
                                 //  插入人脸特征值，返回faceToken ，如果特征值不可用会抛出异常
                                 String faceToken = mFacePassHandler.insertFeature(feature,facePassFeatureAppendInfo);
-                                //  facetoken 绑定底库
+                                //  faceToken 绑定底库
                                 boolean bindResult = mFacePassHandler.bindGroup(group_name, faceToken.getBytes());
-                                //  绑定成功就可以 将 facetoken 和 id 进行绑定了
+                                //  绑定成功就可以 将 faceToken 和 id 进行绑定了
 
                                 if(bindResult){
+
+                                    //  更新QRReturn时间
+                                    QRReturnTime = System.currentTimeMillis();
+
                                     Log.i(NOW_TAG,"绑定成功，将跳转控制台");
-                                    //  facetoken 和用户id 绑定
+                                    //  faceToken 和用户id 绑定
                                     DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(app.getUserId(),faceToken);
 
                                     //  跳转到垃圾箱控制台
                                     goControlActivity();
-
-
-                                    //  将用户id和特征、图片上传至服务器   ===========================================
-
 
                                 }else{
                                     Log.i(NOW_TAG,"绑定失败，删除人脸");
@@ -757,7 +806,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             }else{
                                 //   云端 没有该用户的 人脸 特征值，则提示需要人脸注册
                                 Log.i(NOW_TAG,"云端没有该人脸图片和特征值，显示人脸注册");
-
 
                                 mainHandler.post(new Runnable() {
                                     @Override
@@ -810,47 +858,63 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         }
 
                     }catch (Exception e){
-                        Log.i("响应结果",e.getMessage());
                         e.printStackTrace();
+
+                        Log.i(TCP_DEBUG, "发生异常：" + e.getMessage());
+
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                showToast("出错了，请重新扫码", Toast.LENGTH_SHORT,false,null);
+                            }
+                        });
                     }
+                }else{
+                    Log.i(TCP_DEBUG,"接收到不符合规范的 TCP 推送值" + tcpResponse);
                 }
-
-
-
-                if(tcpResponse.contains("client_id")){
-                    long nowTime = System.currentTimeMillis() / 1000;
-                    TCPVerify verify = new TCPVerify();
-                    verify.setType("login");
-                    TCPVerify.DataBean dataBean = new TCPVerify.DataBean();
-                    dataBean.setSign(md5(nowTime + key).toUpperCase());
-                    dataBean.setTimestamp(String.valueOf(nowTime));
-                    verify.setData(dataBean);
-
-                    Log.i("结果","发送" + gson.toJson(verify));
-
-                    TCPConnectUtil.getInstance().sendData(gson.toJson(verify));
-
-
-                }
-
 
             }
 
             @Override
             public void onClientStatusConnectChanged(int i, int i1) {
 
-                Log.i("Netty","i : " + i + " , " + i1);
+                //  断开连接   0，0
+                //  连接成功为 1 , 0
+
+                //  设备突然离线是 -1 , 0   NettyClientHandler: exceptionCaught
+                Log.i(TCP_DEBUG,"TCP状态改变 i : " + i + " , " + i1);
                 if(i == 1){
-                    Log.i("Netty","连接成功");
+                    NetWorkUtil.getInstance().errorUpload("TCP连接成功");
+                    Log.i(TCP_DEBUG,"连接成功");
                 }else{
                     //  重新连接
-                    TCPConnectUtil.getInstance().reconnect();
-                    Log.i("Netty","重新连接");
+                    //TCPConnectUtil.getInstance().reconnect();
+                    //Log.i("Netty","重新连接");
                 }
+
+                //  设备离线 断开重连接
+                /*if(i == 0 || i == -1){
+
+                    NetWorkUtil.getInstance().errorUpload("设备断开TCP连接,时间: " + System.currentTimeMillis() + "，状态 i :" + i + ", i1："+ i1 );
+
+                    VoiceUtil.getInstance().openAssetMusics(MainActivity.this,"no_work_time.aac");
+
+                    mainHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this,"触发设备离线",Toast.LENGTH_LONG).show();
+
+                            TCPConnectUtil.getInstance().disconnect();
+                            TCPConnectUtil.getInstance().connect();
+                        }
+                    },3000);
+                }*/
             }
         });
 
     }
+
+
 
     //  初始化人脸识别库
     private void initFaceHandler() {
@@ -977,6 +1041,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 intent.putExtra("userId",app.getUserId());
                 startActivityForResult(intent,CONTROL_RESULT_CODE);
             }else{
+                showToast("验证成功，但非投放时间", Toast.LENGTH_SHORT, false, null);
                 //  非投放时间
                 VoiceUtil.getInstance().openAssetMusics(MainActivity.this,"no_work_time.aac");
             }
@@ -1363,7 +1428,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                                 nowFaceToken = faceToken;
 
-
                                 Log.i(MY_TAG,"faceToken 离线状态下的人脸识别"  + faceToken);
 
 
@@ -1608,21 +1672,48 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     ++mSecretNumber;
                     if (mSecretNumber == 5) {
 
+                        Log.i("Netty","主动断开");
+                        //  先断开，在连接
+                        TCPConnectUtil.getInstance().disconnect();
+                        Log.i("Netty","主动连接");
+                        TCPConnectUtil.getInstance().connect();
+                        Toast.makeText(MainActivity.this,"重连",Toast.LENGTH_LONG).show();
+
+
+
+                        final String number = getrandom();
+                        //  开始上报
+                        NetWorkUtil.getInstance().errorUpload("故障，重启授权码:" + number);
+
+
                         adminLoginDialog = new AdminLoginDialog(MainActivity.this);
                         adminLoginDialog.setLoginListener(new AdminLoginDialog.LoginListener() {
                             @Override
                             public void callBack(String editStr,String password,AlertDialog alertDialog) {
 
-                                if(editStr.equals("123")){
-                                    alertDialog.dismiss();
+                                if(editStr.equals(number)){
+                                    if(password.equals("123456")){
+                                        AndroidDeviceSDK.reBoot(MainActivity.this);
+                                    }else if(password.equals("99")){
 
-                                    Intent intent = new Intent(MainActivity.this, SettingActivity.class);
-                                    startActivity(intent);
+                                        Log.i("Netty","主动断开");
+                                        //  先断开，在连接
+                                        TCPConnectUtil.getInstance().disconnect();
+                                        Log.i("Netty","主动连接");
+                                        TCPConnectUtil.getInstance().connect();
 
-                                    //  关闭当前activity
-                                    MainActivity.this.finish();
+                                    }else if(password.equals("1")){
+                                         AndroidDeviceSDK.hideStatus(MainActivity.this,false);
+                                    }else if(password.equals("2")){
+                                        int i = 0 / 1;
+                                    }else if(password.equals("3")){
+                                        Toast.makeText(MainActivity.this, "断开连接", Toast.LENGTH_SHORT).show();
+                                        TCPConnectUtil.getInstance().disconnect();
+                                    }else{
+                                        alertDialog.dismiss();
+                                    }
                                 }else{
-                                    Toast.makeText(MainActivity.this,"登陆失败，密码错误",Toast.LENGTH_LONG).show();
+                                    alertDialog.dismiss();
                                 }
                             }
                         });
@@ -1716,6 +1807,17 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
     }
 
+
+    public static String getrandom(){
+        String code = "";
+        Random random = new Random();
+        for (int i = 0; i < 6; i++) {
+            int r = random.nextInt(10); //每次随机出一个数字（0-9）
+            code = code + r;  //把每次随机出的数字拼在一起
+        }
+        return code;
+
+    }
 
     @Override
     protected void onStop() {
@@ -1962,6 +2064,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case CONTROL_RESULT_CODE:
+
+                APP.userId = 0;
+
                 if(data != null){
                     int exitCode = data.getIntExtra("exitCode",0);
                     //  结算超时
@@ -2112,7 +2217,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  拼接地址 传递 token
         qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId()));
 
-        Log.i(NOW_TAG,"二维码显示的内容 : " + ServerAddress.LOGIN + androidID);
+        Log.i(NOW_TAG,"二维码显示的内容 : " + ServerAddress.LOGIN + APP.getDeviceId());
 
 
         //  暂时添加一个点击事件，模拟扫码成功，并通过TCP连接返回了用户id和token
@@ -2316,6 +2421,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
         //  避免重复进入 控制台界面，2s
         if(System.currentTimeMillis() - lastPassTime < 2000){
+            Log.i(MY_TAG,"重复进入");
             return;
         }
 
@@ -2326,6 +2432,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
         //  如果人脸底库中存在该人脸，且有登陆记录，则直接进入垃圾控制台
         if(userMessage != null){
+
+            Log.i(MY_TAG,"用户信息不为 null");
 
             //  关闭二维码登陆弹窗
             if(qrCodeDialog != null && qrCodeDialog.isShowing()){
@@ -2343,6 +2451,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             }
 
         }else{
+            Log.i(MY_TAG,"人脸底库中存在该人脸，但是没有使用微信登陆过，则显示 扫描二维码弹窗");
             //  如果人脸底库中存在该人脸，但是没有使用微信登陆过，则显示 扫描二维码弹窗
 
             if(!isHasShowDialog()){

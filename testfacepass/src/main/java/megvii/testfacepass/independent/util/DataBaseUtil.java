@@ -187,7 +187,9 @@ public class DataBaseUtil {
             //  设置服务器传过来的用户id
             userMessage.setUserId(userId);
             //  插入到数据库
-            getDaoSession().getUserMessageDao().insert(userMessage);
+
+            //  人脸匹配但不通过 修改 insert 为 insertOrReplace
+            getDaoSession().getUserMessageDao().insertOrReplace(userMessage);
 
         }
     }

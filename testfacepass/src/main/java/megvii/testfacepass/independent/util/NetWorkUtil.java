@@ -283,6 +283,31 @@ public class NetWorkUtil {
     }
 
 
+
+
+    public void errorUpload(String errorMessage){
+        ErrorReportBean errorReportBean = new ErrorReportBean();
+        //  错误描述
+        errorReportBean.setMsg(errorMessage);
+        //  发生时间
+        errorReportBean.setTime(System.currentTimeMillis());
+        //  数据位
+        errorReportBean.setData("00");
+        //  命令位
+        errorReportBean.setOrderNumber("00");
+        //  具体哪一个门
+        errorReportBean.setDoorNumber(0);
+        //  设备id
+        errorReportBean.setDeviceId(APP.getDeviceId());
+        //  错误编号
+        errorReportBean.setErrorId(null);
+        //  实际指令
+        errorReportBean.setOrderString("00");
+
+        errorUpload(errorReportBean);
+    }
+
+
     public void fileUpload(File file,final FileUploadListener fileUploadListener){
         RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), file);
 

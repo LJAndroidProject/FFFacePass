@@ -1126,6 +1126,7 @@ public class ControlActivity extends AppCompatActivity{
     TimerTask hasManTask;
     Timer hasManTimer = new Timer();
     private boolean hasManIsRun = true;
+    private final static int AUTO_EXIT_TIME = 30;
 
     private void hasMan(){
         hasManTask = new TimerTask() {
@@ -1137,12 +1138,17 @@ public class ControlActivity extends AppCompatActivity{
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        control_exit_btn.setText("退出 ( " + (30 - ((System.currentTimeMillis() - APP.hasManTime) / 1000)) + "s )");
+                        control_exit_btn.setText("退出 ( " + (AUTO_EXIT_TIME - ((System.currentTimeMillis() - APP.hasManTime) / 1000)) + "s )");
                     }
                 });
 
+                //  剩余 10s 提醒语音
+                if(hasManIsRun && (AUTO_EXIT_TIME - (System.currentTimeMillis() - APP.hasManTime) / 1000) == 10){
+                    VoiceUtil.getInstance().openAssetMusics(ControlActivity.this,"exit_alert_voice.aac");
+                }
+
                 //  30 s内没有人
-                if(hasManIsRun && System.currentTimeMillis() - APP.hasManTime > (30 * 1000)){
+                if(hasManIsRun && System.currentTimeMillis() - APP.hasManTime > (AUTO_EXIT_TIME * 1000)){
 
                     hasManTask.cancel();
                     hasManTimer.cancel();
@@ -1390,7 +1396,7 @@ public class ControlActivity extends AppCompatActivity{
         }
 
         //  用户id设置为0
-        APP.userId = 0;
+        //  APP.userId = 0;
         //  投递瓶子数量设置为 0
         bottleNumber = 0;
         //  管理员登陆 保存的信息设置为 null
