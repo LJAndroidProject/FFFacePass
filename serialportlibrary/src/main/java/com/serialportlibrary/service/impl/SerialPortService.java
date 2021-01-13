@@ -174,6 +174,43 @@ public class SerialPortService implements ISerialPortService {
     }
 
 
+    public void receiveICThread(final SerialResponseICListener serialResponseICListener) {
+        final InputStream inputStream = mSerialPort.getInputStream();
+
+        /* 开启一个线程进行读取 */
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+
+                        if(inputStream == null){
+                            return;
+                        }
+                        byte[] buffer = new byte[1024];
+                        int size = inputStream.read(buffer);
+
+                        if(size > 0){
+                            byte[] readBytes = new byte[size];
+                            System.arraycopy(buffer, 0, readBytes, 0, size);
+
+                            if(readBytes != null){
+                                serialResponseICListener.response(readBytes);
+                            }
+                        }
+
+                        Thread.sleep(1000);
+
+                    } catch (Exception e) {
+                        Log.i("结算调试","IC串口接收发生异常:" + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+    }
+
+
 
 
 
@@ -193,6 +230,13 @@ public class SerialPortService implements ISerialPortService {
     public interface SerialResponseByteListener{
         void response(byte[] response);
     }
+
+    //  ic卡
+    public interface SerialResponseICListener{
+        void response(byte[] response);
+    }
+
+
 
     @Override
     public byte[] sendData(String date) {

@@ -62,6 +62,15 @@ public class StateCallBean {
         private int apk_size;
         private String update_explain;
         private String apk_download_url;
+        private int eq_status;
+
+        public int getEq_status() {
+            return eq_status;
+        }
+
+        public void setEq_status(int eq_status) {
+            this.eq_status = eq_status;
+        }
 
         public int getVersion_code() {
             return version_code;

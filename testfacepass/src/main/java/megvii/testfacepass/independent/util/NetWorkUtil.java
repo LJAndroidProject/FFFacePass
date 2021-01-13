@@ -357,6 +357,7 @@ public class NetWorkUtil {
         dustbinStateUploadBean.setSign(md5(nowTime + key).toUpperCase());
         dustbinStateUploadBean.setTimestamp(String.valueOf(nowTime));
         dustbinStateUploadBean.setApk_type(APP.ApkType);
+        dustbinStateUploadBean.setDevice_id(APP.getDeviceId());
         dustbinStateUploadBean.setVersion_code(versionCode);
 
         RequestBody body = FormBody.create(MediaType.parse("application/json"), new Gson().toJson(dustbinStateUploadBean));

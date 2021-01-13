@@ -42,6 +42,7 @@ import megvii.testfacepass.independent.bean.GetDustbinConfig;
 import megvii.testfacepass.independent.bean.GetServerGoods;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
+import megvii.testfacepass.utils.AndroidDeviceSDK;
 import megvii.testfacepass.utils.DownloadUtil;
 import okhttp3.Call;
 
@@ -77,13 +78,14 @@ public class InitConfig extends AppCompatActivity {
 
         String ANDROID_ID = Settings.System.getString(getContentResolver(), Settings.System.ANDROID_ID);
         Log.i("安卓ID",ANDROID_ID);
-        if("d800f7d28d59445d".equals(ANDROID_ID)){
+        /*if("d800f7d28d59445d".equals(ANDROID_ID)){
             edit_dustbin_query.setText("GD-GZ-HP-DS-JT-001");
             edit_dustbin_authorizationCode.setText("CIUUHV");
         }else{
             edit_dustbin_query.setText("GD-GZ-HP-DS-JT-002");
             edit_dustbin_authorizationCode.setText("KDSU9E");
-        }
+        }*/
+
 
 
         //  加载中弹窗...

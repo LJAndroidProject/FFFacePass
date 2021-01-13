@@ -74,4 +74,11 @@ public class ServerAddress {
     //  传 id 获取用户头像
     public final static String GET_USER_ICON = IP + "api/Bmxproxy/getUserAvater?user_id=";
 
+
+    //  手机号码登录
+    public final static String PHONE_LOGIN = IP + "api/Android/phoneLogin";
+
+    //  查询二维码
+    public final static String QUERY_QR_CODE = IP + "api/Android/scanLogin";
+
 }

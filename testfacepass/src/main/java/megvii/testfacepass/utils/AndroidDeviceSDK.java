@@ -36,4 +36,19 @@ public class AndroidDeviceSDK {
         Intent intent = new Intent("android.q_zheng.action.REBOOT");
         context.sendBroadcast(intent);
     }
+
+
+    /**
+     * 自动重启
+     * */
+    public static void autoReBoot(Context context,boolean enable){
+        Intent intent = new Intent("android.q_zheng.action.POWERONOFF");
+        int[] poweroff = {0,1}; //    即在每天 0:1 关机,小时取值 0-23,分钟取值 0-59
+        int[] poweron = {0,3}; //  即在每天 0:3 开机,小时取值 0-23,分钟取值 0-59
+        intent.putExtra("timeon", poweron);
+        intent.putExtra("timeoff", poweroff);
+        intent.putExtra("type", 2); //类型 2 代表设置每天开关机时间
+        intent.putExtra("enable",enable); //使能开关机功能，设为 false,则为关闭,缺省为 true
+        context.sendBroadcast(intent);
+    }
 }

@@ -13,11 +13,20 @@ public class DustbinStateUploadBean {
     private String timestamp;
     private String sign;
     private int apk_type;
+    private String device_id;
     private int version_code;
     private List<ListBean> list;
 
     public int getApk_type() {
         return apk_type;
+    }
+
+    public String getDevice_id() {
+        return device_id;
+    }
+
+    public void setDevice_id(String device_id) {
+        this.device_id = device_id;
     }
 
     public void setApk_type(int apk_type) {

@@ -38,6 +38,13 @@
         android:id="@+id/textTueView"
         android:layout_width="265dp"
         android:layout_height="200dp"/>
+    <!--用来自拍的相机-->
+    <FrameLayout
+        android:layout_below="@+id/control_alert_textView"
+        android:id="@+id/control_camera_preview"
+        android:layout_centerInParent="true"
+        android:layout_width="265dp"
+        android:layout_height="200dp"/>
     <ImageView
         android:id="@+id/control_image"
         android:layout_below="@+id/control_alert_textView"

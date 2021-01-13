@@ -33,6 +33,7 @@ import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortRequestManage;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
+import megvii.testfacepass.independent.util.TCPConnectUtil;
 import megvii.testfacepass.utils.DownloadUtil;
 import okhttp3.Call;
 
@@ -94,9 +95,20 @@ public class ResidentService extends Service {
                             Log.i(TAG,response);
                             StateCallBean stateCallBean = gson.fromJson(response, StateCallBean.class);
                             //  大于，并且没有已经在下载 所以要更新
-                            if(stateCallBean.getData() !=null && stateCallBean.getData().getVersion_code() > getAppVersionCode(ResidentService.this) && !downloading){
+                            if(stateCallBean.getData() != null && stateCallBean.getData().getVersion_code() > getAppVersionCode(ResidentService.this) && !downloading){
                                 download(stateCallBean.getData().getApk_download_url());
                             }
+
+                            //  如果是设备已离线则重连
+                            if(stateCallBean.getData() != null && stateCallBean.getData().getEq_status() == 0){
+                                //  断开连接
+                                TCPConnectUtil.getInstance().disconnect();
+                                //  重新连接
+                                TCPConnectUtil.getInstance().connect();
+
+                                NetWorkUtil.getInstance().errorUpload("上传状态时发现设备离线");
+                            }
+
                         }
 
                         @Override
@@ -157,7 +169,9 @@ public class ResidentService extends Service {
         final String saveDir = Environment.getExternalStorageDirectory().toString();
 
         //  文件名称
-        final String fileName = System.currentTimeMillis() + ".apk";
+        //final String fileName = System.currentTimeMillis() + ".apk";
+
+        final String fileName =  "newPackage.apk";
 
         new Thread(new Runnable() {
             @Override
@@ -168,7 +182,16 @@ public class ResidentService extends Service {
                 DownloadUtil.get().download(url, saveDir, fileName, new DownloadUtil.OnDownloadListener() {
                     @Override
                     public void onDownloadSuccess(File file) {
-                        downloading = false;
+
+
+                        //  延迟一下比较好
+                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                downloading = false;
+                            }
+                        },10*1000);
+
                         Log.i("结果","地址" +file);
                         installApk(file);
                     }

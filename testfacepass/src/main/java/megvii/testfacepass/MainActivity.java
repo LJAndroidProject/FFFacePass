@@ -3,6 +3,7 @@ package megvii.testfacepass;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -45,9 +46,12 @@ import android.util.Log;
 import android.util.LruCache;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.InputDevice;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -140,12 +144,15 @@ import megvii.testfacepass.independent.bean.DaoMaster;
 import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.GQrReturnBean;
 import megvii.testfacepass.independent.bean.GetNfcUserBean;
 import megvii.testfacepass.independent.bean.ICCard;
 import megvii.testfacepass.independent.bean.ImageUploadResult;
 import megvii.testfacepass.independent.bean.NearByFeatrueSendBean;
 import megvii.testfacepass.independent.bean.NfcActivityBean;
+import megvii.testfacepass.independent.bean.PhoneLoginBean;
 import megvii.testfacepass.independent.bean.ResultMould;
+import megvii.testfacepass.independent.bean.ScanLoginBean;
 import megvii.testfacepass.independent.bean.TCPVerify;
 import megvii.testfacepass.independent.bean.TCPVerifyResponse;
 import megvii.testfacepass.independent.bean.UserMessage;
@@ -160,6 +167,7 @@ import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.TCPConnectUtil;
 import megvii.testfacepass.independent.util.VoiceUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
+import megvii.testfacepass.independent.view.PhoneLoginDialog;
 import megvii.testfacepass.network.ByteRequest;
 import megvii.testfacepass.utils.AndroidDeviceSDK;
 import megvii.testfacepass.utils.FileUtil;
@@ -325,14 +333,80 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
      *
      * 事件总线经常无效，所以使用广播发送与接收
      * */
+    //  超级管理员卡2
+    public final static String ROOT_CARD2 = "A8000000000500C6D4912BADA9";
+    //  超级管理员卡1
+    public final static String ROOT_CARD = "A80000000005003030A741E3A9";
+    private AlertDialog offLinAdminAlertDialog;
     public class MyBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent != null){
                 String icCardContent = intent.getStringExtra("content");
                 if(icCardContent != null){
-                    ICCard icCard = new ICCard(0,icCardContent);
-                    icCard(icCard);
+
+                    //  特殊的管理员卡
+                    if(icCardContent.equals(ROOT_CARD) || icCardContent.equals(ROOT_CARD2)){
+
+                        if(offLinAdminAlertDialog != null && offLinAdminAlertDialog.isShowing()){
+                            return;
+                        }
+
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                String[] functionArray = new String[]{
+                                        "进入投递界面 ( 占桶员 ) ",
+                                        "重新建立TCP连接",
+                                        "进入调试界面",
+                                        "重启设备",
+                                        "显示状态栏",
+                                        "关闭前台监听"
+                                };
+                                AlertDialog.Builder offLinDialog = new AlertDialog.Builder(MainActivity.this);
+                                offLinDialog.setTitle("离线管理员");
+                                offLinDialog.setCancelable(false);
+                                offLinDialog.setItems(functionArray, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        switch (which){
+                                            case 0:
+                                                APP.hasManTime = System.currentTimeMillis();
+                                                startActivity(new Intent(MainActivity.this,ControlActivity.class));
+                                                break;
+                                            case 1:
+                                                TCPConnectUtil.getInstance().disconnect();
+                                                TCPConnectUtil.getInstance().connect();
+                                                break;
+                                            case 2:
+                                                startActivity(new Intent(MainActivity.this,DebugActivity.class));
+                                                break;
+                                            case 3:
+                                                AndroidDeviceSDK.reBoot(MainActivity.this);
+                                                break;
+                                            case 4:
+                                                AndroidDeviceSDK.hideStatus(MainActivity.this,false);
+                                                break;
+                                            case 5:
+                                                AndroidDeviceSDK.checkForeground(MainActivity.this,false);
+                                                break;
+                                        }
+                                    }
+                                });
+                                offLinDialog.setPositiveButton("关闭弹窗", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                                offLinDialog. create();
+                                offLinAdminAlertDialog = offLinDialog.show();
+                            }
+                        });
+                    }else{
+                        ICCard icCard = new ICCard(0,icCardContent);
+                        icCard(icCard);
+                    }
                 }
             }
         }
@@ -401,6 +475,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         AndroidDeviceSDK.hideStatus(MainActivity.this,true);
         //  检查是否在前台
         AndroidDeviceSDK.checkForeground(MainActivity.this,true);
+        //  凌晨关机重启
+        AndroidDeviceSDK.autoReBoot(this,true);
         //  必须在第一次语音播报前 先初始化对象，否则可能出现第一次语音播报无声音的情况
         VoiceUtil.getInstance();
         //  初始化 greenDao 数据库，以及数据库操作对象
@@ -452,6 +528,102 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        char c = (char) event.getUnicodeChar();
+        Log.i("扫码结果","onKeyDown 接收字符：" + c  + "," + event.getUnicodeChar());
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private static StringBuilder stringBuilder = new StringBuilder();
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+
+        /*InputDevice inputDevice = event.getDevice();
+        inputDevice.getMotionRanges();
+        //  SM SM-2D PRODUCT HID KBW
+        Log.i("扫码抢",inputDevice.getName());*/
+        if(event.getUnicodeChar() != 0){
+            char c = (char) event.getUnicodeChar();
+            Log.i("扫码结果","接收字符：" + c  + "," + event.getUnicodeChar());
+        }
+
+        //  重复删除
+        /*if(stringBuilder!=null && stringBuilder.length() > 0){
+            if(String.valueOf(c).equalsIgnoreCase(stringBuilder.substring(stringBuilder.length()-1))){
+                return true;
+            }
+        }*/
+
+
+
+
+        //  如果手机号输入弹窗存在则不进行处理
+        if(phoneLoginDialog != null && phoneLoginDialog.isShowing()){
+            return true;
+        }else{
+            if(event.getAction() == KeyEvent.ACTION_DOWN){
+                char pressedKey = (char) event.getUnicodeChar();
+
+                //  数字或者字母才添加
+                if(Character.isLetterOrDigit(pressedKey)){
+                    stringBuilder.append(pressedKey);
+                    Log.i("扫码结果",stringBuilder.toString());
+                }
+            }
+
+            //  长度 20 才进行下一步判断
+            if(stringBuilder.length() == 10){
+                String result = stringBuilder.toString();
+                if(result.startsWith("a1") && result.endsWith("1a")){
+
+                    Map<String,String> hasMap = new HashMap<>();
+                    hasMap.put("user_code",result);
+                    NetWorkUtil.getInstance().doPost(ServerAddress.QUERY_QR_CODE, hasMap, new NetWorkUtil.NetWorkListener() {
+                        @Override
+                        public void success(String response) {
+                            ScanLoginBean scanLoginBean = gson.fromJson(response,ScanLoginBean.class);
+                            if(scanLoginBean != null && scanLoginBean.getCode() == 1){
+                                APP.userId = scanLoginBean.getData().getUser_id();
+                                APP.userType = scanLoginBean.getData().getUser_type();
+                                goControlActivity();
+                            }else{
+                                Toast.makeText(MainActivity.this, "没有找到该用户", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void fail(Call call, IOException e) {
+                            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void error(Exception e) {
+                            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    //  清空
+                    stringBuilder.delete(0,stringBuilder.length());
+                }else{
+                    Toast.makeText(this,"数据结构不符合规范",Toast.LENGTH_LONG).show();
+
+                    stringBuilder.delete(0,stringBuilder.length());
+                }
+            }else{
+                //Toast.makeText(this,"数据不符合规范",Toast.LENGTH_LONG).show();
+
+                //stringBuilder.delete(0,stringBuilder.length());
+            }
+
+        }
+
+
+        return super.dispatchKeyEvent(event);
+    }
+
 
 
     //  关闭所有门
@@ -619,6 +791,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 //  来自服务器的响应
                 tcpResponse = new String(bytes, StandardCharsets.UTF_8);
 
+                if(tcpResponse != null && tcpResponse.length() == 9 && "error msg".equals(tcpResponse)){
+                    return;
+                }
+
 
                 Log.i(TCP_DEBUG,"服务器推送内容长度：" + tcpResponse.length() + "，TCP 当前状态：" + i);
 
@@ -626,6 +802,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 //  这一步解决一个返回特征值分段问题    =====================================================
                 //  以扫码推送特征值开头
                 if(tcpResponse.startsWith("{\"type\":\"QrReturn\",") && !tcpResponse.endsWith("}")){
+                    cache = tcpResponse;
+                    return;
+                }
+
+                if(tcpResponse.startsWith("{\"type\":\"GQrReturn\",") && !tcpResponse.endsWith("}")){
                     cache = tcpResponse;
                     return;
                 }
@@ -640,7 +821,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                 //  如果 分 3段，为中间那段
 
-                if(!tcpResponse.startsWith("{") && tcpResponse.length() > 200 && !tcpResponse.endsWith("}")){
+                if(!tcpResponse.startsWith("{") /*&& tcpResponse.length() > 200*/ && !tcpResponse.endsWith("}")){
                     cache = cache + tcpResponse;
                     return;
                 }
@@ -687,7 +868,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                         @Override
                                         public void success(String response) {
 
-                                            NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + response);
+                                            //NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + response);
 
                                             Log.i(TCP_DEBUG,"TCP绑定结果:" + response);
 
@@ -702,13 +883,13 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                         @Override
                                         public void fail(Call call, IOException e) {
                                             Log.i(TCP_DEBUG,"TCP绑定发生错误" + e.getMessage());
-                                            NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + e.getMessage());
+                                            //NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + e.getMessage());
                                         }
 
                                         @Override
                                         public void error(Exception e) {
                                             Log.i(TCP_DEBUG,"TCP绑定发生错误" + e.getMessage());
-                                            NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + e.getMessage());
+                                            //NetWorkUtil.getInstance().errorUpload("TCP 认证 connect_rz_msg" + e.getMessage());
                                         }
                                     });
 
@@ -717,7 +898,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         }else if(type.equals("client_connect_msgect_msg")){
                             //  连接成功注册 与 绑定
 
-                            NetWorkUtil.getInstance().errorUpload("TCP 绑定 client_connect_msgect_msg");
+                            //NetWorkUtil.getInstance().errorUpload("TCP 绑定 client_connect_msgect_msg");
 
                             //  TCP 发两个bug
                             if(System.currentTimeMillis() - lastBindTime < 1000){
@@ -816,6 +997,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                             }
 
+                        }else if(type.equals("GQrReturn")){
+                            //  回收桶二维码登录
+                            GQrReturnBean gQrReturnBean = gson.fromJson(data,GQrReturnBean.class);
+                            APP.userId = gQrReturnBean.getInfo().getUser_id();
+                            APP.userType = gQrReturnBean.getInfo().getUser_type();
+                            goControlActivity();
                         }else if(type.equals("nfcActivity")){
                             NfcActivityBean nfcActivityBean = gson.fromJson(data,NfcActivityBean.class);
                             //  nfc 绑定成功
@@ -884,11 +1071,15 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 //  设备突然离线是 -1 , 0   NettyClientHandler: exceptionCaught
                 Log.i(TCP_DEBUG,"TCP状态改变 i : " + i + " , " + i1);
                 if(i == 1){
-                    NetWorkUtil.getInstance().errorUpload("TCP连接成功");
+                    //NetWorkUtil.getInstance().errorUpload("TCP连接成功");
                     Log.i(TCP_DEBUG,"连接成功");
                 }else{
                     //  重新连接
-                    //TCPConnectUtil.getInstance().reconnect();
+                    /*TCPConnectUtil.getInstance().disconnect();
+                    TCPConnectUtil.getInstance().connect();*/
+
+                    TCPConnectUtil.getInstance().reconnect();
+
                     //Log.i("Netty","重新连接");
                 }
 
@@ -1023,6 +1214,28 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
      * */
     private void goControlActivity(){
 
+        //  如果为 null ，重新请求投递时间
+        if(binsWorkTimeBean == null){
+            NetWorkUtil.getInstance().doGetThread(ServerAddress.GET_BINS_WORK_TIME, null, new NetWorkUtil.NetWorkListener() {
+                @Override
+                public void success(String response) {
+                    binsWorkTimeBean  = gson.fromJson(response,BinsWorkTimeBean.class);
+                }
+
+                @Override
+                public void fail(Call call, IOException e) {
+
+                }
+
+                @Override
+                public void error(Exception e) {
+
+                }
+            });
+        }
+
+
+
         APP.hasManTime = System.currentTimeMillis();
 
         //  是特殊用户 userType 为 1 ， 普通用户则为 0
@@ -1041,7 +1254,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 intent.putExtra("userId",app.getUserId());
                 startActivityForResult(intent,CONTROL_RESULT_CODE);
             }else{
-                showToast("验证成功，但非投放时间", Toast.LENGTH_SHORT, false, null);
+                //  showToast("验证成功，但非投放时间", Toast.LENGTH_SHORT, false, null);
+                Toast.makeText(MainActivity.this,"非投放时间",Toast.LENGTH_LONG).show();
+                stringBuilder.delete(0,stringBuilder.length());
                 //  非投放时间
                 VoiceUtil.getInstance().openAssetMusics(MainActivity.this,"no_work_time.aac");
             }
@@ -1115,7 +1330,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         icAlert = alert.show();
                     }
                 }else{
-                    Toast.makeText(MainActivity.this, "卡片不存在", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "卡片不存在" + icCard.getCardCode(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -1646,6 +1861,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         mFaceOperationBtn.setOnClickListener(this);
 
 
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         heightPixels = displayMetrics.heightPixels;
@@ -1683,7 +1899,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                         final String number = getrandom();
                         //  开始上报
-                        NetWorkUtil.getInstance().errorUpload("故障，重启授权码:" + number);
+                        //NetWorkUtil.getInstance().errorUpload("故障，重启授权码:" + number);
 
 
                         adminLoginDialog = new AdminLoginDialog(MainActivity.this);
@@ -2191,6 +2407,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
      * 显示扫描二维码登陆弹窗
      * */
     private AlertDialog qrCodeDialog;
+    private PhoneLoginDialog phoneLoginDialog;
     private void showQRCodeDialog(){
 
         if(qrCodeDialog != null && qrCodeDialog.isShowing()){
@@ -2209,18 +2426,73 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         //  alert.setCancelable(false);
         View view = View.inflate(MainActivity.this,R.layout.qr_code_layout,null);
         ImageView qr_code_login = (ImageView)view.findViewById(R.id.iv_qr_code_login);
+        ImageView iv_qr_code_vxLogin = (ImageView)view.findViewById(R.id.iv_qr_code_vxLogin);
+
+        iv_qr_code_vxLogin.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId() + "&device_type=2"));
+
 
         //  获取安卓设备唯一标识符
         String androidID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         //  添加时间戳
 
+        Log.i(NOW_TAG,"二维码显示的内容 服务器地址 : " + ServerAddress.LOGIN );
+
+        Log.i(NOW_TAG,"二维码显示的内容 设备ID : " + APP.getDeviceId());
+
+
         //  拼接地址 传递 token
         qr_code_login.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId()));
 
-        Log.i(NOW_TAG,"二维码显示的内容 : " + ServerAddress.LOGIN + APP.getDeviceId());
-
 
         //  暂时添加一个点击事件，模拟扫码成功，并通过TCP连接返回了用户id和token
+        alert.setPositiveButton("手机号登录 ( 需先扫描登录二维码绑定 )", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                phoneLoginDialog = new PhoneLoginDialog(MainActivity.this);
+                phoneLoginDialog.setLoginListener(new PhoneLoginDialog.LoginListener() {
+                    @Override
+                    public void callBack(String editStr, AlertDialog alertDialog) {
+
+                        Map<String,String> hasMap = new HashMap<>();
+                        hasMap.put("phone",editStr);
+                        NetWorkUtil.getInstance().doPost(ServerAddress.PHONE_LOGIN, hasMap, new NetWorkUtil.NetWorkListener() {
+                            @Override
+                            public void success(String response) {
+
+                                //  手机号码登录返回结果
+                                PhoneLoginBean phoneLoginBean = gson.fromJson(response,PhoneLoginBean.class);
+                                if(phoneLoginBean.getCode() == 1){
+                                    APP.userId = phoneLoginBean.getData().getUser_id();
+                                    APP.userType = phoneLoginBean.getData().getUser_type();
+
+                                    phoneLoginDialog.dismiss();
+
+                                    toast("登录成功");
+                                    goControlActivity();
+                                }else{
+                                    toast("请先使用微信扫描二维码绑定手机号码");
+                                }
+
+
+                            }
+
+                            @Override
+                            public void fail(Call call, IOException e) {
+                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void error(Exception e) {
+                                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                });
+                phoneLoginDialog.create();
+                phoneLoginDialog.show();
+            }
+        });
         qr_code_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -2474,6 +2746,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
      * */
     private boolean isHasShowDialog(){
 
+        if(phoneLoginDialog != null && phoneLoginDialog.isShowing()){
+            return true;
+        }
+
         //  人脸验证失败,显示添加人脸弹窗
         if(alertDialog!=null && alertDialog.isShowing()){
             return true;
@@ -2549,7 +2825,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         alertB.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                app.setUserId(0);
+                APP.userId = 0;
                 APP.userType = 0;
 
                 dialog.dismiss();

@@ -2,6 +2,7 @@ package megvii.testfacepass;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -11,20 +12,16 @@ import android.util.Log;
 import com.serialportlibrary.service.impl.SerialPortService;
 import com.serialportlibrary.util.ByteStringUtil;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
-import megvii.testfacepass.independent.bean.DebugLogBean;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.SerialPortICUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.TCPConnectUtil;
 
@@ -37,8 +34,11 @@ public class APP extends Application {
 
     public static long userType;
 
+    //  用户照片
+    public static String UserPhoto;
 
     public static boolean controlImagePreview = false;
+
 
     private String deviceToken;
 
@@ -108,6 +108,19 @@ public class APP extends Application {
                 }
 
                 SerialPortResponseManage.getInstance().inOrderString(APP.this,response);
+            }
+        });
+
+        SerialPortICUtil.getInstance().receiveICListener(new SerialPortService.SerialResponseICListener() {
+            @Override
+            public void response(byte[] response) {
+                String icString = ByteStringUtil.byteArrayToHexStr(response);
+
+                Log.i("硬件串口对接日志",icString);
+
+                Intent intent = new Intent("icCard");
+                intent.putExtra("content",icString);
+                sendBroadcast(intent);
             }
         });
 

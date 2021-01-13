@@ -16,7 +16,6 @@
         android:background="#ff000000"
         android:gravity="center">
 
-
         <megvii.testfacepass.camera.CameraPreview
             android:id="@+id/preview"
             android:layout_width="match_parent"
@@ -121,6 +120,7 @@
                 android:layout_height="wrap_content"
                 android:text="SDKMode" />
 
+
             <!--<TextView
                 android:id="@+id/txt_facepass_sdk_name"
                 android:layout_width="match_parent"
@@ -130,5 +130,6 @@
                 android:textColor="@android:color/white"
                 android:textSize="30sp" />-->
         </LinearLayout>
+
     </FrameLayout>
 </LinearLayout>
