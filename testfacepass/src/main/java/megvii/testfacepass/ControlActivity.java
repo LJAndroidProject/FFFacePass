@@ -525,7 +525,7 @@ public class ControlActivity extends AppCompatActivity{
         mUVCCamera.setPictureTakenCallback(new PictureCallback() {
             @Override
             public void onPictureTaken(String path) {
-                Log.i("take picture","take picture 拍摄完毕:" + path);
+                Log.i(DEBUG_TAG_TASK,"take picture 拍摄完毕:" + path);
 
                 UploadImageServiceBean uploadImageServiceBean = new UploadImageServiceBean();
                 uploadImageServiceBean.setPath(path);
@@ -664,7 +664,7 @@ public class ControlActivity extends AppCompatActivity{
 
 
     //  延迟结算
-    private final static String DEBUG_TAG_TASK = "定时延迟结算";
+    public final static String DEBUG_TAG_TASK = "定时延迟结算";
     public void exit_time_task(){
 
         Thread exitThread = new Thread(){
@@ -710,33 +710,44 @@ public class ControlActivity extends AppCompatActivity{
                             //  如果摄像头就是正在关闭的门就不用切换
                             if(pidToDoorNumber(mUsbDevice.getProductId()) == dustbinStateBean.getDoorNumber()){
                                 Log.i(DEBUG_TAG_TASK,"不用切换摄像头");
+
+                                //  直接拍照
+                                mUVCCamera.takePicture(imageName);
                             }else{
                                 Log.i(DEBUG_TAG_TASK,"切换摄像头为" + dustbinStateBean.getDoorNumber());
                                 //  先关闭当前摄像头
                                 mUVCCamera.closeCamera();
 
-                                //  切换摄像头
-                                mUsbDevice = getUsbCameraDevice(doorNumberToPid(dustbinStateBean.getDoorNumber()));
-                                mUVCCamera.requestPermission(mUsbDevice);
+                                //  如果当前摄像头存在
+                                if(getUsbCameraDevice(doorNumberToPid(dustbinStateBean.getDoorNumber())) != null){
+                                    //  切换摄像头
+                                    mUsbDevice = getUsbCameraDevice(doorNumberToPid(dustbinStateBean.getDoorNumber()));
 
-                                //  停留 5s 切换摄像头
-                                try {
-                                    Thread.sleep(5000);
-                                }catch (Exception e){
-                                    e.printStackTrace();
+                                    mUVCCamera.requestPermission(mUsbDevice);
+
+                                    //  停留 5s 切换摄像头
+                                    try {
+                                        Thread.sleep(5000);
+                                    }catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
+                                    Log.i(DEBUG_TAG_TASK,"给"+dustbinStateBean.getDoorNumber()+"拍照");
+                                    //  拍照
+                                    mUVCCamera.takePicture(imageName);
+                                }else{
+                                    //  不存在则跳出
+                                    Log.i(DEBUG_TAG_TASK,"找不到"+dustbinStateBean.getDoorNumber()+"门的摄像头");
+
                                 }
                             }
 
                         }
-
-
-                        //  拍照
-                        mUVCCamera.takePicture(imageName);
                     }
 
                 }
 
-                Log.i("take picture","take picture 进入关闭");
+                Log.i(DEBUG_TAG_TASK,"take picture 进入关闭");
                 //  1为结算超时 会关闭所有门
                 exitEnd(1);
 
@@ -956,6 +967,17 @@ public class ControlActivity extends AppCompatActivity{
         UsbManager mUsbManager = (UsbManager) getSystemService(USB_SERVICE);
 
         HashMap<String, UsbDevice> deviceMap = mUsbManager.getDeviceList();
+
+
+        //  打印扫描到的摄像头
+        if (deviceMap != null) {
+            for (UsbDevice usbDevice : deviceMap.values()) {
+                Integer integer = usbDevice.getProductId();
+                Log.i(DEBUG_TAG_TASK,"扫描到的摄像头：" + usbDevice.getProductId() + "，进制转换：" + integer.toHexString(integer));
+            }
+        }
+
+
         if (deviceMap != null) {
             textView.append("摄像头数量:" + deviceMap.size() + "\n");
             for (UsbDevice usbDevice : deviceMap.values()) {
@@ -1580,7 +1602,7 @@ public class ControlActivity extends AppCompatActivity{
                 map.put("user_pictrue",APP.UserPhoto);
             }
 
-            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"马上提交" +  map.toString());
+            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"即将添加投递记录" +  map.toString());
             NetWorkUtil.getInstance().doPost(ServerAddress.DUSTBIN_RECORD, map, new NetWorkUtil.NetWorkListener() {
                 @Override
                 public void success(String response) {

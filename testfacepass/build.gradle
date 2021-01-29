@@ -10,8 +10,8 @@ android {
         applicationId "megvii.testfacepass"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 17
-        versionName "17.0"
+        versionCode 21
+        versionName "21.0"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

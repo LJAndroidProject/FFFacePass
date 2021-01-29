@@ -105,6 +105,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -306,6 +307,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     private ImageView mSyncGroupBtn;
     private AlertDialog mSyncGroupDialog;
 
+
     private ImageView mFaceOperationBtn;
     /*图片缓存*/
     private FaceImageCache mImageCache;
@@ -325,6 +327,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     private Gson gson = new Gson();
     //  从控制台返回的值
     public final static int CONTROL_RESULT_CODE = 300;
+
+    private ImageView float_qrcode_image;
 
     BinsWorkTimeBean binsWorkTimeBean;
 
@@ -412,6 +416,36 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         }
     }
 
+
+    /**
+     * 凌晨重启
+     * */
+    class TimeChangeReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case Intent.ACTION_TIME_TICK:
+
+                    //  每过一分钟 触发
+                    Calendar now = Calendar.getInstance();
+                    String timeString = now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE);
+
+                    if(timeString.equals("1:10")){
+                        //  1 分钟后重启
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                AndroidDeviceSDK.reBoot(MainActivity.this);
+                            }
+                        },1000 * 60);
+                    }
+
+
+                    break;
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -423,6 +457,14 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         app = (APP) getApplication();
         mainHandler = new Handler(Looper.getMainLooper());
 
+
+
+        //  时间变化监听广播
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_TIME_TICK);    //  每分钟变化
+        registerReceiver(new TimeChangeReceiver(),intentFilter);
+
+
         //  注册IC卡广播
         registerReceiver(new MyBroadcastReceiver(),new IntentFilter("icCard"));
 
@@ -431,6 +473,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         NetWorkUtil.getInstance().doGetThread(ServerAddress.GET_BINS_WORK_TIME, null, new NetWorkUtil.NetWorkListener() {
             @Override
             public void success(String response) {
+                Log.i("投放时间",response);
                 binsWorkTimeBean  = gson.fromJson(response,BinsWorkTimeBean.class);
             }
 
@@ -954,6 +997,23 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                             //  云端有该人的人脸特征，则将特征保存到本地
                             if(vxLoginCall.isFeatrue_state() && vxLoginCall.isFace_image_state()){
+
+                                UserMessage userMessage = DataBaseUtil.getInstance(MainActivity.this)
+                                        .getDaoSession().getUserMessageDao().queryBuilder()
+                                        .where(UserMessageDao.Properties.UserId.eq(vxLoginCall.getInfo().getUser_id()))
+                                        .unique();
+                                //  本地已经有这个人脸特征了，则删除掉原有的人脸特征，添加新的人脸特征
+                                if(userMessage != null){
+                                    //  人脸库中删除这个人脸特征
+                                    mFacePassHandler.deleteFace(userMessage.getFaceToken().getBytes());
+                                    //  本地数据库中删除这个用户
+                                    DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao().delete(userMessage);
+                                    Log.i(NOW_TAG,"删除旧的人脸特征与注册信息");
+                                }else{
+                                    Log.i(NOW_TAG,"不存在该用户，可以添加");
+                                }
+
+
                                 Log.i(NOW_TAG,"当前用户 含有人脸特征值 和 人脸图片");
                                 //  获取来自服务器人脸特征 ( 字符串之前是 Base64 形式 )
                                 byte[] feature = Base64.decode(vxLoginCall.getInfo().getFeatrue(),Base64.DEFAULT);
@@ -1042,6 +1102,28 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             }else{
                                 Log.i("响应结果","特征值为空");
                             }
+                        }else if(type.equals("deleteAllFace")){
+                            //  删除所有用户信息
+                            DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao().deleteAll();
+                            //  删除人脸库
+                            mFacePassHandler.clearAllGroupsAndFaces();
+                            //  重启
+                            AndroidDeviceSDK.reBoot(MainActivity.this);
+                        }else if(type.equals("updateAllUserType0")){
+                            //  修改所有用户类型 为 0
+                            List<UserMessage> userMessageList = DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao().queryBuilder().list();
+
+                            for(UserMessage userMessage : userMessageList){
+                                userMessage.setUserType(0);
+                            }
+
+                            DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao().updateInTx(userMessageList);
+
+                            NetWorkUtil.getInstance().errorUpload("用户类型已全部修改为 0 ");
+
+                            Log.i("updateAllUserType0","修改之前");
+                        }else if(type.equals("reboot")){
+                            AndroidDeviceSDK.reBoot(MainActivity.this);
                         }
 
                     }catch (Exception e){
@@ -1176,6 +1258,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         } catch (FacePassException e) {
                             e.printStackTrace();
                             Log.d(DEBUG_TAG, "FacePassHandler is null");
+                            Log.i(DEBUG_TAG,"异常：" + e.getMessage());
                             return;
                         }
                         return;
@@ -1212,13 +1295,16 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     /**
      * 跳转控制台投递界面
      * */
+    public final static String TAG = "投递时间";
     private void goControlActivity(){
 
         //  如果为 null ，重新请求投递时间
         if(binsWorkTimeBean == null){
+            Log.i(TAG,"投递时间 binsWorkTimeBean 为 null");
             NetWorkUtil.getInstance().doGetThread(ServerAddress.GET_BINS_WORK_TIME, null, new NetWorkUtil.NetWorkListener() {
                 @Override
                 public void success(String response) {
+                    Log.i(TAG,"为 null" + response);
                     binsWorkTimeBean  = gson.fromJson(response,BinsWorkTimeBean.class);
                 }
 
@@ -1242,18 +1328,23 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         Log.i(CARD_DEBUG,String.valueOf(APP.userType));
         //  特殊用户就直接跳转了
         if(APP.userType == 1){
+            Log.i(TAG,"用户类型为 1");
+
             //  跳转到垃圾箱控制台
             Intent intent = new Intent(MainActivity.this,ControlActivity.class);
             intent.putExtra("userId",app.getUserId());
             startActivityForResult(intent,CONTROL_RESULT_CODE);
         }else{
+            Log.i(TAG,"用户类型不为 1");
             //  非特殊用户
             if(BinsWorkTimeUntil.getBinsWorkTime(binsWorkTimeBean)){
+                Log.i(TAG,"非特殊用户 投放时间");
                 //  是投放时间，跳转到垃圾箱控制台
                 Intent intent = new Intent(MainActivity.this,ControlActivity.class);
                 intent.putExtra("userId",app.getUserId());
                 startActivityForResult(intent,CONTROL_RESULT_CODE);
             }else{
+                Log.i(TAG,"非特殊用户 投放时间");
                 //  showToast("验证成功，但非投放时间", Toast.LENGTH_SHORT, false, null);
                 Toast.makeText(MainActivity.this,"非投放时间",Toast.LENGTH_LONG).show();
                 stringBuilder.delete(0,stringBuilder.length());
@@ -1860,6 +1951,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         mFaceOperationBtn = (ImageView) findViewById(R.id.btn_face_operation);
         mFaceOperationBtn.setOnClickListener(this);
 
+        //  直接登录
+        float_qrcode_image = (ImageView) findViewById(R.id.float_qrcode_image);
+        float_qrcode_image.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId() + "&device_type=2"));
+
 
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -1991,6 +2086,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         cameraView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+
+                showQRCodeDialog();
 
                 //  隐藏状态栏，也就是 app 打开后不能退出
                 AndroidDeviceSDK.hideStatus(MainActivity.this,true);
@@ -2282,6 +2379,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             case CONTROL_RESULT_CODE:
 
                 APP.userId = 0;
+                APP.userType = 0;
 
                 if(data != null){
                     int exitCode = data.getIntExtra("exitCode",0);

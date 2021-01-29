@@ -43,11 +43,11 @@ public class UploadImageService extends Service {
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void updateService(UploadImageServiceBean uploadImageServiceBean){
 
-        Log.i("take picture","take picture 事件总线收到上传任务");
+        Log.i(ControlActivity.DEBUG_TAG_TASK,"take picture 事件总线收到上传任务");
 
         if(uploadImageServiceBean != null && uploadImageServiceBean.getPath() != null){
 
-            Log.i("take picture","take picture 事件总线收到上传任务" + uploadImageServiceBean.toString());
+            Log.i(ControlActivity.DEBUG_TAG_TASK,"take picture 事件总线收到上传任务" + uploadImageServiceBean.toString());
 
             File file = new File(uploadImageServiceBean.getPath());
             //  去除.jpg
@@ -96,24 +96,24 @@ public class UploadImageService extends Service {
                     NetWorkUtil.getInstance().doPost(ServerAddress.RUBBISH_IMAGE_POST, map, new NetWorkUtil.NetWorkListener() {
                         @Override
                         public void success(String response) {
-                            Log.i("take picture","图片绑定结果" + response);
+                            Log.i(ControlActivity.DEBUG_TAG_TASK,"图片绑定结果" + response);
                         }
 
                         @Override
                         public void fail(Call call, IOException e) {
-
+                            Log.i(ControlActivity.DEBUG_TAG_TASK,"图片绑定结果" + e.getMessage());
                         }
 
                         @Override
                         public void error(Exception e) {
-
+                            Log.i(ControlActivity.DEBUG_TAG_TASK,"图片绑定结果" + e.getMessage());
                         }
                     });
                 }
 
                 @Override
                 public void error(Exception e) {
-
+                    Log.i(ControlActivity.DEBUG_TAG_TASK,"图片绑定结果" + e.getMessage());
                 }
             });
         }

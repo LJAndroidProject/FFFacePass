@@ -16,12 +16,19 @@
         android:background="#ff000000"
         android:gravity="center">
 
-
         <megvii.testfacepass.camera.CameraPreview
             android:id="@+id/preview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical" />
+
+        <ImageView
+            android:layout_margin="20dp"
+            android:layout_gravity="bottom|left"
+            android:id="@+id/float_qrcode_image"
+            android:background="#FFFFFF"
+            android:layout_width="150dp"
+            android:layout_height="150dp"/>
 
         <megvii.testfacepass.FaceView
             android:id="@+id/fcview"

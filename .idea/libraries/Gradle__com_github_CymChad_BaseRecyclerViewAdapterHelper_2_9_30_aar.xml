@@ -12,7 +12,9 @@
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c7b86052a0207bdfa69e718c384fae70/AndroidManifest.xml" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c7b86052a0207bdfa69e718c384fae70/jars/classes.jar!/" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.CymChad/BaseRecyclerViewAdapterHelper/2.9.30/7cc740846af8a1869345376d765f81093dedbe3b/BaseRecyclerViewAdapterHelper-2.9.30-javadoc.jar!/" />
+    </JAVADOC>
     <SOURCES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.CymChad/BaseRecyclerViewAdapterHelper/2.9.30/b1cdf1d9751eb1e35fd8b05282af9b25c729725d/BaseRecyclerViewAdapterHelper-2.9.30-sources.jar!/" />
     </SOURCES>
