@@ -146,6 +146,7 @@ import megvii.testfacepass.independent.bean.DaoSession;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.GQrReturnBean;
+import megvii.testfacepass.independent.bean.GetDustbinConfig;
 import megvii.testfacepass.independent.bean.GetNfcUserBean;
 import megvii.testfacepass.independent.bean.ICCard;
 import megvii.testfacepass.independent.bean.ImageUploadResult;
@@ -162,6 +163,7 @@ import megvii.testfacepass.independent.bean.VXLoginCall;
 import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.util.BinsWorkTimeUntil;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.DustbinUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.QRCodeUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
@@ -365,7 +367,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                         "进入调试界面",
                                         "重启设备",
                                         "显示状态栏",
-                                        "关闭前台监听"
+                                        "关闭前台监听",
+                                        "更新垃圾箱配置"
                                 };
                                 AlertDialog.Builder offLinDialog = new AlertDialog.Builder(MainActivity.this);
                                 offLinDialog.setTitle("离线管理员");
@@ -394,6 +397,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                             case 5:
                                                 AndroidDeviceSDK.checkForeground(MainActivity.this,false);
                                                 break;
+                                            case 6:
+                                                updateConfig();
+                                                break;
                                         }
                                     }
                                 });
@@ -414,6 +420,79 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 }
             }
         }
+    }
+
+    //  更新配置
+    private void updateConfig(){
+
+        Map<String,String> map = new HashMap<>();
+        map.put("device_id",APP.getDeviceId());
+        map.put("mange_code","KDSU9E");
+        NetWorkUtil.getInstance().doPost(ServerAddress.GET_DUSTBIN_CONFIG, map, new NetWorkUtil.NetWorkListener() {
+            @Override
+            public void success(String response) {
+
+                Log.i("配置获取结果",response);
+
+                GetDustbinConfig getDustbinConfig = new Gson().fromJson(response,GetDustbinConfig.class);
+
+                if(getDustbinConfig.getCode() == 1){
+                    List<DustbinStateBean> list = new ArrayList<>();
+
+                    List<GetDustbinConfig.DataBean.ListBean> listBeans = getDustbinConfig.getData().getList();
+                    for(GetDustbinConfig.DataBean.ListBean listBean : listBeans){
+
+                        //  垃圾箱id   服务器分配
+                        long id = listBean.getId();
+                        //  门板编号    也就是第几个垃圾箱
+                        int number = Integer.parseInt(listBean.getBin_code());
+                        //  垃圾箱类型 例如 可回收垃圾、有害垃圾、厨余垃圾
+                        String typeString = DustbinUtil.getDustbinType(listBean.getBin_type());
+                        //  垃圾箱类型 例如A1 A2 B3 B5 C5 D6 D7 D8
+                        String typeNumber = listBean.getBin_type();
+
+
+                        list.add(new DustbinStateBean(id,number,typeString,typeNumber,0,0,0,0,false,false,false,false,false,false,false,false));
+                    }
+
+                    //  保存箱体配置
+                    DataBaseUtil.getInstance(MainActivity.this).setDustBinStateConfig(list);
+
+
+                    /*
+                     * 保存垃圾箱配置
+                     * */
+                    DustbinConfig dustbinConfig = new DustbinConfig();
+                    dustbinConfig.setDustbinDeviceId(listBeans.get(0).getDevice_id());  //  deviceID
+                    dustbinConfig.setDustbinDeviceName(getDustbinConfig.getData().getDevice_name());    //  deviceName 部署在哪一个小区
+                    dustbinConfig.setHasVendingMachine(getDustbinConfig.getData().getHas_amat() == 1);  //  是否有售卖机
+                    //  如果存在售卖机则创建售卖机货道
+                    if(getDustbinConfig.getData().getHas_amat() == 1){
+                        //  不需要创建售卖机
+                        //  initReplenishment();
+                    }
+                    DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getDustbinConfigDao().insertOrReplace(dustbinConfig);    //  保存配置
+
+
+                    Toast.makeText(MainActivity.this, "更新成功", Toast.LENGTH_SHORT).show();
+
+                    finish();
+                }
+
+            }
+
+            @Override
+            public void fail(Call call, IOException e) {
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void error(Exception e) {
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
     }
 
 

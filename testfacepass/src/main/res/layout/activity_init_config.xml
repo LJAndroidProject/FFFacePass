@@ -20,14 +20,14 @@
             android:textSize="20sp" />
 
         <EditText
-            android:text="GD-GZ-HP-DS-JT-005"
+            android:text="GD-GZ-HP-DS-JT-006"
             android:id="@+id/edit_dustbin_query"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="输入设备编号"
             android:padding="20dp" />
         <EditText
-            android:text="DO66TC"
+            android:text="6DG7Y0"
             android:id="@+id/edit_dustbin_authorizationCode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

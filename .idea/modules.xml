@@ -3,8 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/FacePass.iml" filepath="$PROJECT_DIR$/.idea/modules/FacePass.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/libuvccamera/FacePass.libuvccamera.iml" filepath="$PROJECT_DIR$/.idea/modules/libuvccamera/FacePass.libuvccamera.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/serialportlibrary/FacePass.serialportlibrary.iml" filepath="$PROJECT_DIR$/.idea/modules/serialportlibrary/FacePass.serialportlibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/testfacepass/FacePass.testfacepass.iml" filepath="$PROJECT_DIR$/.idea/modules/testfacepass/FacePass.testfacepass.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbCameraCommon/FacePass.usbCameraCommon.iml" filepath="$PROJECT_DIR$/.idea/modules/usbCameraCommon/FacePass.usbCameraCommon.iml" />
     </modules>
   </component>
 </project>

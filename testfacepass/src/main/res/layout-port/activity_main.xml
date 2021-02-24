@@ -16,6 +16,11 @@
         android:background="#ff000000"
         android:gravity="center">
 
+        <fragment
+            android:name="megvii.testfacepass.CameraFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
         <megvii.testfacepass.camera.CameraPreview
             android:id="@+id/preview"
             android:layout_width="match_parent"

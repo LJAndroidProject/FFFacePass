@@ -20,9 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
-import com.lgh.uvccamera.UVCCameraProxy;
-import com.lgh.uvccamera.bean.PicturePath;
-import com.lgh.uvccamera.callback.ConnectCallback;
+
 import com.serialportlibrary.util.ByteStringUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -46,7 +44,7 @@ public class DebugActivity extends AppCompatActivity {
     private EditText target_door_number;
     private TextView stateBugTextView;
     private TextureView debug_textTueView;
-    private UVCCameraProxy mUVCCamera;
+
     private UsbDevice mUsbDevice;
     private TextView debug_camera_textTueView;
 
@@ -72,52 +70,10 @@ public class DebugActivity extends AppCompatActivity {
         });
 
 
-        mUVCCamera = new UVCCameraProxy(this);
-        mUVCCamera.getConfig()
-                .isDebug(true) // 是否调试
-                .setPicturePath(PicturePath.APPCACHE) // 图片保存路径，保存在app缓存还是sd卡
-                .setDirName("uvccamera") // 图片保存目录名称
-                .setProductId(0) // 产品id，用于过滤设备，不需要可不设置 37424
-                .setVendorId(0); // 供应商id，用于过滤设备，不需要可不设置 1443
-
-        mUVCCamera.setPreviewTexture(debug_textTueView); // TextureView
 
         //  默认摄像头
         mUsbDevice = getUsbCameraDevice(ControlActivity.doorNumberToPid(1));
-        mUVCCamera.requestPermission(mUsbDevice);
 
-
-        mUVCCamera.setConnectCallback(new ConnectCallback() {
-            @Override
-            public void onAttached(UsbDevice usbDevice) {
-
-
-                mUVCCamera.requestPermission(mUsbDevice); // USB设备授权
-            }
-
-            @Override
-            public void onGranted(UsbDevice usbDevice, boolean granted) {
-                mUVCCamera.connectDevice(mUsbDevice);
-                // 外置摄像头是/dev/bus/usb/001/021
-            }
-
-            @Override
-            public void onConnected(UsbDevice usbDevice) {
-                mUVCCamera.openCamera(); // 打开相机
-            }
-
-            @Override
-            public void onCameraOpened() {
-                //  拍出来的1图片大小
-                mUVCCamera.setPreviewSize(640, 480); // 设置预览尺寸
-                mUVCCamera.startPreview(); // 开始预览
-            }
-
-            @Override
-            public void onDetached(UsbDevice usbDevice) {
-                mUVCCamera.closeCamera(); // 关闭相机
-            }
-        });
 
 
         target_door_number.addTextChangedListener(new TextWatcher() {
@@ -139,11 +95,11 @@ public class DebugActivity extends AppCompatActivity {
 
                 int doorNumber = Integer.parseInt(s.toString());
                 if(doorNumber >= 1 && doorNumber <= 8){
-                    mUVCCamera.closeCamera();
+
 
                     //  切换摄像头
                     mUsbDevice = getUsbCameraDevice(ControlActivity.doorNumberToPid(doorNumber));
-                    mUVCCamera.requestPermission(mUsbDevice);
+
 
                     Toast.makeText(DebugActivity.this, "切换摄像头" + doorNumber, Toast.LENGTH_SHORT).show();
                 }
