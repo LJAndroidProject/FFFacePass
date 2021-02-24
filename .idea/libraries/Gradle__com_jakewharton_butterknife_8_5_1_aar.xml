@@ -1,9 +1,6 @@
 <component name="libraryTable">
   <library name="Gradle: com.jakewharton:butterknife:8.5.1@aar">
     <CLASSES>
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c8560c726bc6c693686a783ff9c97a72/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c8560c726bc6c693686a783ff9c97a72/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/c8560c726bc6c693686a783ff9c97a72/res" />
       <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/7b3d491cd33db7933ef7e38b38880588/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/7b3d491cd33db7933ef7e38b38880588/res" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/7b3d491cd33db7933ef7e38b38880588/AndroidManifest.xml" />

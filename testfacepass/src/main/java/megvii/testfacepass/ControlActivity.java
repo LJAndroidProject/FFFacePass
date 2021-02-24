@@ -30,10 +30,7 @@ import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.google.gson.Gson;
-import com.lgh.uvccamera.UVCCameraProxy;
-import com.lgh.uvccamera.bean.PicturePath;
-import com.lgh.uvccamera.callback.ConnectCallback;
-import com.lgh.uvccamera.callback.PictureCallback;
+
 import com.serialportlibrary.util.ByteStringUtil;
 
 import org.greenrobot.eventbus.EventBus;
@@ -72,6 +69,7 @@ import megvii.testfacepass.independent.bean.UploadImageServiceBean;
 import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
+import megvii.testfacepass.independent.util.DustbinUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.VoiceUtil;
@@ -90,7 +88,6 @@ public class ControlActivity extends AppCompatActivity{
 
     //  摄像头
     private TextureView textTueView;
-    private UVCCameraProxy mUVCCamera;
     private UsbDevice mUsbDevice;
 
     private int mSecretNumber = 0;
@@ -138,9 +135,6 @@ public class ControlActivity extends AppCompatActivity{
 
         Log.i("take picture","take picture 销毁");
 
-        if(mUVCCamera != null && mUVCCamera.isCameraOpen()){
-            mUVCCamera.closeCamera(); // 关闭相机
-        }
 
         APP.controlActivityIsRun = false;
 
@@ -221,16 +215,7 @@ public class ControlActivity extends AppCompatActivity{
             control_image.setAlpha(1f);
         }*/
 
-        //  初始化摄像头
-        mUVCCamera = new UVCCameraProxy(this);
-        mUVCCamera.getConfig()
-                .isDebug(true) // 是否调试
-                .setPicturePath(PicturePath.APPCACHE) // 图片保存路径，保存在app缓存还是sd卡
-                .setDirName("uvccamera") // 图片保存目录名称
-                .setProductId(/*doorNumberToPid(openDefaultDoor())*/0) // 产品id，用于过滤设备，不需要可不设置 37424
-                .setVendorId(0); // 供应商id，用于过滤设备，不需要可不设置 1443
 
-        mUVCCamera.setPreviewTexture(textTueView); // TextureView
 
         //  默认摄像头
         /*
@@ -241,7 +226,7 @@ public class ControlActivity extends AppCompatActivity{
 
         //mUsbDevice = getUsbCameraDevice(ControlActivity.doorNumberToPid(1));
         //mUVCCamera.closeCamera();
-        mUVCCamera.requestPermission(mUsbDevice);
+
 
 
         /*new Handler().postDelayed(new Runnable() {
@@ -262,8 +247,7 @@ public class ControlActivity extends AppCompatActivity{
                 //  如果 6 s后还没有显示画面就尝试再开启一下摄像头
                 if(!cameraOpened){
                     Log.i("onCameraOpened","onCameraOpened 没有成功开启,再次请求摄像头");
-                    mUVCCamera.closeCamera();
-                    mUVCCamera.requestPermission(mUsbDevice);
+
                 }
 
                 if(mCamera != null){
@@ -497,7 +481,8 @@ public class ControlActivity extends AppCompatActivity{
                             @Override
                             public void run() {
                                 for(DustbinStateBean target : APP.dustbinBeanList){
-                                    if(target.getDustbinBoxType().equals(data.getDustbinBoxType())){
+                                    //  0   号桶作废
+                                    if(target.getDustbinBoxType().equals(data.getDustbinBoxType()) && target.getDoorNumber() != 0 ){
                                         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(target.getDoorNumber()));
                                         try {
                                             Thread.sleep(500);
@@ -521,55 +506,10 @@ public class ControlActivity extends AppCompatActivity{
         control_recyclerview.setAdapter(controlItemAdapter);
 
 
-        //  UVC 摄像头拍照回调
-        mUVCCamera.setPictureTakenCallback(new PictureCallback() {
-            @Override
-            public void onPictureTaken(String path) {
-                Log.i(DEBUG_TAG_TASK,"take picture 拍摄完毕:" + path);
-
-                UploadImageServiceBean uploadImageServiceBean = new UploadImageServiceBean();
-                uploadImageServiceBean.setPath(path);
-                EventBus.getDefault().post(uploadImageServiceBean);
-
-            }
-        });
 
 
-        //  UVC 摄像头一些回调
-        mUVCCamera.setConnectCallback(new ConnectCallback() {
-            @Override
-            public void onAttached(UsbDevice usbDevice) {
 
-                mUVCCamera.requestPermission(mUsbDevice); // USB设备授权
-            }
 
-            @Override
-            public void onGranted(UsbDevice usbDevice, boolean granted) {
-
-                mUVCCamera.connectDevice(mUsbDevice);
-
-            }
-
-            @Override
-            public void onConnected(UsbDevice usbDevice) {
-                mUVCCamera.openCamera(); // 打开相机
-            }
-
-            @Override
-            public void onCameraOpened() {
-                //  拍出来的1图片大小
-                mUVCCamera.setPreviewSize(640, 480); // 设置预览尺寸
-                mUVCCamera.startPreview(); // 开始预览
-
-                cameraOpened = true;
-                Log.i("onCameraOpened","onCameraOpened");
-            }
-
-            @Override
-            public void onDetached(UsbDevice usbDevice) {
-                mUVCCamera.closeCamera(); // 关闭相机
-            }
-        });
     }
 
 
@@ -704,44 +644,24 @@ public class ControlActivity extends AppCompatActivity{
                         //  添加投递记录
                         addRecord(dustbinStateBean,time);
 
-                        //  首先设备不能为 null
-                        if(mUsbDevice != null){
+                        //  拍照
+                        Intent intent = new Intent("MY_BROADCAST_RECEIVER");
+                        intent.putExtra("type","broadcast_camera_type");
+                        intent.putExtra("data","");
 
-                            //  如果摄像头就是正在关闭的门就不用切换
-                            if(pidToDoorNumber(mUsbDevice.getProductId()) == dustbinStateBean.getDoorNumber()){
-                                Log.i(DEBUG_TAG_TASK,"不用切换摄像头");
+                        intent.putExtra("doorNumber",dustbinStateBean.getDoorNumber());
+                        intent.putExtra("time",time);
+                        intent.putExtra("bin_id", dustbinStateBean.getId());
 
-                                //  直接拍照
-                                mUVCCamera.takePicture(imageName);
-                            }else{
-                                Log.i(DEBUG_TAG_TASK,"切换摄像头为" + dustbinStateBean.getDoorNumber());
-                                //  先关闭当前摄像头
-                                mUVCCamera.closeCamera();
+                        Log.i("拍照调试","实际传输的bin_id:" + dustbinStateBean.getId());
 
-                                //  如果当前摄像头存在
-                                if(getUsbCameraDevice(doorNumberToPid(dustbinStateBean.getDoorNumber())) != null){
-                                    //  切换摄像头
-                                    mUsbDevice = getUsbCameraDevice(doorNumberToPid(dustbinStateBean.getDoorNumber()));
 
-                                    mUVCCamera.requestPermission(mUsbDevice);
+                        sendBroadcast(intent);
 
-                                    //  停留 5s 切换摄像头
-                                    try {
-                                        Thread.sleep(5000);
-                                    }catch (Exception e){
-                                        e.printStackTrace();
-                                    }
-
-                                    Log.i(DEBUG_TAG_TASK,"给"+dustbinStateBean.getDoorNumber()+"拍照");
-                                    //  拍照
-                                    mUVCCamera.takePicture(imageName);
-                                }else{
-                                    //  不存在则跳出
-                                    Log.i(DEBUG_TAG_TASK,"找不到"+dustbinStateBean.getDoorNumber()+"门的摄像头");
-
-                                }
-                            }
-
+                        try {
+                            Thread.sleep(500);
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
                     }
 
@@ -795,7 +715,8 @@ public class ControlActivity extends AppCompatActivity{
         for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
             if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())){
 
-                if(!dustbinStateBean.getIsFull()){
+                //  为什么不为 0 呢 ，0 号桶位置作废
+                if(!dustbinStateBean.getIsFull() && dustbinStateBean.getDoorNumber() != 0){
                     //  添加需要关闭的垃圾箱
                     addNeedCloseDustbin(dustbinStateBean);
                     byte[] result = SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
@@ -1409,12 +1330,6 @@ public class ControlActivity extends AppCompatActivity{
                     Log.i(DEBUG_TAG,"不用切换摄像头");
                 }else{
                     Log.i(DEBUG_TAG,"切换摄像头为" + dustbinStateBean.getDoorNumber());
-                    //  先关闭当前摄像头
-                    mUVCCamera.closeCamera();
-
-                    //  切换摄像头
-                    mUsbDevice = getUsbCameraDevice(doorNumberToPid(dustbinStateBean.getDoorNumber()));
-                    mUVCCamera.requestPermission(mUsbDevice);
                 }
 
             }
@@ -1512,7 +1427,7 @@ public class ControlActivity extends AppCompatActivity{
         //  开启杀菌消毒
         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openTheDisinfection(dustbinStateBean.getDoorNumber()));
         //  拍照
-        mUVCCamera.takePicture(imageName);
+
 
         Log.i(DEBUG_TAG,"收到关门回调，添加投递记录和拍照");
 
