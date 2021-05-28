@@ -582,7 +582,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                 SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDogHouse(dustbinStateBean.getDoorNumber()));
                             }
                         });
-                    }else if("21:0".equals(timeString)){
+                    }else if("20:55".equals(timeString)){
                         AndroidDeviceSDK.autoReBootForAM(MainActivity.this,true);
                     }else if("21:15".equals(timeString)){
                         AndroidDeviceSDK.shutDownBoot(MainActivity.this);
