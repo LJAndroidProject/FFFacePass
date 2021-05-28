@@ -82,7 +82,7 @@ public class NetWorkUtil {
 
 
         Request request = new Request.Builder().url( url).post(formBody.build()).build();
-        Log.i("结果","multipartBody:"+request.toString());
+
 
 
         okHttpClient.newCall(request).enqueue(new Callback() {
@@ -236,7 +236,7 @@ public class NetWorkUtil {
      *
      * */
     public void errorUpload(ErrorReportBean errorReportBean){
-        Log.i("错误上报结果",errorReportBean.toString());
+
 
         if(APP.getDeviceId() != null){
 
@@ -274,7 +274,7 @@ public class NetWorkUtil {
 
                 @Override
                 public void onResponse(final Call call, final Response response) throws IOException {
-                        Log.i("错误上报结果",response.body().string());
+
                 }
             });
         }
@@ -315,6 +315,42 @@ public class NetWorkUtil {
         MultipartBody multipartBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", file.getName(), requestBody)
+                .build();
+
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(ServerAddress.FILE_UPLOAD)
+                .post(multipartBody)
+                .build();
+
+        okHttpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                fileUploadListener.error(e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if(response.isSuccessful()){
+                    //  通用 bean
+                    GeneralBean generalBean = new Gson().fromJson(response.body().string(),GeneralBean.class);
+                    fileUploadListener.success(generalBean.getData());
+                }else{
+                    fileUploadListener.error(new Exception("状态码异常"));
+                }
+            }
+        });
+    }
+
+
+    //  定期删除
+    public void fileUploadAutoDelete(File file,final FileUploadListener fileUploadListener){
+        RequestBody requestBody = RequestBody.create(MediaType.parse("image/jpg"), file);
+
+        // 文件上传的请求体封装
+        MultipartBody multipartBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("file", file.getName(), requestBody)
+                .addFormDataPart("source","bins")   //  服务器定期删除
                 .build();
 
         okhttp3.Request request = new okhttp3.Request.Builder()

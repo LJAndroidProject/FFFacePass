@@ -1,16 +1,14 @@
 <component name="libraryTable">
   <library name="Gradle: com.github.xiaohaibin:XBanner:1.6.1@aar">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/71e884b92df7f8091cb3f2162e641271/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/05bc106b66a7133c4ba2ce9414b7ff01/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/71e884b92df7f8091cb3f2162e641271/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/71e884b92df7f8091cb3f2162e641271/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/71e884b92df7f8091cb3f2162e641271/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/05bc106b66a7133c4ba2ce9414b7ff01/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/05bc106b66a7133c4ba2ce9414b7ff01/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/05bc106b66a7133c4ba2ce9414b7ff01/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.xiaohaibin/XBanner/1.6.1/46e77020a74a7a0e1c3a0e9b02455c73558a8fb3/XBanner-1.6.1-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

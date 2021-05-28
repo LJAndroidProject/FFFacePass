@@ -1,13 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.umeng.umsdk:asms:1.1.3@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/cd3b1024e9d98e29596dae461e7454af/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/cd3b1024e9d98e29596dae461e7454af/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/cd3b1024e9d98e29596dae461e7454af/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f10bcbb2dc0ed96cb422a6589d9ea6e2/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f10bcbb2dc0ed96cb422a6589d9ea6e2/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/f10bcbb2dc0ed96cb422a6589d9ea6e2/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES>
-      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.umeng.umsdk/asms/1.1.3/6c6324cfc80db1b3f06f630b5f3bd352a8ebd72a/asms-1.1.3-sources.jar!/" />
-    </SOURCES>
+    <SOURCES />
   </library>
 </component>

@@ -137,7 +137,6 @@ public class VendingUtil {
 
         //  出货失败  setType
         /*product_fail_msg*/
-        Log.i("结果","订单完毕:" + new Gson().toJson(buySuccessToServer));
         TCPConnectUtil.getInstance().sendData(new Gson().toJson(buySuccessToServer));
     }
 

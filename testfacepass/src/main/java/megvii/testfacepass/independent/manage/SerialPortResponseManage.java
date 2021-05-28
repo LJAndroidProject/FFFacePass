@@ -9,7 +9,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.serialportlibrary.util.ByteStringUtil;
-
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Arrays;
@@ -26,8 +25,10 @@ import megvii.testfacepass.independent.util.DustbinUtil;
 import megvii.testfacepass.independent.util.NetWorkUtil;
 import megvii.testfacepass.independent.util.OrderUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
+import megvii.testfacepass.utils.LogUtil;
 
 import static megvii.testfacepass.MainActivity.MY_ORDER;
+import static megvii.testfacepass.MainActivity.TAG;
 
 /**
  * 端口响应的数据交给此类处理，目前主要是用来实时监听相关，请求响应形式不由此类处理
@@ -208,7 +209,6 @@ public class SerialPortResponseManage {
                     //  开始上报
                     NetWorkUtil.getInstance().errorUpload(errorReportBean);
 
-                    Log.i("结果", errorReportBean.toString());
 
                     //  本地错误记录
                     DataBaseUtil.getInstance(context).getDaoSession().getErrorReportBeanDao().insert(errorReportBean);
@@ -216,11 +216,6 @@ public class SerialPortResponseManage {
 
 
             } else if (orderMessage.getOrder()[0] == OrderUtil.GET_DATA_BYTE) {   //  获取数据
-
-                Log.i(APP.TAG, "获取到数据");
-                //  读取数据
-
-                Log.i(APP.TAG, "获取到数据位:" + ByteStringUtil.byteArrayToHexStr(orderMessage.getDataContent()));
 
                 DustbinStateBean dustbinStateBean = new DustbinStateBean();
                 //  重量 0-25000 * 10g
@@ -244,7 +239,7 @@ public class SerialPortResponseManage {
                 //  挡板是否开启
                 dustbinStateBean.setDoorIsOpen(chars[0] == '1');
                 //  接近开关
-                dustbinStateBean.setProximitySwitch(chars[1] == '1');
+                dustbinStateBean.setProximitySwitch(chars[1] == '0');//   !!!!
                 //  人工门开关
                 dustbinStateBean.setArtificialDoor(chars[2] == '0');
                 //  侧满
@@ -258,20 +253,32 @@ public class SerialPortResponseManage {
                 //  人工锁
                 dustbinStateBean.setArtificialDoorLock(chars[7] == '1');
 
-                Log.i(APP.TAG, "获取到数据的 二进制" + tString);
-                Log.i(APP.TAG, "状态解析" + dustbinStateBean.toString());
+
+                Log.i(APP.TAG, "状态解析" + dustbinStateBean.toChineseString());
 
                 //  接近开关
                 if(dustbinStateBean.getProximitySwitch()){
-                    Log.i("定时","有人");
                     APP.hasManTime = System.currentTimeMillis();
                 }
 
+                //  有一个人工门是开的 ，就关闭所有紫外线灯。
+                /*if(dustbinStateBean.getArtificialDoor()){
+                    if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0){
+                        for(DustbinStateBean dust : APP.dustbinBeanList){
+
+                            //  关闭消毒灯
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().
+                                    closeTheDisinfection(dust.getDoorNumber()));
+                            try {
+                                Thread.sleep(50);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }*/
+
                 APP.setDustbinState(context,dustbinStateBean);
-
-                Log.i("结算调试",dustbinStateBean.getDoorNumber() + ", 门状态:" + dustbinStateBean.getDoorIsOpen());
-
-
 
                 //  人接近 与离开
                     /*DustbinStateBean oldDustbinStateBean =  DustbinUtil.getDustbinState(dustbinStateBean.getDoorNumber());
@@ -328,8 +335,7 @@ public class SerialPortResponseManage {
 
 
             } else if (orderMessage.getOrder()[0] == OrderUtil.DOG_HOUSE_BYTE) {
-
-
+                LogUtil.d(TAG,""+orderMessage.getDataContent());
             } else if (orderMessage.getOrder()[0] == OrderUtil.VENDING_BYTE) {
                 //  售卖机指令转发
                 //OrderMessage orderMessage = OrderUtil.orderAnalysis(ByteStringUtil.hexStrToByteArray(order));
@@ -382,7 +388,6 @@ public class SerialPortResponseManage {
             int shift = (4 - 1 - i) * 8;
             value += (bytes[i] & 0x000000FF) << shift;// 往高位游
         }
-        Log.i(APP.TAG,"重量" + value);
         return value;
     }
 
@@ -392,7 +397,6 @@ public class SerialPortResponseManage {
         //将每个byte依次搬运到int相应的位置
         result = bytes[0] & 0xff;
         result = result << 8 | bytes[1] & 0xff;
-        Log.i(APP.TAG,"重量" + result);
         return result;
     }
 

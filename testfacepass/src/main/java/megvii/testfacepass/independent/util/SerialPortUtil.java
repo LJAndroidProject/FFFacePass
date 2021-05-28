@@ -34,7 +34,7 @@ public class SerialPortUtil {
                     serialPortService = new SerialPortBuilder()
                             .setTimeOut(100L)
                             .setBaudrate(115200)
-                            .setDevicePath("dev/ttyS2") //  售卖机的 232是 ttyS1 、 垃圾箱的ttl 是 ttyS2  、 大屏用ttyS3
+                            .setDevicePath("dev/ttyS4") //  售卖机的 232是 ttyS1 、 垃圾箱的ttl 是 ttyS2  、 大屏用ttyS3
                             .createService();
 
                     if(serialPortService != null){
@@ -57,8 +57,9 @@ public class SerialPortUtil {
         if(data.contains(" ")){
             data = data.replace(" ","");
         }
-
-        Log.i("结果","发送：" + data);
+//        if(null == serialPortService){
+//            return null;
+//        }
         return serialPortService.sendData(data);
     }
 
@@ -67,6 +68,9 @@ public class SerialPortUtil {
     public byte[] sendData(byte[] data){
 
         Log.i(APP.TAG, "发送：" + ByteStringUtil.byteArrayToHexStr(data));
+//        if(null == serialPortService){
+//            return null;
+//        }
         return serialPortService.sendData(data);
     }
 

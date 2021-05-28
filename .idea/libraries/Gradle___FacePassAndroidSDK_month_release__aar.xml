@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="Gradle: :FacePassAndroidSDK-month-release:@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/211c1e37836c25938f252488142d9912/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/211c1e37836c25938f252488142d9912/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/211c1e37836c25938f252488142d9912/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0872483a7a85d83e4a232a63547c96de/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0872483a7a85d83e4a232a63547c96de/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/0872483a7a85d83e4a232a63547c96de/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

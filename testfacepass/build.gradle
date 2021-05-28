@@ -1,17 +1,24 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
 apply plugin: 'mtj-circle-plugin'
+apply plugin: 'bugly'
 
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
     //  adb shell am force-stop megvii.testfacepass
+    /**
+     * 1.串口地址
+     * 2.获取状态
+     * 3.人脸图片推送
+     * 4.version code 和 number
+     * */
     defaultConfig {
         applicationId "megvii.testfacepass"
         minSdkVersion 21
         targetSdkVersion 27
-        versionCode 22
-        versionName "22.0"
+        versionCode 32
+        versionName "32.2"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -47,14 +54,20 @@ android {
 
     greendao {
         schemaVersion 1 //当前数据库版本
-        targetGenDir 'src/main/java/megvii/testfacepass/dao' //指定生成代码的目录
-        daoPackage //生成代码到具体包下
+        targetGenDir 'src/main/java/' //指定生成代码的目录
+        daoPackage 'megvii.testfacepass.independent.bean'//生成代码到具体包下
     }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    bugly {
+        appId = 'b98d724c6c' // 注册时分配的App ID
+        appKey = '79fa508d-a8e6-4a15-b621-a4eded5d0c5f' // 注册时分配的App Key
+    }
+
 }
 
 MtjCirclePluginConfig {
@@ -92,6 +105,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    compile 'com.android.support:cardview-v7:27.0.0'
 
 
     api project(':serialportlibrary')
@@ -156,7 +171,9 @@ dependencies {
 
 
     compile 'cn.bingoogolapple:bga-qrcode-zbar:1.3.6'
-    //
+    compile 'com.tencent.bugly:crashreport:latest.release' //其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.1.5
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+//其中latest.release指代最新版本号，也可以指定明确的版本号，例如2.2.0
 
-
+//    implementation 'com.blankj:utilcode:1.29.0'
 }

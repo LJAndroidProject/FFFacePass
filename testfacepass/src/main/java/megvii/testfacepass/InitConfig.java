@@ -68,6 +68,8 @@ public class InitConfig extends AppCompatActivity {
 
         setContentView(R.layout.activity_init_config);
 
+        AndroidDeviceSDK.hideStatus(this,false);
+
         
 
         //  初始化布局
@@ -122,7 +124,6 @@ public class InitConfig extends AppCompatActivity {
                     @Override
                     public void success(String response) {
 
-                        Log.i("结果",response);
 
                         GetDustbinConfig getDustbinConfig = new Gson().fromJson(response,GetDustbinConfig.class);
 
@@ -153,7 +154,9 @@ public class InitConfig extends AppCompatActivity {
                              * 保存垃圾箱配置
                              * */
                             DustbinConfig dustbinConfig = new DustbinConfig();
-                            dustbinConfig.setDustbinDeviceId(listBeans.get(0).getDevice_id());  //  deviceID
+                            if(listBeans.size()>0){
+                                dustbinConfig.setDustbinDeviceId(listBeans.get(0).getDevice_id());  //  deviceID
+                            }
                             dustbinConfig.setDustbinDeviceName(getDustbinConfig.getData().getDevice_name());    //  deviceName 部署在哪一个小区
                             dustbinConfig.setHasVendingMachine(getDustbinConfig.getData().getHas_amat() == 1);  //  是否有售卖机
                             //  如果存在售卖机则创建售卖机货道
@@ -299,7 +302,6 @@ public class InitConfig extends AppCompatActivity {
 
                     @Override
                     public void onDownloading(final int progress) {
-                        Log.i("结果","下载进度" + progress);
 
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override

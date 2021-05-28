@@ -2,6 +2,7 @@ package megvii.testfacepass;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.Handler;
@@ -30,6 +31,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import megvii.testfacepass.independent.bean.DustbinStateBean;
 import megvii.testfacepass.independent.bean.DebugLogBean;
@@ -301,6 +304,10 @@ public class DebugActivity extends AppCompatActivity {
 
     }
 
+    public void goUVCDebug(View view){
+        startActivity(new Intent(this,TestActivity.class));
+    }
+
 
     public UsbDevice getUsbCameraDevice(int pid) {
         debug_camera_textTueView.setText(null);
@@ -330,10 +337,12 @@ public class DebugActivity extends AppCompatActivity {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
+
                 if(debug_log_tv != null){
                     debug_log_tv.append(de.getString());
                     debug_log_tv.append("\n");
                 }
+
             }
         });
     }
@@ -347,6 +356,39 @@ public class DebugActivity extends AppCompatActivity {
         if(alertState != null && !alertState.isShowing()){
             alertState.show();
         }
+    }
+
+
+    private TimerTask getDustbinState;
+    public void loop_get_state(View view){
+
+        if(getDustbinState != null){
+            Toast.makeText(DebugActivity.this,"关闭轮询",Toast.LENGTH_LONG).show();
+            getDustbinState.cancel();
+            return;
+        }
+
+        Toast.makeText(DebugActivity.this,"开启轮询",Toast.LENGTH_LONG).show();
+        getDustbinState = new TimerTask() {
+            @Override
+            public void run() {
+                if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0){
+                    for(DustbinStateBean dustbinBeanList : APP.dustbinBeanList){
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().getDate(dustbinBeanList.getDoorNumber()));
+                        try {
+                            Thread.sleep(50);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
+
+        Timer timer2 = new Timer();
+        timer2.schedule(getDustbinState,1,1000);
+
+
     }
 
 

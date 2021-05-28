@@ -35,6 +35,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TabLayout;
 import android.support.v4.content.FileProvider;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -59,6 +60,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -78,6 +80,9 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.littlegreens.netty.client.listener.NettyClientListener;
 import com.serialportlibrary.util.ByteStringUtil;
 import com.umeng.message.entity.UMessage;
@@ -170,10 +175,14 @@ import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.TCPConnectUtil;
 import megvii.testfacepass.independent.util.VoiceUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
+import megvii.testfacepass.independent.view.CustomNumKeyView;
 import megvii.testfacepass.independent.view.PhoneLoginDialog;
 import megvii.testfacepass.network.ByteRequest;
 import megvii.testfacepass.utils.AndroidDeviceSDK;
+import megvii.testfacepass.utils.DataCleanManager;
+import megvii.testfacepass.utils.DownloadUtil;
 import megvii.testfacepass.utils.FileUtil;
+import megvii.testfacepass.utils.LogUtil;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -185,6 +194,7 @@ import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 
 public class MainActivity extends Activity implements CameraManager.CameraListener, View.OnClickListener {
+
 
     //  人脸识别模式
     private enum FacePassSDKMode {
@@ -368,10 +378,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                         "重启设备",
                                         "显示状态栏",
                                         "关闭前台监听",
-                                        "更新垃圾箱配置"
+                                        "更新垃圾箱配置",
+                                        "清除设备在服务器的人脸绑定",
+                                        "重新校准"
                                 };
                                 AlertDialog.Builder offLinDialog = new AlertDialog.Builder(MainActivity.this);
-                                offLinDialog.setTitle("离线管理员");
+                                offLinDialog.setTitle(APP.getDeviceId() + " - 离线管理员");
                                 offLinDialog.setCancelable(false);
                                 offLinDialog.setItems(functionArray, new DialogInterface.OnClickListener() {
                                     @Override
@@ -400,6 +412,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                             case 6:
                                                 updateConfig();
                                                 break;
+                                            case 7:
+                                                clearServerFace();
+                                                break;
+                                            case 8:
+                                                startActivity(new Intent(MainActivity.this,WeightCalibrationActivity.class));
+                                                break;
                                         }
                                     }
                                 });
@@ -420,6 +438,40 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 }
             }
         }
+    }
+
+
+    //  清空服务器下这个设备的人脸绑定
+    private void clearServerFace(){
+        Map<String,String> hasMap = new HashMap<>();
+        hasMap.put("device_id",APP.getDeviceId());
+        NetWorkUtil.getInstance().doGet(ServerAddress.CLEAR_DEVICE_FACE_BING, hasMap, new NetWorkUtil.NetWorkListener() {
+            @Override
+            public void success(String response) {
+                Toast.makeText(MainActivity.this, response, Toast.LENGTH_SHORT).show();
+
+                DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao().deleteAll();
+
+                try {
+                    mFacePassHandler.clearAllGroupsAndFaces();
+
+                    finish();
+                } catch (FacePassException e) {
+                    Toast.makeText(MainActivity.this, "本地人脸底库删除失败" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void fail(Call call, IOException e) {
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void error(Exception e) {
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     //  更新配置
@@ -517,8 +569,44 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                 AndroidDeviceSDK.reBoot(MainActivity.this);
                             }
                         },1000 * 60);
+                    }else if("9:15".equals(timeString)){
+                        new Handler().post(()->{
+                            AndroidDeviceSDK.shutDownBoot(MainActivity.this);
+                        });
+                    }else if("6:50".equals(timeString)){
+                        new Handler().post(()->{
+                            for(DustbinStateBean dustbinStateBean: APP.dustbinBeanList){
+                                //投放时间，电磁锁开锁
+                                //方法名为关闭，是让电磁锁断电开锁
+                                LogUtil.d(TAG,dustbinStateBean.getDoorNumber()+"门电子锁开锁");
+                                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDogHouse(dustbinStateBean.getDoorNumber()));
+                            }
+                        });
+                    }else if("21:0".equals(timeString)){
+                        AndroidDeviceSDK.autoReBootForAM(MainActivity.this,true);
+                    }else if("21:15".equals(timeString)){
+                        AndroidDeviceSDK.shutDownBoot(MainActivity.this);
                     }
-
+                    if(BinsWorkTimeUntil.getBinsWorkTime(binsWorkTimeBean)){
+                        Log.i(TAG,"投放时间");
+                        for(DustbinStateBean dustbinStateBean: APP.dustbinBeanList){
+                            //投放时间，电磁锁开锁
+                            //方法名为关闭，是让电磁锁断电开锁
+                                Log.i(TAG,"投放时间电子锁未开锁，打开"+dustbinStateBean.getDoorNumber()+"门电子");
+                                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDogHouse(dustbinStateBean.getDoorNumber()));
+                        }
+                    }else{
+                        Log.i(TAG,"非投放时间");
+                        //关机前处理操作
+                        for(DustbinStateBean dustbinStateBean: APP.dustbinBeanList){
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
+                            //非投放时间，电磁锁上锁
+                            LogUtil.d(TAG,dustbinStateBean.getDoorNumber()+"门电子锁上锁");
+                            //方法名为开启，是让电磁锁通电上锁
+                                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDogHouse(dustbinStateBean.getDoorNumber()));
+                                LogUtil.writeBusinessLog(dustbinStateBean.getDoorNumber()+"门已上锁");
+                        }
+                    }
 
                     break;
             }
@@ -601,6 +689,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         AndroidDeviceSDK.autoReBoot(this,true);
         //  必须在第一次语音播报前 先初始化对象，否则可能出现第一次语音播报无声音的情况
         VoiceUtil.getInstance();
+
         //  初始化 greenDao 数据库，以及数据库操作对象
         userMessageDao = DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao();
 
@@ -650,6 +739,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
     }
+
+
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -820,7 +911,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     //  友盟推送 ，从服务器传过来的,不过用了 TCP 后就不用了
     @Subscribe(threadMode = ThreadMode.POSTING)
     public void ServerToAndroid(UMessage msg){
-        Log.i(PUSH,"服务器传过来的结果" + msg.custom);
 
 
         Log.i(NOW_TAG,"接收到友盟推送的内容" + msg.custom);
@@ -899,6 +989,12 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     }
 
 
+
+
+    /**
+     *
+     * 有空放 Service 里面
+     * */
     private String tcp_client_id;   //  服务器分配的连接 id
     private String cache;   //  字符串缓存，当从服务器传输过来的内容太多可能会被分段发送，所以这里用一个缓存字符串拼接原本 分段的内容
     private String tcpResponse; //  实际经过拼接处理后的 服务器字符串
@@ -1155,7 +1251,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                             }
                         }else if(type.equals("nearByFeatrueSend")){
-                            Log.i("响应结果",data);
                             NearByFeatrueSendBean nearByFeatrueSendBean = gson.fromJson(data,NearByFeatrueSendBean.class);
 
 
@@ -1173,13 +1268,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                 //  绑定成功就可以 将 facetoken 和 id 进行绑定了
 
                                 if(bindResult) {
-                                    Log.i("响应结果","绑定成功");
                                     //  facetoken 和用户id 绑定
                                     DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceToken(nearByFeatrueSendBean.getUser_id(), faceToken);
                                 }
 
                             }else{
-                                Log.i("响应结果","特征值为空");
                             }
                         }else if(type.equals("deleteAllFace")){
                             //  删除所有用户信息
@@ -1203,6 +1296,44 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             Log.i("updateAllUserType0","修改之前");
                         }else if(type.equals("reboot")){
                             AndroidDeviceSDK.reBoot(MainActivity.this);
+          
+                        }else if(/*type.equals("addFaceImage")*/false){  //  添加人脸，人脸在服务器注册
+
+                            Log.i("addFaceImage","进入添加人脸");
+
+                            JsonObject addFaceImageJsonObject = JsonParser.parseString(data).getAsJsonObject();
+
+
+                            int userId = addFaceImageJsonObject.get("userId").getAsInt();
+                            int userType = addFaceImageJsonObject.get("userType").getAsInt();
+                            String imageUrl = addFaceImageJsonObject.get("imageUrl").getAsString();
+
+                            APP.userId = userId;
+                            APP.userType = userType;
+
+                            Log.i("addFaceImage",addFaceImageJsonObject.toString());
+
+                            Log.i("addFaceImage",userId+","+userType+","+imageUrl);
+
+
+                            //  查询是否已经有这个人的特征值
+                            UserMessage userMessage = DataBaseUtil.getInstance(MainActivity.this)
+                                    .getDaoSession().getUserMessageDao().queryBuilder()
+                                    .where(UserMessageDao.Properties.UserId.eq(userId))
+                                    .unique();
+                            //  本地已经有这个人脸特征了，则删除掉原有的人脸特征，添加新的人脸特征
+                            if(userMessage != null){
+                                //  人脸库中删除这个人脸特征
+                                mFacePassHandler.deleteFace(userMessage.getFaceToken().getBytes());
+                                //  本地数据库中删除这个用户
+                                DataBaseUtil.getInstance(MainActivity.this).getDaoSession().getUserMessageDao().delete(userMessage);
+                                Log.i("addFaceImage","删除旧的人脸特征与注册信息" + userMessage.getUserId());
+                            }else{
+                                Log.i("addFaceImage","不存在该用户，可以添加" + userId);
+                            }
+
+
+                            downloadFaceImage(imageUrl,userId, userType);
                         }
 
                     }catch (Exception e){
@@ -1239,7 +1370,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     /*TCPConnectUtil.getInstance().disconnect();
                     TCPConnectUtil.getInstance().connect();*/
 
-                    TCPConnectUtil.getInstance().reconnect();
+                    //TCPConnectUtil.getInstance().reconnect();
 
                     //Log.i("Netty","重新连接");
                 }
@@ -1263,6 +1394,107 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                 }*/
             }
         });
+
+    }
+
+
+
+    /**
+     * 下载人脸图片
+     * */
+    private synchronized void downloadFaceImage(String imageUrl,final long userId,long userType) throws Exception{
+
+
+        Log.i("addFaceImage","开始下载人脸图片");
+        //  开始下载图片
+        DownloadUtil.get().download(imageUrl, Environment.getExternalStorageDirectory().toString(),
+                System.currentTimeMillis() + ".jpg", new DownloadUtil.OnDownloadListener() {
+                    @Override
+                    public void onDownloadSuccess(File file) {
+
+                        Log.i("addFaceImage","下载完毕");
+                        try {
+
+
+
+                            //  提取图片特征值
+                            FacePassExtractFeatureResult facePassExtractFeatureResult =
+                                    mFacePassHandler.extractFeature(BitmapFactory.decodeFile(file.getAbsolutePath()));
+                            //  如果特征值合格
+                            if(facePassExtractFeatureResult.result == 0){
+
+                                FacePassFeatureAppendInfo facePassFeatureAppendInfo = new FacePassFeatureAppendInfo();
+
+                                //  创建 faceToken
+                                String faceToken = mFacePassHandler.insertFeature(facePassExtractFeatureResult.featureData,facePassFeatureAppendInfo);
+
+                                nowFaceToken = faceToken;
+
+                                boolean bindResult = mFacePassHandler.bindGroup(group_name, faceToken.getBytes());
+
+                                //  绑定结果
+                                if(bindResult){
+                                    Log.i("addFaceImage",userId + ",绑定成功" + faceToken);
+                                    //  本地实现
+                                    DataBaseUtil.getInstance(MainActivity.this).insertUserIdAndFaceTokenThread(userId,userType,nowFaceToken);
+
+
+                                    Map<String,String> hasMap = new HashMap<>();
+                                    hasMap.put("user_id",String.valueOf(userId));
+                                    hasMap.put("device_id",APP.getDeviceId());
+                                    //  通知人脸合格
+                                    NetWorkUtil.getInstance().doPost(ServerAddress.POST_FACE_REGISTER_SUCCESS_LOG, hasMap, new NetWorkUtil.NetWorkListener() {
+                                        @Override
+                                        public void success(String response) {
+                                            Log.i("addFaceImage","通知服务器" + response);
+                                        }
+
+                                        @Override
+                                        public void fail(Call call, IOException e) {
+
+                                        }
+
+                                        @Override
+                                        public void error(Exception e) {
+
+                                        }
+                                    });
+
+
+                                }else{
+                                    mFacePassHandler.deleteFace(faceToken.getBytes());
+                                    Log.i("addFaceImage",userId + ",绑定失败");
+                                }
+                            }else{
+                                mainHandler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MainActivity.this, "人脸不合格", Toast.LENGTH_SHORT).show();
+                                        file.delete();
+                                    }
+                                });
+                            }
+                        }catch (Exception e){
+                            Log.i("addFaceImage",e.getMessage());
+                        }finally {
+                            //  删除图片
+                            //  file.delete();
+                        }
+
+
+
+                    }
+
+                    @Override
+                    public void onDownloading(int progress) {
+
+                    }
+
+                    @Override
+                    public void onDownloadFailed(Exception e) {
+                        Log.i("addFaceImage","下载失败"+e.getMessage());
+                    }
+                });
 
     }
 
@@ -1338,6 +1570,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                             e.printStackTrace();
                             Log.d(DEBUG_TAG, "FacePassHandler is null");
                             Log.i(DEBUG_TAG,"异常：" + e.getMessage());
+                            //  人脸库初始化失败，上报服务器
+                            if(faceCreateResult){
+                                NetWorkUtil.getInstance().errorUpload("检测到人脸识别库创建失败");
+                                faceCreateResult = false;
+                            }
                             return;
                         }
                         return;
@@ -1352,6 +1589,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             }
         }.start();
     }
+
+    private boolean faceCreateResult = true;
 
     @Override
     protected void onResume() {
@@ -1376,7 +1615,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
      * */
     public final static String TAG = "投递时间";
     private void goControlActivity(){
-
         //  如果为 null ，重新请求投递时间
         if(binsWorkTimeBean == null){
             Log.i(TAG,"投递时间 binsWorkTimeBean 为 null");
@@ -1564,6 +1802,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     @Override
     public void onPictureTaken(CameraPreviewData cameraPreviewData) {
         mFeedFrameQueue.offer(cameraPreviewData);
+
+
         //  Log.i(DEBUG_TAG, "feedframe");
     }
 
@@ -1592,6 +1832,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     image = new FacePassImage(cameraPreviewData.nv21Data, cameraPreviewData.width, cameraPreviewData.height, cameraRotation, FacePassImageType.NV21);
                 } catch (FacePassException e) {
                     e.printStackTrace();
+                    Log.e(MY_TAG,"人脸帧invalid失败");
                     continue;
                 }
 
@@ -1601,6 +1842,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                     detectionResult = mFacePassHandler.feedFrame(image);
                 } catch (FacePassException e) {
+                    Log.e(MY_TAG,"人脸脸框异常");
                     e.printStackTrace();
                 }
 
@@ -1646,6 +1888,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                         Log.i("lengthlength", "length is " + jsresponse.getString("data").getBytes().length);
                                         result = mFacePassHandler.decodeResponse(jsresponse.getString("data").getBytes());
                                     } catch (FacePassException e) {
+                                        Log.e(MY_TAG,"联机人脸数据解码失败");
                                         e.printStackTrace();
                                         return;
                                     }
@@ -1813,7 +2056,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                                 nowFaceToken = faceToken;
 
-                                Log.i(MY_TAG,"faceToken 离线状态下的人脸识别"  + faceToken);
+                                Log.i("addFaceImage","faceToken 离线状态下的人脸识别"  + faceToken);
 
 
                                 //  查询faceToken 是否对应某一个从服务器传过来 userId，如果存在则直接进入垃圾箱控制台
@@ -1848,9 +2091,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     }else{
                         Log.i(MY_TAG,"isLocalGroupExist 为 false ，底库不存在。");
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (FacePassException e) {
+                } catch (InterruptedException | FacePassException e) {
+                    Log.e(MY_TAG,"人脸getFaceImageByFaceToken异常，RecognizeThread.run");
                     e.printStackTrace();
                 }
             }
@@ -2023,6 +2265,100 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         setContentView(R.layout.activity_main);
 
 
+        TabLayout tabLayout = findViewById(R.id.login_type_tabLayout);
+        tabLayout.addTab(tabLayout.newTab().setText("扫码使用"));
+        tabLayout.addTab(tabLayout.newTab().setText("注册人脸"));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+                if(float_qrcode_image == null){
+                    float_qrcode_image = findViewById(R.id.float_qrcode_image);
+                }
+
+                if(tab.getPosition() == 0 ){
+                    float_qrcode_image.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId() + "&device_type=2"));
+                }else{
+                    float_qrcode_image.setImageBitmap(QRCodeUtil.getAppletLoginCode(ServerAddress.LOGIN + APP.getDeviceId()));
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+
+        EditText phoneNumberText = findViewById(R.id.phoneNumberText);
+        CustomNumKeyView customNumKeyView = findViewById(R.id.keyboardview);
+        customNumKeyView.setOnCallBack(new CustomNumKeyView.CallBack() {
+            @Override
+            public void clickNum(String num) {
+                if("手机登录".equals(num)){
+
+                    if(phoneNumberText.getText().length() != 11){
+                        toast("手机号码格式不符合规范");
+                        return;
+                    }
+
+                    Map<String,String> hasMap = new HashMap<>();
+                    hasMap.put("phone",phoneNumberText.getText().toString());
+                    NetWorkUtil.getInstance().doPost(ServerAddress.PHONE_LOGIN, hasMap, new NetWorkUtil.NetWorkListener() {
+                        @Override
+                        public void success(String response) {
+
+                            //  手机号码登录返回结果
+                            PhoneLoginBean phoneLoginBean = gson.fromJson(response,PhoneLoginBean.class);
+                            if(phoneLoginBean.getCode() == 1){
+                                APP.userId = phoneLoginBean.getData().getUser_id();
+                                APP.userType = phoneLoginBean.getData().getUser_type();
+
+                                if(phoneLoginDialog != null && phoneLoginDialog.isShowing()){
+                                    phoneLoginDialog.dismiss();
+                                }
+
+                                phoneNumberText.setText(null);
+
+                                toast("登录成功");
+                                goControlActivity();
+                            }else{
+                                toast("请先使用微信扫描二维码绑定手机号码");
+                            }
+
+
+                        }
+
+                        @Override
+                        public void fail(Call call, IOException e) {
+                            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void error(Exception e) {
+                            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                }else{
+                    phoneNumberText.append(num);
+                }
+            }
+
+            @Override
+            public void deleteNum() {
+                Toast.makeText(MainActivity.this, "清空成功", Toast.LENGTH_SHORT).show();
+                phoneNumberText.setText("");
+            }
+        });
+
+
         //  添加按钮以及设置监听器
         mSyncGroupBtn = (ImageView) findViewById(R.id.btn_group_name);
         mSyncGroupBtn.setOnClickListener(this);
@@ -2064,9 +2400,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                         Log.i("Netty","主动断开");
                         //  先断开，在连接
-                        TCPConnectUtil.getInstance().disconnect();
+                        //TCPConnectUtil.getInstance().disconnect();
                         Log.i("Netty","主动连接");
-                        TCPConnectUtil.getInstance().connect();
+                        //TCPConnectUtil.getInstance().connect();
                         Toast.makeText(MainActivity.this,"重连",Toast.LENGTH_LONG).show();
 
 
@@ -2088,9 +2424,9 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                                         Log.i("Netty","主动断开");
                                         //  先断开，在连接
-                                        TCPConnectUtil.getInstance().disconnect();
+                                        //TCPConnectUtil.getInstance().disconnect();
                                         Log.i("Netty","主动连接");
-                                        TCPConnectUtil.getInstance().connect();
+                                        //TCPConnectUtil.getInstance().connect();
 
                                     }else if(password.equals("1")){
                                          AndroidDeviceSDK.hideStatus(MainActivity.this,false);
@@ -2266,6 +2602,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
 
         TCPConnectUtil.getInstance().disconnect();
+
+        AndroidDeviceSDK.hideStatus(this,false);
 
 
 
@@ -2469,6 +2807,23 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                         }
                     }
                 }
+
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
+                            //  关补光灯
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeLight(dustbinStateBean.getDoorNumber()));
+                            try {
+                                Thread.sleep(50);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }).start();
+
                 break;
             //从相册选取照片后读取地址
             case REQUEST_CODE_CHOOSE_PICK:
@@ -2509,6 +2864,11 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                 //  获取位图对象
                 Bitmap bitmap = BitmapFactory.decodeFile(file.toString());
+
+                //  如果图片是颠倒的，则旋转过来
+                if(bitmap.getWidth() > bitmap.getHeight()){
+                    bitmap = adjustPhotoRotation(bitmap,90);
+                }
 
                 try {
                     //  提取特征值
@@ -2562,6 +2922,24 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     }
 
 
+
+    /**
+     *
+     * @param bm 原有位图对象
+     * @param orientationDegree 旋转角度
+     * 图片旋转
+     * */
+    public Bitmap adjustPhotoRotation(Bitmap bm, int orientationDegree) {
+        Matrix m = new Matrix();
+        m.setRotate(orientationDegree, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+
+        return Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), m, true);
+
+    }
+
+
+
+
     /**
      *
      * 初始化数据库
@@ -2586,6 +2964,10 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     private AlertDialog qrCodeDialog;
     private PhoneLoginDialog phoneLoginDialog;
     private void showQRCodeDialog(){
+        if(true){
+            return;
+        }
+
 
         if(qrCodeDialog != null && qrCodeDialog.isShowing()){
             return;
@@ -2868,6 +3250,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
     private long lastPassTime;
     private void queryFaceToken(String faceToken){
 
+
         //  避免重复进入 控制台界面，2s
         if(System.currentTimeMillis() - lastPassTime < 2000){
             Log.i(MY_TAG,"重复进入");
@@ -2900,6 +3283,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
             }
 
         }else{
+            Log.i("addFaceImage","找不到" + faceToken + "对应的用户");
+
             Log.i(MY_TAG,"人脸底库中存在该人脸，但是没有使用微信登陆过，则显示 扫描二维码弹窗");
             //  如果人脸底库中存在该人脸，但是没有使用微信登陆过，则显示 扫描二维码弹窗
 
@@ -2981,7 +3366,8 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                 //  打开相机拍照
                 //  步骤一：创建存储照片的文件
-                String path = getFilesDir() + File.separator + "images" + File.separator;
+
+                String path = Environment.getExternalStorageDirectory().toString();
                 file = new File(path, System.currentTimeMillis() + ".jpg");
                 if(!file.getParentFile().exists())
                     file.getParentFile().mkdirs();
@@ -3052,6 +3438,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                     return;
                 }
             } catch (FacePassException e) {
+                Log.e(MY_TAG,"人脸getFaceImageByFaceToken异常，mFacePassHandler.getFaceImage");
                 e.printStackTrace();
             }
         }

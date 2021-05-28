@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
@@ -18,6 +19,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
@@ -75,9 +77,12 @@ import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.VoiceUtil;
 import megvii.testfacepass.independent.view.AdminLoginDialog;
 import megvii.testfacepass.independent.view.CameraPreview;
+import megvii.testfacepass.network.DustBinRecordRequestParams;
+import megvii.testfacepass.utils.LogUtil;
 import okhttp3.Call;
 
-public class ControlActivity extends AppCompatActivity{
+public class ControlActivity extends AppCompatActivity {
+    private static final String TAG = "ControlActivity";
     private Intent intent;
 
     //  这个id 是服务器传过来的用户id，绑定接下来的所有操作
@@ -112,12 +117,13 @@ public class ControlActivity extends AppCompatActivity{
     //  摄像头默认显示的画面
 
     //  结算模式
-    public enum EXIT_MODE{
+    public enum EXIT_MODE {
         //  关门迭代
         CLOSE_ITERATION,
         //  定时延迟
         TIME_TASK
     }
+
 
     //  投递之前记录
     public List<DustbinStateBean> beforeDustbinStateBeans;
@@ -133,7 +139,7 @@ public class ControlActivity extends AppCompatActivity{
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.i("take picture","take picture 销毁");
+        Log.i("take picture", "take picture 销毁");
 
 
         APP.controlActivityIsRun = false;
@@ -159,28 +165,26 @@ public class ControlActivity extends AppCompatActivity{
         //  关闭消毒灯
         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeTheDisinfection(1));
 
-        if(isTaskRoot()){
-            Log.i("isTaskRoot","true");
+        if (isTaskRoot()) {
+            Log.i("isTaskRoot", "true");
             finish();
-        }else{
-            Log.i("isTaskRoot","false");
+        } else {
+            Log.i("isTaskRoot", "false");
         }
 
         setContentView(R.layout.activity_control);
 
 
         //  初始化自拍相机
-        initCameraSurfaceView();
+        //initCameraSurfaceView();
 
         handler = new Handler(Looper.getMainLooper());
 
         hasMan();
 
 
-
-
         //  结算模式为关门迭代
-        if(exit_mode == EXIT_MODE.CLOSE_ITERATION){
+        if (exit_mode == EXIT_MODE.CLOSE_ITERATION) {
             EventBus.getDefault().register(this);
 
             SerialPortResponseManage.getInstance().setCloseListener(new SerialPortResponseManage.CloseListener() {
@@ -191,7 +195,7 @@ public class ControlActivity extends AppCompatActivity{
             });
 
             //setDustbinCallListener();
-        }else{
+        } else {
             //  结算定时 定时
         }
 
@@ -202,10 +206,10 @@ public class ControlActivity extends AppCompatActivity{
         //  更新售货机商品列表
         getGoodsPos();
 
-        control_exit_btn= (TextView) findViewById(R.id.control_exit_btn);
+        control_exit_btn = (TextView) findViewById(R.id.control_exit_btn);
         textTueView = (TextureView) findViewById(R.id.textTueView);
         control_image = (ImageView) findViewById(R.id.control_image);
-        control_recyclerview = (RecyclerView)findViewById(R.id.control_recyclerview);
+        control_recyclerview = (RecyclerView) findViewById(R.id.control_recyclerview);
         textView = (TextView) findViewById(R.id.textView);
         control_welcome_textView = (TextView) findViewById(R.id.control_welcome_textView);
 
@@ -214,7 +218,6 @@ public class ControlActivity extends AppCompatActivity{
         }else{
             control_image.setAlpha(1f);
         }*/
-
 
 
         //  默认摄像头
@@ -245,7 +248,7 @@ public class ControlActivity extends AppCompatActivity{
                 control_exit_btn.setVisibility(View.VISIBLE);
 
                 //  如果 6 s后还没有显示画面就尝试再开启一下摄像头
-                if(!cameraOpened){
+                /*if(!cameraOpened){
                     Log.i("onCameraOpened","onCameraOpened 没有成功开启,再次请求摄像头");
 
                 }
@@ -253,9 +256,9 @@ public class ControlActivity extends AppCompatActivity{
                 if(mCamera != null){
                     //  来张自拍
                     takePicture();
-                }
+                }*/
             }
-        },6000);
+        }, 6000);
 
 
         //  快速连续点击 5 次 ，出现管理员登录
@@ -270,7 +273,7 @@ public class ControlActivity extends AppCompatActivity{
                     if (mSecretNumber == 5) {
 
                         //  如果管理员登陆过 还没有退出，则可以直接复用，登陆信息 省的每次都要验证码
-                        if(phoneCodeVerifyBean != null){
+                        if (phoneCodeVerifyBean != null) {
                             showAdminManage(phoneCodeVerifyBean);
                             return;
                         }
@@ -287,52 +290,52 @@ public class ControlActivity extends AppCompatActivity{
 
 
                                 //  传参手机号码 和 密码 开始登陆
-                                Map<String,String> map = new HashMap<>();
-                                map.put("phone",editStr);
-                                map.put("pwd",password);
+                                Map<String, String> map = new HashMap<>();
+                                map.put("phone", editStr);
+                                map.put("pwd", password);
                                 NetWorkUtil.getInstance().doPost(ServerAddress.ADMIN_LOGIN, map, new NetWorkUtil.NetWorkListener() {
                                     @Override
                                     public void success(String response) {
                                         //  登陆结果
-                                        AdminLoginResult adminLoginResult = new Gson().fromJson(response,AdminLoginResult.class);
+                                        AdminLoginResult adminLoginResult = new Gson().fromJson(response, AdminLoginResult.class);
 
                                         //  手机号码 + 密码 登陆成功
-                                        if(adminLoginResult.getCode() == 1){
+                                        if (adminLoginResult.getCode() == 1) {
                                             Toast.makeText(ControlActivity.this, "登陆成功，正在发送验证码。", Toast.LENGTH_SHORT).show();
 
                                             //  登陆成功，发送验证码
-                                            Map<String,String> m = new HashMap<>();
-                                            m.put("phone",editStr);
-                                            m.put("type","2");
+                                            Map<String, String> m = new HashMap<>();
+                                            m.put("phone", editStr);
+                                            m.put("type", "2");
                                             NetWorkUtil.getInstance().doPost(ServerAddress.SEND_SMS, m, new NetWorkUtil.NetWorkListener() {
                                                 @Override
                                                 public void success(String response) {
 
                                                     //  验证码发送回调
-                                                    GeneralBean generalBean = new Gson().fromJson(response,GeneralBean.class);
-                                                    if(generalBean.getCode() == 1){
+                                                    GeneralBean generalBean = new Gson().fromJson(response, GeneralBean.class);
+                                                    if (generalBean.getCode() == 1) {
                                                         //  验证码发送成功
                                                         Toast.makeText(ControlActivity.this, "已发送验证码到手机。", Toast.LENGTH_SHORT).show();
                                                         //  弹窗跳转至 验证码输入
                                                         adminLoginDialog.verifyState(new AdminLoginDialog.VerifyListener() {
                                                             @Override
-                                                            public void verifyCallBack(String adminPhone, String verifyCode,final AlertDialog alertDialog) {
+                                                            public void verifyCallBack(String adminPhone, String verifyCode, final AlertDialog alertDialog) {
                                                                 //  点击验证码 验证 ，传输手机号码、 密码 、以及输入的验证码进行验证
 
-                                                                Map<String,String> ma = new HashMap<>();
-                                                                ma.put("phone",adminPhone);
-                                                                ma.put("pwd",password);
-                                                                ma.put("code",verifyCode);
+                                                                Map<String, String> ma = new HashMap<>();
+                                                                ma.put("phone", adminPhone);
+                                                                ma.put("pwd", password);
+                                                                ma.put("code", verifyCode);
                                                                 NetWorkUtil.getInstance().doPost(ServerAddress.PHONE_CODE_VERIFY, ma, new NetWorkUtil.NetWorkListener() {
                                                                     @Override
                                                                     public void success(String response) {
-                                                                        phoneCodeVerifyBean = new Gson().fromJson(response,PhoneCodeVerifyBean.class);
-                                                                        if(phoneCodeVerifyBean.getCode() == 1){
-                                                                            Log.i("结果",phoneCodeVerifyBean.toString());
+                                                                        phoneCodeVerifyBean = new Gson().fromJson(response, PhoneCodeVerifyBean.class);
+                                                                        if (phoneCodeVerifyBean.getCode() == 1) {
+
 
                                                                             alertDialog.dismiss();
                                                                             showAdminManage(phoneCodeVerifyBean);
-                                                                        }else{
+                                                                        } else {
                                                                             Toast.makeText(ControlActivity.this, "验证码错误", Toast.LENGTH_SHORT).show();
                                                                         }
                                                                     }
@@ -351,11 +354,9 @@ public class ControlActivity extends AppCompatActivity{
 
                                                             }
                                                         });
-                                                    }else{
+                                                    } else {
                                                         Toast.makeText(ControlActivity.this, "验证码发送失败。", Toast.LENGTH_SHORT).show();
                                                     }
-
-
 
 
                                                 }
@@ -372,8 +373,7 @@ public class ControlActivity extends AppCompatActivity{
                                             });
 
 
-
-                                        }else{
+                                        } else {
                                             //  手机号码 + 验证码 登陆失败
                                             Toast.makeText(ControlActivity.this, "账户或密码错误，登陆失败", Toast.LENGTH_SHORT).show();
                                         }
@@ -406,12 +406,12 @@ public class ControlActivity extends AppCompatActivity{
 
 
         intent = getIntent();
-        userId = intent.getLongExtra("userId",1);
+        userId = intent.getLongExtra("userId", 1);
 
-        if(userId == 0){
-            Toast.makeText(ControlActivity.this,"特殊用户",Toast.LENGTH_LONG).show();
+        if (userId == 0) {
+            Toast.makeText(ControlActivity.this, "特殊用户", Toast.LENGTH_LONG).show();
             //finish();
-        }else{
+        } else {
             control_welcome_textView.setText("欢迎用户 " + APP.userId + " 进入操作界面");
         }
 
@@ -421,35 +421,39 @@ public class ControlActivity extends AppCompatActivity{
 
 
         //  投递界面 添加自动售卖机
-        if(DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique().getHasVendingMachine()){
+        if (DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique().getHasVendingMachine()) {
             DustbinStateBean dustbinStateBean = new DustbinStateBean();
             dustbinStateBean.setDustbinBoxType("自动售卖机");
             dustbinStateBeans.add(dustbinStateBean);
         }
 
         //  适配器
-        final ControlItemAdapter controlItemAdapter = new ControlItemAdapter(R.layout.control_item_layout,removeDuplicateUser(dustbinStateBeans));
+        final ControlItemAdapter controlItemAdapter = new ControlItemAdapter(R.layout.control_item_layout, removeDuplicateUser(dustbinStateBeans));
         controlItemAdapter.setOnItemChildClickListener(new BaseQuickAdapter.OnItemChildClickListener() {
             @Override
             public void onItemChildClick(final BaseQuickAdapter adapter, View view, final int position) {
-                if(view.getId() == R.id.control_item_iv){
+                if (view.getId() == R.id.control_item_iv) {
 
                     final DustbinStateBean data = controlItemAdapter.getData().get(position);
 
-                    if("自动售卖机".equals(data.getDustbinBoxType())){
-                        startActivity(new Intent(ControlActivity.this,VendingMachineActivity.class));
-                    }else{
+                    if ("自动售卖机".equals(data.getDustbinBoxType())) {
+                        startActivity(new Intent(ControlActivity.this, VendingMachineActivity.class));
+                    } else {
 
                         //  获取合适的垃圾箱类型
                         DustbinStateBean dustbinStateBean = openDoorByType(data.getDustbinBoxType());
-                        if(dustbinStateBean == null){
+                        if (dustbinStateBean == null) {
                             Toast.makeText(ControlActivity.this, "没有合适的垃圾箱", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
+
+
                         //  添加需要关闭的垃圾箱
                         addNeedCloseDustbin(dustbinStateBean);
                         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
+
 
                         //  开启垃圾箱
                         //  SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
@@ -466,27 +470,27 @@ public class ControlActivity extends AppCompatActivity{
         controlItemAdapter.setOnItemChildLongClickListener(new BaseQuickAdapter.OnItemChildLongClickListener() {
             @Override
             public boolean onItemChildLongClick(BaseQuickAdapter adapter, View view, int position) {
-                if(view.getId() == R.id.control_item_iv){
+                if (view.getId() == R.id.control_item_iv) {
 
                     final DustbinStateBean data = controlItemAdapter.getData().get(position);
 
-                    if("自动售卖机".equals(data.getDustbinBoxType())){
+                    if ("自动售卖机".equals(data.getDustbinBoxType())) {
 
-                    }else{
+                    } else {
 
-                        Toast.makeText(ControlActivity.this,"关闭" + data.getDustbinBoxType() + "垃圾箱",Toast.LENGTH_LONG).show();
+                        Toast.makeText(ControlActivity.this, "关闭" + data.getDustbinBoxType() + "垃圾箱", Toast.LENGTH_LONG).show();
 
                         //  关闭所有该类型的垃圾箱
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                for(DustbinStateBean target : APP.dustbinBeanList){
+                                for (DustbinStateBean target : APP.dustbinBeanList) {
                                     //  0   号桶作废
-                                    if(target.getDustbinBoxType().equals(data.getDustbinBoxType()) && target.getDoorNumber() != 0 ){
+                                    if (target.getDustbinBoxType().equals(data.getDustbinBoxType()) && target.getDoorNumber() != 0) {
                                         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(target.getDoorNumber()));
                                         try {
-                                            Thread.sleep(500);
-                                        }catch (Exception e){
+                                            Thread.sleep(1000);
+                                        } catch (Exception e) {
                                             e.printStackTrace();
                                         }
                                     }
@@ -502,25 +506,21 @@ public class ControlActivity extends AppCompatActivity{
                 return true;
             }
         });
-        control_recyclerview.setLayoutManager(new GridLayoutManager(this,3));
+        control_recyclerview.setLayoutManager(new GridLayoutManager(this, 3));
         control_recyclerview.setAdapter(controlItemAdapter);
-
-
-
-
 
 
     }
 
 
-
     //  初始化相机
     FrameLayout cameraFrame;
     private Camera mCamera;
-    public void initCameraSurfaceView() {
-        cameraFrame = (FrameLayout)findViewById(R.id.control_camera_preview);
 
-        int numberOfCameras  = Camera.getNumberOfCameras();
+    public void initCameraSurfaceView() {
+        cameraFrame = (FrameLayout) findViewById(R.id.control_camera_preview);
+
+        int numberOfCameras = Camera.getNumberOfCameras();
         //  遍历摄像头信息
         for (int cameraId = 0; cameraId < numberOfCameras; cameraId++) {
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
@@ -531,16 +531,13 @@ public class ControlActivity extends AppCompatActivity{
             }
         }
 
-        if(mCamera == null){
-            Log.i("结果","相机为空");
-        }
 
         CameraPreview mPreview = new CameraPreview(this, mCamera);
         cameraFrame.addView(mPreview);
     }
 
 
-    public void takePicture(){
+    public void takePicture() {
         //得到照相机的参数
         Camera.Parameters parameters = mCamera.getParameters();
         //图片的格式
@@ -564,14 +561,25 @@ public class ControlActivity extends AppCompatActivity{
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             FileOutputStream fos = null;
-            String mFilePath = getFilesDir()  + File.separator + System.currentTimeMillis() +".png";
+            String mFilePath = getFilesDir() + File.separator + System.currentTimeMillis() + ".png";
             //  文件
             File tempFile = new File(mFilePath);
+
+
+            //  获取位图对象
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+            //  如果图片是颠倒的，则旋转过来
+            if (bitmap.getWidth() > bitmap.getHeight()) {
+                bitmap = adjustPhotoRotation(bitmap, 90);
+            }
+
             try {
                 fos = new FileOutputStream(tempFile);
-                fos.write(data);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.flush();
+                fos.close();
 
-                NetWorkUtil.getInstance().fileUpload(tempFile, new NetWorkUtil.FileUploadListener() {
+                NetWorkUtil.getInstance().fileUploadAutoDelete(tempFile, new NetWorkUtil.FileUploadListener() {
                     @Override
                     public void success(String fileUrl) {
                         APP.UserPhoto = fileUrl;
@@ -602,72 +610,99 @@ public class ControlActivity extends AppCompatActivity{
         }
     };
 
+    /**
+     * @param bm                原有位图对象
+     * @param orientationDegree 旋转角度
+     *                          图片旋转
+     */
+    public Bitmap adjustPhotoRotation(Bitmap bm, int orientationDegree) {
+        Matrix m = new Matrix();
+        m.setRotate(orientationDegree, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+
+        return Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), m, true);
+
+    }
+
 
     //  延迟结算
     public final static String DEBUG_TAG_TASK = "定时延迟结算";
-    public void exit_time_task(){
 
-        Thread exitThread = new Thread(){
+    public void exit_time_task() {
+
+        Thread exitThread = new Thread() {
             @Override
             public void run() {
                 super.run();
 
-                Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"关门之前垃圾箱的状态：" + APP.dustbinBeanList.toString());
-                for(final DustbinStateBean dustbinStateBean : needCloseDustbin /* 之前是关闭当前状态为开的门 APP.dustbinBeanList*/){
-                    Log.i(DEBUG_TAG_TASK,"正在处理的门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen());
+                Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, "关门之前垃圾箱的状态：" + APP.dustbinBeanList.toString());
+                for (final DustbinStateBean dustbinStateBean : needCloseDustbin /* 之前是关闭当前状态为开的门 APP.dustbinBeanList*/) {
+                    Log.i(DEBUG_TAG_TASK, "正在处理的门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen());
+
+
+                    //  如果人工门没有开，才开紫外线灯
+                    if (!dustbinStateBean.getDoorIsOpen()) {
+                        //  开消毒灯
+                        int i = DustbinUtil.getLeftOrRight(dustbinStateBean.getDoorNumber());
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openElectromagnetism(i));
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openElectromagnetism(dustbinStateBean.getDoorNumber()));
+
+                    }
 
                     //  如果是开门的
-                    if(true /* 之前是关闭当前状态为开的门 dustbinStateBean.getDoorIsOpen()*/){
-                        Log.i(DEBUG_TAG_TASK,dustbinStateBean.getDoorNumber() + "是开的");
+                    if (true /* 之前是关闭当前状态为开的门 dustbinStateBean.getDoorIsOpen()*/) {
+                        Log.i(DEBUG_TAG_TASK, dustbinStateBean.getDoorNumber() + "是开的");
 
                         //  时间
                         final long time = System.currentTimeMillis() / 1000;
                         //  文件名称
-                        final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + "_" +  dustbinStateBean.getId() + ".jpg";
+                        final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + "_" + dustbinStateBean.getId() + ".jpg";
 
-                        Log.i(DEBUG_TAG_TASK,dustbinStateBean.getDoorNumber() + "开始关门");
+                        Log.i(DEBUG_TAG_TASK, dustbinStateBean.getDoorNumber() + "开始关门");
 
                         //  关门
                         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
 
                         try {
-                            Thread.sleep(500);
-                        }catch (Exception e){
+                            Thread.sleep(400);
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
+
 
                         //  开补光灯
                         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
 
-                        Log.i(DEBUG_TAG_TASK,dustbinStateBean.getDoorNumber() + "开始添加投递记录");
+                        Log.i(DEBUG_TAG_TASK, dustbinStateBean.getDoorNumber() + "开始添加投递记录");
 
                         //  添加投递记录
-                        addRecord(dustbinStateBean,time);
+                        addRecord(dustbinStateBean, time);
 
                         //  拍照
                         Intent intent = new Intent("MY_BROADCAST_RECEIVER");
-                        intent.putExtra("type","broadcast_camera_type");
-                        intent.putExtra("data","");
+                        intent.putExtra("type", "broadcast_camera_type");
+                        intent.putExtra("data", "");
 
-                        intent.putExtra("doorNumber",dustbinStateBean.getDoorNumber());
-                        intent.putExtra("time",time);
+                        intent.putExtra("doorNumber", dustbinStateBean.getDoorNumber());
+                        intent.putExtra("time", time);
                         intent.putExtra("bin_id", dustbinStateBean.getId());
-
-                        Log.i("拍照调试","实际传输的bin_id:" + dustbinStateBean.getId());
-
-
+                        //打印time是为了确认 拍照广播 是否收到且是否一致
+                        Log.i("拍照调试", "实际传输的bin_id:" + dustbinStateBean.getId() + ", time:" + time);
                         sendBroadcast(intent);
-
                         try {
                             Thread.sleep(500);
-                        }catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
 
                 }
 
-                Log.i(DEBUG_TAG_TASK,"take picture 进入关闭");
+                Log.i(DEBUG_TAG_TASK, "take picture 进入关闭");
                 //  1为结算超时 会关闭所有门
                 exitEnd(1);
 
@@ -680,15 +715,16 @@ public class ControlActivity extends AppCompatActivity{
 
     //  需要关闭的垃圾箱列表
     private List<DustbinStateBean> needCloseDustbin = new ArrayList<>();
-    public void addNeedCloseDustbin(DustbinStateBean dustbinStateBean){
+
+    public void addNeedCloseDustbin(DustbinStateBean dustbinStateBean) {
         //  如果为 0 则直接添加
-        if(needCloseDustbin.size() == 0 ){
+        if (needCloseDustbin.size() == 0) {
             needCloseDustbin.add(dustbinStateBean);
-        }else{
+        } else {
 
             //  查找该垃圾箱是否已经被添加进去，如果有则直接返回
-            for(DustbinStateBean dustbinStateBeanChild:needCloseDustbin){
-                if(dustbinStateBeanChild.getDoorNumber() == dustbinStateBean.getDoorNumber()){
+            for (DustbinStateBean dustbinStateBeanChild : needCloseDustbin) {
+                if (dustbinStateBeanChild.getDoorNumber() == dustbinStateBean.getDoorNumber()) {
                     return;
                 }
             }
@@ -696,95 +732,119 @@ public class ControlActivity extends AppCompatActivity{
             //  如果能执行到这里说明还没有被加入进去，则添加该垃圾箱
             needCloseDustbin.add(dustbinStateBean);
 
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+
+                    int i = DustbinUtil.getLeftOrRight(dustbinStateBean.getDoorNumber());
+
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeElectromagnetism(i));
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeElectromagnetism(dustbinStateBean.getDoorNumber()));
+
+
+                }
+            }).start();
+
         }
     }
-
 
 
     /**
      * 默认开启的门 默认开启餐厨和其它
      * 同时 返回 默认开启的摄像头
-     * */
+     */
     private int defaultCamera = 1;
     private final static String CAMERA_TAG = "摄像头调试";
-    private int openDefaultDoor(){
+
+    private int openDefaultDoor() {
 
         /*
-        * 开其它
-        * */
-        for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
-            if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())){
+         * 开其它
+         * */
+        for (DustbinStateBean dustbinStateBean : APP.dustbinBeanList) {
+            if (dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())) {
 
                 //  为什么不为 0 呢 ，0 号桶位置作废
-                if(!dustbinStateBean.getIsFull() && dustbinStateBean.getDoorNumber() != 0){
+                if (!dustbinStateBean.getIsFull() && dustbinStateBean.getDoorNumber() != 0) {
                     //  添加需要关闭的垃圾箱
                     addNeedCloseDustbin(dustbinStateBean);
+
+                    //  开灯
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
+
                     byte[] result = SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
 
-                    if(result != null){
+                    if (result != null) {
                         Log.i("开门返回1", ByteStringUtil.byteArrayToHexStr(result));
                     }
 
                     defaultCamera = dustbinStateBean.getDoorNumber();
                     break;
-                }else{
+                } else {
                     Toast.makeText(this, dustbinStateBean.getDustbinBoxType() + "垃圾箱已满", Toast.LENGTH_SHORT).show();
                 }
             }
         }
 
         /*
-        *
-        * 开餐厨
-        * */
-        for(final DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
-            if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.KITCHEN.toString())){
+         *
+         * 开餐厨
+         * */
+        for (final DustbinStateBean dustbinStateBean : APP.dustbinBeanList) {
+            if (dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.KITCHEN.toString())) {
 
-                if(!dustbinStateBean.getIsFull()){
+                if (!dustbinStateBean.getIsFull()) {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             //  添加需要关闭的垃圾箱
                             addNeedCloseDustbin(dustbinStateBean);
+
+                            //  开灯
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
+
                             byte[] result = SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openDoor(dustbinStateBean.getDoorNumber()));
-                            if(result != null){
+                            if (result != null) {
                                 Log.i("开门返回2", ByteStringUtil.byteArrayToHexStr(result));
                             }
 
-                            if(defaultCamera != 0){
+                            if (defaultCamera != 0) {
                                 defaultCamera = dustbinStateBean.getDoorNumber();
                             }
                         }
-                    },500);
+                    }, 500);
 
                     break;
-                }else{
+                } else {
                     Toast.makeText(ControlActivity.this, dustbinStateBean.getDustbinBoxType() + "垃圾箱已满", Toast.LENGTH_SHORT).show();
                 }
 
             }
         }
 
-        Log.i(CAMERA_TAG,"默认摄像头" + defaultCamera);
+        Log.i(CAMERA_TAG, "默认摄像头" + defaultCamera);
         return defaultCamera;
     }
 
 
-
-
-
     // 显示管理员
-    String [] finalStrings = new String[]{"回收箱管理","故障维修管理","售卖机补货"};
-    String [] strings = new String[]{"回收箱管理","故障维修管理","售卖机补货"};
+    String[] finalStrings = new String[]{"回收箱管理", "故障维修管理", "售卖机补货"};
+    String[] strings = new String[]{"回收箱管理", "故障维修管理", "售卖机补货"};
     /**
-     *
      * 1：回收员，2维修员，3：补货员，99：超级管理员
-     * */
+     */
 
     private PhoneCodeVerifyBean phoneCodeVerifyBean;
-    private void showAdminManage(PhoneCodeVerifyBean phoneCodeVerifyBean){
+
+    private void showAdminManage(PhoneCodeVerifyBean phoneCodeVerifyBean) {
         //  如果不是超级管理员，把编号转换成 字符身份
-        if(!phoneCodeVerifyBean.getData().getAdmin_types().contains("99")){
+        if (!phoneCodeVerifyBean.getData().getAdmin_types().contains("99")) {
             String typeStr = phoneCodeVerifyBean.getData().getAdmin_types().replace("1", finalStrings[0]);
             typeStr = typeStr.replace("2", finalStrings[1]);
             typeStr = typeStr.replace("3", finalStrings[2]);
@@ -793,22 +853,22 @@ public class ControlActivity extends AppCompatActivity{
         }
 
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(ControlActivity.this,R.style.SingleChoiceItemsDialogStyle);
+        AlertDialog.Builder alert = new AlertDialog.Builder(ControlActivity.this, R.style.SingleChoiceItemsDialogStyle);
         alert.setTitle("选择你要做的操作:");
-        alert.setSingleChoiceItems(strings,-1, new DialogInterface.OnClickListener() {
+        alert.setSingleChoiceItems(strings, -1, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
                 String item = strings[which];
 
-                if(finalStrings[0].equals(item)){
+                if (finalStrings[0].equals(item)) {
                     Intent intent = new Intent(ControlActivity.this, RecyclerAdminActivity.class);
                     startActivity(intent);
-                }else if(finalStrings[1].equals(item)){
+                } else if (finalStrings[1].equals(item)) {
                     Intent intent = new Intent(ControlActivity.this, DustbinManageActivity.class);
                     startActivity(intent);
-                }else if( finalStrings[2].equals(item)){
-                    Intent intent = new Intent(ControlActivity.this,ReplenishmentActivity.class);
+                } else if (finalStrings[2].equals(item)) {
+                    Intent intent = new Intent(ControlActivity.this, ReplenishmentActivity.class);
                     startActivity(intent);
                 }
             }
@@ -827,22 +887,22 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 筛选合适的垃圾箱
-     * */
-    private DustbinStateBean openDoorByType(String type){
-        if(APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0 ){
-            Log.i("筛选合适大垃圾箱",APP.dustbinBeanList.toString());
-            for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
-                if(dustbinStateBean.getDustbinBoxType().equals(type)){
+     */
+    private DustbinStateBean openDoorByType(String type) {
+        if (APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0) {
+            Log.i("筛选合适大垃圾箱", APP.dustbinBeanList.toString());
+            for (DustbinStateBean dustbinStateBean : APP.dustbinBeanList) {
+                if (dustbinStateBean.getDustbinBoxType().equals(type)) {
 
-                    if(!dustbinStateBean.getIsFull()){
+                    if (!dustbinStateBean.getIsFull()) {
                         return dustbinStateBean;
-                    }else{
+                    } else {
                         Toast.makeText(this, "垃圾箱已满", Toast.LENGTH_SHORT).show();
                         return null;
                     }
                 }
             }
-        }else{
+        } else {
             Toast.makeText(this, "垃圾箱配置为空", Toast.LENGTH_SHORT).show();
         }
 
@@ -852,25 +912,22 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 根据桶位获取pid
-     * */
-    public static int doorNumberToPid(int numb){
+     */
+    public static int doorNumberToPid(int numb) {
 
         int target = numb * 1111;
 
         String string = new BigInteger(String.valueOf(target), 16).toString();
 
 
-        Log.i("结果",string);
-
         return Integer.parseInt(string);
     }
 
 
-
     /**
      * 根据 pid 转 桶位
-     * */
-    public static int pidToDoorNumber(int pid){
+     */
+    public static int pidToDoorNumber(int pid) {
 
         Integer x = pid;
 
@@ -880,7 +937,6 @@ public class ControlActivity extends AppCompatActivity{
 
         return i / 1111;
     }
-
 
 
     //  根据 pid 获取 UVC 摄像头设备
@@ -894,7 +950,7 @@ public class ControlActivity extends AppCompatActivity{
         if (deviceMap != null) {
             for (UsbDevice usbDevice : deviceMap.values()) {
                 Integer integer = usbDevice.getProductId();
-                Log.i(DEBUG_TAG_TASK,"扫描到的摄像头：" + usbDevice.getProductId() + "，进制转换：" + integer.toHexString(integer));
+                Log.i(DEBUG_TAG_TASK, "扫描到的摄像头：" + usbDevice.getProductId() + "，进制转换：" + integer.toHexString(integer));
             }
         }
 
@@ -918,7 +974,7 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 垃圾箱类型 去重
-     * */
+     */
     public static ArrayList<DustbinStateBean> removeDuplicateUser(List<DustbinStateBean> list) {
         Set<DustbinStateBean> set = new TreeSet<>(new Comparator<DustbinStateBean>() {
             @Override
@@ -932,7 +988,7 @@ public class ControlActivity extends AppCompatActivity{
 
 
     //  适配器
-    public static class ControlItemAdapter extends BaseQuickAdapter<DustbinStateBean, BaseViewHolder> implements View.OnTouchListener{
+    public static class ControlItemAdapter extends BaseQuickAdapter<DustbinStateBean, BaseViewHolder> implements View.OnTouchListener {
 
         public ControlItemAdapter(int layoutResId, @Nullable List<DustbinStateBean> data) {
             super(layoutResId, data);
@@ -948,19 +1004,19 @@ public class ControlActivity extends AppCompatActivity{
             int image_resource = 0;
 
             //  厨余
-            if(DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())){
+            if (DustbinENUM.BOTTLE.toString().equals(data.getDustbinBoxType())) {
                 image_resource = R.mipmap.pinzi;
-            }else if(DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())){
+            } else if (DustbinENUM.WASTE_PAPER.toString().equals(data.getDustbinBoxType())) {
                 image_resource = R.mipmap.zhipi;
-            }else if(DustbinENUM.RECYCLABLES.toString().equals(data.getDustbinBoxType())){
+            } else if (DustbinENUM.RECYCLABLES.toString().equals(data.getDustbinBoxType())) {
                 image_resource = R.mipmap.kehuishou;
-            }else if(DustbinENUM.KITCHEN.toString().equals(data.getDustbinBoxType())){
+            } else if (DustbinENUM.KITCHEN.toString().equals(data.getDustbinBoxType())) {
                 image_resource = R.mipmap.chuyu;
-            }else if(DustbinENUM.HARMFUL.toString().equals(data.getDustbinBoxType())){
+            } else if (DustbinENUM.HARMFUL.toString().equals(data.getDustbinBoxType())) {
                 image_resource = R.mipmap.youhai;
-            }else if(DustbinENUM.OTHER.toString().equals(data.getDustbinBoxType())){
+            } else if (DustbinENUM.OTHER.toString().equals(data.getDustbinBoxType())) {
                 image_resource = R.mipmap.qita;
-            }else if("自动售卖机".equals(data.getDustbinBoxType())){
+            } else if ("自动售卖机".equals(data.getDustbinBoxType())) {
                 image_resource = R.mipmap.shouhuo;
             }
 
@@ -976,7 +1032,7 @@ public class ControlActivity extends AppCompatActivity{
         public boolean onTouch(View v, MotionEvent event) {
 
             //  点击效果，调整透明度
-            switch (event.getAction()){
+            switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     v.setAlpha(0.8f);
                     break;
@@ -990,22 +1046,20 @@ public class ControlActivity extends AppCompatActivity{
     }
 
 
-
-
     /**
      * 获取商品列表，不管有没有售卖机 都将备选列表下载下来
-     * */
-    private void getGoodsPos(){
+     */
+    private void getGoodsPos() {
         NetWorkUtil.getInstance().doGetThread(ServerAddress.GET_GOODS_POS, null, new NetWorkUtil.NetWorkListener() {
             @Override
             public void success(String response) {
-                GetServerGoods getServerGoods = new Gson().fromJson(response,GetServerGoods.class);
+                GetServerGoods getServerGoods = new Gson().fromJson(response, GetServerGoods.class);
                 //  获取商品列表
                 List<GetServerGoods.DataBean.ListBean> listBeans = getServerGoods.getData().getList();
 
 
                 List<CommodityAlternativeBean> commodityAlternativeBeans = new ArrayList<>();
-                for(GetServerGoods.DataBean.ListBean listBean : listBeans){
+                for (GetServerGoods.DataBean.ListBean listBean : listBeans) {
                     CommodityAlternativeBean commodityBean = new CommodityAlternativeBean();
                     commodityBean.setCommodityName(listBean.getGoods_name());
                     commodityBean.setCanUserIntegral(listBean.getScore_pay() == 1);
@@ -1041,20 +1095,21 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 传入需要更新的商品备选，更新商品备选列表，并更新列表商品
+     *
      * @param commodityAlternativeBeans 修改当前商品的备选
-     * */
-    private void updateCommodity(List<CommodityAlternativeBean> commodityAlternativeBeans){
+     */
+    private void updateCommodity(List<CommodityAlternativeBean> commodityAlternativeBeans) {
 
         //  修改备选商品数据库
         DataBaseUtil.getInstance(this).getDaoSession().getCommodityAlternativeBeanDao().saveInTx(commodityAlternativeBeans);
 
         //  遍历变化的商品
-        for(CommodityAlternativeBean commodityAlternativeBean : commodityAlternativeBeans){
+        for (CommodityAlternativeBean commodityAlternativeBean : commodityAlternativeBeans) {
             //  查询所有这个id的商品
             List<CommodityBean> com = DataBaseUtil.getInstance(ControlActivity.this).getDaoSession().getCommodityBeanDao().queryBuilder().where(CommodityBeanDao.Properties.CommodityID.eq(commodityAlternativeBean.getCommodityID())).list();
 
             //  该id下的商品 挨个进行赋值
-            for(CommodityBean c :com){
+            for (CommodityBean c : com) {
                 c.setCommodityID(commodityAlternativeBean.getCommodityID());
                 c.setCommodityAlternativeBean(commodityAlternativeBean);
             }
@@ -1065,12 +1120,10 @@ public class ControlActivity extends AppCompatActivity{
     }
 
 
-
     /**
-     * @deprecated
-     * 退出进行结算
-     * */
-    public void exit(View view){
+     * @deprecated 退出进行结算
+     */
+    public void exit(View view) {
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setCancelable(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -1086,10 +1139,10 @@ public class ControlActivity extends AppCompatActivity{
 
                     //  查询所有开启的门板
                     List<DustbinStateBean> dustbinBeanList = APP.dustbinBeanList;
-                    for(final DustbinStateBean dustbinStateBean:dustbinBeanList){
+                    for (final DustbinStateBean dustbinStateBean : dustbinBeanList) {
 
                         //  扫描门板开启的箱体
-                        if(dustbinStateBean.getDoorIsOpen()){
+                        if (dustbinStateBean.getDoorIsOpen()) {
                             //  关闭门
                             SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
 
@@ -1116,7 +1169,6 @@ public class ControlActivity extends AppCompatActivity{
                     phoneCodeVerifyBean = null;
 
 
-
                     new Handler(Looper.getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
@@ -1126,7 +1178,7 @@ public class ControlActivity extends AppCompatActivity{
 
                     //startActivity(new Intent(ControlActivity.this,MainActivity.class));
                     finish();
-                }catch (InterruptedException e){
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
@@ -1163,33 +1215,45 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 30 s内没有人自动退出
-     * */
+     */
     TimerTask hasManTask;
     Timer hasManTimer = new Timer();
     private boolean hasManIsRun = true;
     private final static int AUTO_EXIT_TIME = 30;
 
-    private void hasMan(){
+    private void hasMan() {
         hasManTask = new TimerTask() {
             @Override
             public void run() {
 
-                Log.i("定时",(System.currentTimeMillis() / 1000) + "," + (APP.hasManTime / 1000));
+                Log.i("定时", (System.currentTimeMillis() / 1000) + "," + (APP.hasManTime / 1000));
 
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
+
+                        if ((AUTO_EXIT_TIME - ((System.currentTimeMillis() - APP.hasManTime) / 1000)) == 0) {
+                            if (timer != null) {
+                                timer.cancel();
+                            }
+
+                            if (timerTask != null) {
+                                timerTask.cancel();
+                            }
+                            exitEnd(1);
+                        }
+
                         control_exit_btn.setText("退出 ( " + (AUTO_EXIT_TIME - ((System.currentTimeMillis() - APP.hasManTime) / 1000)) + "s )");
                     }
                 });
 
                 //  剩余 10s 提醒语音
-                if(hasManIsRun && (AUTO_EXIT_TIME - (System.currentTimeMillis() - APP.hasManTime) / 1000) == 10){
-                    VoiceUtil.getInstance().openAssetMusics(ControlActivity.this,"exit_alert_voice.aac");
+                if (hasManIsRun && (AUTO_EXIT_TIME - (System.currentTimeMillis() - APP.hasManTime) / 1000) == 10) {
+                    VoiceUtil.getInstance().openAssetMusics(ControlActivity.this, "exit_alert_voice.aac");
                 }
 
                 //  30 s内没有人
-                if(hasManIsRun && System.currentTimeMillis() - APP.hasManTime > (AUTO_EXIT_TIME * 1000)){
+                if (hasManIsRun && System.currentTimeMillis() - APP.hasManTime > (AUTO_EXIT_TIME * 1000)) {
 
                     hasManTask.cancel();
                     hasManTimer.cancel();
@@ -1210,15 +1274,13 @@ public class ControlActivity extends AppCompatActivity{
         };
 
         hasManTimer = new Timer();
-        hasManTimer.schedule(hasManTask,1,1000);
+        hasManTimer.schedule(hasManTask, 1, 1000);
     }
-
-
 
 
     /**
      * 退出投递
-     * */
+     */
     //  退出投递弹窗
     private ProgressDialog exitProgressDialog;
     //  开始退出时间
@@ -1226,8 +1288,9 @@ public class ControlActivity extends AppCompatActivity{
     private TimerTask timerTask;
     private Timer timer;
     private Handler handler;
-    public void exitControl(View view){
-        VoiceUtil.getInstance().openAssetMusics(ControlActivity.this,"exit_alert_voice.aac");
+
+    public void exitControl(View view) {
+        VoiceUtil.getInstance().openAssetMusics(ControlActivity.this, "exit_alert_voice.aac");
 
         exitProgressDialog = new ProgressDialog(this);
         exitProgressDialog.setCancelable(false);
@@ -1247,14 +1310,14 @@ public class ControlActivity extends AppCompatActivity{
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        long timeDiff = (System.currentTimeMillis()  - beginExitTime) / 1000;
+                        long timeDiff = (System.currentTimeMillis() - beginExitTime) / 1000;
 
-                        if(exitProgressDialog != null){
+                        if (exitProgressDialog != null) {
                             exitProgressDialog.setTitle("结算中 ( " + timeDiff + "s )");
 
-                            if(exit_mode == EXIT_MODE.CLOSE_ITERATION){
+                            if (exit_mode == EXIT_MODE.CLOSE_ITERATION) {
                                 //  一般一个桶 6-7 s就可以关闭了，所有桶位的数量 * 8
-                                if(timeDiff > APP.dustbinBeanList.size() * 9){
+                                if (timeDiff > APP.dustbinBeanList.size() * 9) {
                                     timer.cancel();
                                     timerTask.cancel();
                                     Toast.makeText(ControlActivity.this, "结算超时", Toast.LENGTH_SHORT).show();
@@ -1269,13 +1332,13 @@ public class ControlActivity extends AppCompatActivity{
         };
 
         timer = new Timer();
-        timer.schedule(timerTask,1,1000);
+        timer.schedule(timerTask, 1, 1000);
 
         //  迭代
-        if(exit_mode == EXIT_MODE.CLOSE_ITERATION){
+        if (exit_mode == EXIT_MODE.CLOSE_ITERATION) {
             //  寻找需要关闭的门,迭代关闭
             closeOpenedDoor();
-        }else{
+        } else {
             //  定时退出
             exit_time_task();
         }
@@ -1284,11 +1347,11 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 获取投递之前的某个垃圾桶参数
-     * */
-    private DustbinStateBean getBeforeDustbin(int doorNumber){
+     */
+    private DustbinStateBean getBeforeDustbin(int doorNumber) {
 
-        for(DustbinStateBean dustbinStateBean : beforeDustbinStateBeans){
-            if(dustbinStateBean.getDoorNumber() == doorNumber){
+        for (DustbinStateBean dustbinStateBean : beforeDustbinStateBeans) {
+            if (dustbinStateBean.getDoorNumber() == doorNumber) {
                 return dustbinStateBean;
             }
         }
@@ -1299,9 +1362,10 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 关闭已经开启 且没有关闭失败记录过 的门
-     * */
+     */
     public final static String DEBUG_TAG = "结算调试";
-    public void closeOpenedDoor(){
+
+    public void closeOpenedDoor() {
         /*//  计算符合条件的门
         int hasMatchCondition = 0;
 
@@ -1315,26 +1379,26 @@ public class ControlActivity extends AppCompatActivity{
         DustbinStateBean dustbinStateBean = getOpenedDoor();
 
 
-        if(dustbinStateBean == null){
-            Log.i(DEBUG_TAG,"结算完毕");
+        if (dustbinStateBean == null) {
+            Log.i(DEBUG_TAG, "结算完毕");
             exitEnd(0);
-        }else{
+        } else {
 
-            Log.i(DEBUG_TAG,"寻找到合适的门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen());
+            Log.i(DEBUG_TAG, "寻找到合适的门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen());
 
             //  首先设备不能为 null
-            if(mUsbDevice != null){
+            if (mUsbDevice != null) {
 
                 //  如果摄像头就是正在关闭的门就不用切换
-                if(pidToDoorNumber(mUsbDevice.getProductId()) == dustbinStateBean.getDoorNumber()){
-                    Log.i(DEBUG_TAG,"不用切换摄像头");
-                }else{
-                    Log.i(DEBUG_TAG,"切换摄像头为" + dustbinStateBean.getDoorNumber());
+                if (pidToDoorNumber(mUsbDevice.getProductId()) == dustbinStateBean.getDoorNumber()) {
+                    Log.i(DEBUG_TAG, "不用切换摄像头");
+                } else {
+                    Log.i(DEBUG_TAG, "切换摄像头为" + dustbinStateBean.getDoorNumber());
                 }
 
             }
 
-            Log.i(DEBUG_TAG,"发送指令,关" + dustbinStateBean.getDoorNumber() + "号门");
+            Log.i(DEBUG_TAG, "发送指令,关" + dustbinStateBean.getDoorNumber() + "号门");
 
             //  关门
             SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDoor(dustbinStateBean.getDoorNumber()));
@@ -1345,15 +1409,16 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 退出清算,将一些数据置为空
+     *
      * @param exitCode 1为结算超时 ， 0 为结算正常
-     * */
-    private void exitEnd(int exitCode){
+     */
+    private void exitEnd(int exitCode) {
 
         //  反正要延迟大概 4s 左右
         int millis = 4000 / APP.dustbinBeanList.size();
 
         //  依次关闭补光灯
-        for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
+        /*for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
             //  关补光灯
             SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeLight(dustbinStateBean.getDoorNumber()));
             try {
@@ -1361,11 +1426,11 @@ public class ControlActivity extends AppCompatActivity{
             }catch (Exception e){
                 e.printStackTrace();
             }
-        }
+        }*/
 
-        Log.i("take picture","take picture 休眠结束");
+        Log.i("take picture", "take picture 休眠结束");
         //  中断监听与销毁线程
-        if(dustbinCallListenerThread != null && !dustbinCallListenerThread.isInterrupted()){
+        if (dustbinCallListenerThread != null && !dustbinCallListenerThread.isInterrupted()) {
             dustbinCallListener = false;
             dustbinCallListenerThread.interrupt();
         }
@@ -1378,50 +1443,51 @@ public class ControlActivity extends AppCompatActivity{
         phoneCodeVerifyBean = null;
 
         //  将关门失败清空
-        for(DustbinStateBean dustbinStateBean : APP.dustbinBeanList){
+        for (DustbinStateBean dustbinStateBean : APP.dustbinBeanList) {
             dustbinStateBean.setCloseFailNumber(0);
-            APP.setDustbinState(ControlActivity.this,dustbinStateBean);
+            APP.setDustbinState(ControlActivity.this, dustbinStateBean);
         }
 
         //  因为可能在子线程中被调用
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                if(exitProgressDialog != null){
+                if (exitProgressDialog != null) {
                     exitProgressDialog.dismiss();
                 }
             }
         });
 
         //startActivity(new Intent(ControlActivity.this,MainActivity.class));
-        Intent intent = new Intent(ControlActivity.this,MainActivity.class);
-        intent.putExtra("exitCode",exitCode);
-        setResult(MainActivity.CONTROL_RESULT_CODE,intent);
+        Intent intent = new Intent(ControlActivity.this, MainActivity.class);
+        intent.putExtra("exitCode", exitCode);
+        setResult(MainActivity.CONTROL_RESULT_CODE, intent);
         finish();
     }
 
     /**
      * 垃圾箱关闭回调，关闭成功或关闭失败都会回调
-     * */
+     */
     private long lastExecuteTime;
-    @Subscribe(threadMode = ThreadMode.POSTING,sticky = true,priority = 99)
-    public void closeDoorCall(final DustbinStateBean dustbinStateBean){
+
+    @Subscribe(threadMode = ThreadMode.POSTING, sticky = true, priority = 99)
+    public void closeDoorCall(final DustbinStateBean dustbinStateBean) {
 
         //  定时结算则不做处理
-        if(exit_mode == EXIT_MODE.TIME_TASK){
+        if (exit_mode == EXIT_MODE.TIME_TASK) {
             return;
         }
 
-        if(System.currentTimeMillis() - lastExecuteTime < 1000){
+        if (System.currentTimeMillis() - lastExecuteTime < 1000) {
             return;
         }
         lastExecuteTime = System.currentTimeMillis();
 
-        Log.i(DEBUG_TAG,"进入closeDoorCall()");
+        Log.i(DEBUG_TAG, "进入closeDoorCall()");
         //  时间
         long time = System.currentTimeMillis() / 1000;
         //  文件名称
-        final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + "_" +  dustbinStateBean.getId() + ".jpg";
+        final String imageName = APP.getDeviceId() + "_" + dustbinStateBean.getDoorNumber() + "_" + APP.userId + "_" + time + "_" + dustbinStateBean.getId() + ".jpg";
         //  开启补光灯
         SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().openLight(dustbinStateBean.getDoorNumber()));
         //  开启杀菌消毒
@@ -1429,13 +1495,13 @@ public class ControlActivity extends AppCompatActivity{
         //  拍照
 
 
-        Log.i(DEBUG_TAG,"收到关门回调，添加投递记录和拍照");
+        Log.i(DEBUG_TAG, "收到关门回调，添加投递记录和拍照");
 
-        Log.i(DEBUG_TAG,"关闭反馈，打印事件总线传过来的对象" + dustbinStateBean.toString());
+        Log.i(DEBUG_TAG, "关闭反馈，打印事件总线传过来的对象" + dustbinStateBean.toString());
 
 
         //  本地和服务器添加投递记录
-        addRecord(dustbinStateBean,time);
+        addRecord(dustbinStateBean, time);
 
         //  寻找并关闭已开启的门
         closeOpenedDoor();
@@ -1443,22 +1509,21 @@ public class ControlActivity extends AppCompatActivity{
     }
 
 
-
     /**
      * 添加投递记录
-     * */
-    private void addRecord(final DustbinStateBean dustbinStateBean,long time){
+     */
+    private void addRecord(final DustbinStateBean dustbinStateBean, long time) {
         //  添加一条用户投递记录
-        DeliveryRecord deliveryRecord = new DeliveryRecord(null,dustbinStateBean.getDoorNumber(),APP.userId,time,dustbinStateBean.getDustbinWeight(),null);
+        DeliveryRecord deliveryRecord = new DeliveryRecord(null, dustbinStateBean.getDoorNumber(), APP.userId, time, dustbinStateBean.getDustbinWeight(), null);
         long id = DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().insert(deliveryRecord);
 
-        Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"添加投递记录" + id);
+        Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, "添加投递记录" + id);
 
         //  计算投递重量差 ，兑换积分
         //  如果人工门不是开启的, 才计算重量
-        if(!dustbinStateBean.getArtificialDoor()){
+        if (!dustbinStateBean.getArtificialDoor()) {
 
-            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"没有开启人工门");
+            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, "没有开启人工门");
 
             DeliveryRecord nowDeliveryRecord = new DeliveryRecord();
             nowDeliveryRecord.setDeliveryTime(System.currentTimeMillis());
@@ -1471,7 +1536,7 @@ public class ControlActivity extends AppCompatActivity{
 
 
             //  查询同一个桶最近两次投递记录，算出重量差
-            QueryBuilder<DeliveryRecord> queryBuilder =  DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().queryBuilder();
+            QueryBuilder<DeliveryRecord> queryBuilder = DataBaseUtil.getInstance(this).getDaoSession().getDeliveryRecordDao().queryBuilder();
             queryBuilder.where(DeliveryRecordDao.Properties.DoorNumber.eq(dustbinStateBean.getDoorNumber()));
             queryBuilder.orderDesc(DeliveryRecordDao.Properties.Id);
             queryBuilder.limit(2);
@@ -1482,7 +1547,7 @@ public class ControlActivity extends AppCompatActivity{
 
             //  获取垃圾箱之前的状态
             DustbinStateBean beforeDustbin = getBeforeDustbin(dustbinStateBean.getDoorNumber());
-            if(beforeDustbin != null ){
+            if (beforeDustbin != null) {
                 diff = dustbinStateBean.getDustbinWeight() - beforeDustbin.getDustbinWeight();
             }
 
@@ -1501,55 +1566,62 @@ public class ControlActivity extends AppCompatActivity{
 
 
             //  上传投递记录
-            Map<String,String> map = new HashMap<>();
-            map.put("user_id",String.valueOf(APP.userId));
-            map.put("bin_id",String.valueOf(dustbinStateBean.getId()));
-            map.put("bin_type",dustbinStateBean.getDustbinBoxNumber());
-            map.put("post_weight",String.valueOf(diff));
-            map.put("former_weight",String.valueOf(dustbinStateBean.getDustbinWeight() - diff));
-            map.put("now_weight",String.valueOf(dustbinStateBean.getDustbinWeight()));
-            map.put("plastic_bottle_num",String.valueOf(bottleNumber));
-            map.put("err_code",dustbinStateBean.getCloseFailNumber() == 0 ? "0" : "1");  //  0是正常的，其它是不正常的 1、2、3 对应一个err_msg
-            map.put("err_msg",dustbinStateBean.getCloseFailNumber() == 0 ? "无描述" : "关门失败，结算异常");//    异常描述
-            map.put("time",String.valueOf(time));
-            map.put("rubbish_image"," ");
-            if(APP.UserPhoto != null){
-                map.put("user_pictrue",APP.UserPhoto);
+            Map<String, String> map = new HashMap<>();
+            map.put("user_id", String.valueOf(APP.userId));
+            map.put("bin_id", String.valueOf(dustbinStateBean.getId()));
+            map.put("bin_type", dustbinStateBean.getDustbinBoxNumber());
+            map.put("post_weight", String.valueOf(diff));
+            map.put("former_weight", String.valueOf(dustbinStateBean.getDustbinWeight() - diff));
+            map.put("now_weight", String.valueOf(dustbinStateBean.getDustbinWeight()));
+            map.put("plastic_bottle_num", String.valueOf(bottleNumber));
+            map.put("err_code", dustbinStateBean.getCloseFailNumber() == 0 ? "0" : "1");  //  0是正常的，其它是不正常的 1、2、3 对应一个err_msg
+            map.put("err_msg", dustbinStateBean.getCloseFailNumber() == 0 ? "无描述" : "关门失败，结算异常");//    异常描述
+            map.put("time", String.valueOf(time));
+            map.put("rubbish_image", " ");
+            if (APP.UserPhoto != null) {
+                map.put("user_pictrue", APP.UserPhoto);
             }
 
-            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"即将添加投递记录" +  map.toString());
-            NetWorkUtil.getInstance().doPost(ServerAddress.DUSTBIN_RECORD, map, new NetWorkUtil.NetWorkListener() {
-                @Override
-                public void success(String response) {
-
-                    Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,response);
-                    //  如果是瓶子类型,则清空瓶子
-                    if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())){
-                        bottleNumber = 0;
-                    }
-                }
-
-                @Override
-                public void fail(Call call, IOException e) {
-                    Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,e.getMessage());
-                }
-
-                @Override
-                public void error(Exception e) {
-                    Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,e.getMessage());
-                }
-            });
-        }else{
-            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG,"人工门开启不做投递记录");
+            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, "即将添加投递记录" + map.toString());
+            DustBinRecordRequestParams recordRequestParams = new DustBinRecordRequestParams();
+            recordRequestParams.setRequestMap(map);
+            EventBus.getDefault().post(recordRequestParams);
+//            NetWorkUtil.getInstance().doPost(ServerAddress.DUSTBIN_RECORD, map, new NetWorkUtil.NetWorkListener() {
+//                @Override
+//                public void success(String response) {
+//                    LogUtil.d(TAG,"投递记录成功上传服务器: "+response);
+//                    LogUtil.writeBusinessLog("投递记录成功上传服务器: "+response);
+//                    Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, response);
+//                    //  如果是瓶子类型,则清空瓶子
+//                    if (dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.BOTTLE.toString())) {
+//                        bottleNumber = 0;
+//                    }
+//                }
+//
+//                @Override
+//                public void fail(Call call, IOException e) {
+//                    LogUtil.writeBusinessLog("投递失败 "+e.getMessage());
+//                    Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, e.getMessage());
+//                }
+//
+//                @Override
+//                public void error(Exception e) {
+//                    LogUtil.writeBusinessLog("投递失败 "+e.getMessage());
+//                    Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, e.getMessage());
+//                }
+//            });
+        } else {
+            LogUtil.writeBusinessLog("人工门开启不做投递记录");
+            Log.i(exit_mode == EXIT_MODE.TIME_TASK ? DEBUG_TAG_TASK : DEBUG_TAG, "人工门开启不做投递记录");
         }
     }
 
     /**
      * 获取门
-     * */
-    private DustbinStateBean getDustbinByDoorNumber(List<DustbinStateBean> dustbinStateBeans , int doorNumber){
-        for(DustbinStateBean dustbinStateBean:dustbinStateBeans){
-            if(dustbinStateBean.getDoorNumber() == doorNumber){
+     */
+    private DustbinStateBean getDustbinByDoorNumber(List<DustbinStateBean> dustbinStateBeans, int doorNumber) {
+        for (DustbinStateBean dustbinStateBean : dustbinStateBeans) {
+            if (dustbinStateBean.getDoorNumber() == doorNumber) {
                 return dustbinStateBean;
             }
         }
@@ -1560,19 +1632,20 @@ public class ControlActivity extends AppCompatActivity{
     //  设置关门监听
     /**
      * 因为事件总线经常无效，所有现在用死循环取数据
-     * */
+     */
     private volatile boolean dustbinCallListener = true;
     private Thread dustbinCallListenerThread;
-    private void setDustbinCallListener(){
-        dustbinCallListenerThread = new Thread(){
+
+    private void setDustbinCallListener() {
+        dustbinCallListenerThread = new Thread() {
             @Override
             public void run() {
                 super.run();
 
-                while (dustbinCallListener){
+                while (dustbinCallListener) {
                     DustbinStateBean dustbinStateBean = SerialPortResponseManage.getInstance().getDustbinStateBean();
-                    Log.i(DEBUG_TAG,"关门监听" + (dustbinStateBean == null ? "，没有关门" : ",监听到关门"));
-                    if(dustbinStateBean != null){
+                    Log.i(DEBUG_TAG, "关门监听" + (dustbinStateBean == null ? "，没有关门" : ",监听到关门"));
+                    if (dustbinStateBean != null) {
                         //  用完了就 ， 设置为 null
                         SerialPortResponseManage.getInstance().setDustbinStateBean(null);
                         closeDoorCall(dustbinStateBean);
@@ -1580,7 +1653,7 @@ public class ControlActivity extends AppCompatActivity{
 
                     try {
                         Thread.sleep(100);
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -1593,19 +1666,18 @@ public class ControlActivity extends AppCompatActivity{
 
     /**
      * 获取还在开着的门
-     * */
-    private DustbinStateBean getOpenedDoor(){
-        Log.i(DEBUG_TAG,"扫描之前打印所有的门状态" + APP.dustbinBeanList.toString());
-        for(DustbinStateBean dustbinStateBean:APP.dustbinBeanList){
-            if(dustbinStateBean.getDoorIsOpen() && dustbinStateBean.getCloseFailNumber() == 0 ){
-                Log.i(DEBUG_TAG,"找到的合适门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen() + "," + dustbinStateBean.getCloseFailNumber());
+     */
+    private DustbinStateBean getOpenedDoor() {
+        Log.i(DEBUG_TAG, "扫描之前打印所有的门状态" + APP.dustbinBeanList.toString());
+        for (DustbinStateBean dustbinStateBean : APP.dustbinBeanList) {
+            if (dustbinStateBean.getDoorIsOpen() && dustbinStateBean.getCloseFailNumber() == 0) {
+                Log.i(DEBUG_TAG, "找到的合适门" + dustbinStateBean.getDoorNumber() + "," + dustbinStateBean.getDoorIsOpen() + "," + dustbinStateBean.getCloseFailNumber());
                 return dustbinStateBean;
             }
         }
 
         return null;
     }
-
 
 
 }

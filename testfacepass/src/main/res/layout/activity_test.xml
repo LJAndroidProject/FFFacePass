@@ -7,7 +7,8 @@
     android:orientation="vertical"
     tools:context=".TestActivity">
     <TextView
-        android:text="智能款测试"
+        android:padding="10dp"
+        android:text="UVC相机测试"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <fragment

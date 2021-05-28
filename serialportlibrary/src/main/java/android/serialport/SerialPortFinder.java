@@ -39,17 +39,11 @@ public class SerialPortFinder {
                 String[] w = l.split(" +");
                 if ((w.length == 5) && ("serial".equals(w[4]))) {
                     mDrivers.add(new Driver(w[0], w[1]));
-                    Log.i("结果",new Driver(w[0], w[1]).toString());
                 }
             }
             r.close();
         }
 
-        if(mDrivers == null){
-            Log.i("结果","列表为空");
-        }else{
-            Log.i("结果",mDrivers.toString());
-        }
         return mDrivers;
     }
 

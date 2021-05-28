@@ -81,7 +81,7 @@ public class UploadImageService extends Service {
              * 图片文件上传
              * */
 
-            NetWorkUtil.getInstance().fileUpload(file, new NetWorkUtil.FileUploadListener() {
+            NetWorkUtil.getInstance().fileUploadAutoDelete(file, new NetWorkUtil.FileUploadListener() {
                 @Override
                 public void success(String fileUrl) {
 

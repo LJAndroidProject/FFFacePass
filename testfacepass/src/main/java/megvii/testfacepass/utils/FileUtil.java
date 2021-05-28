@@ -8,6 +8,11 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Created by xingchaolei on 2018/1/26.
@@ -129,4 +134,163 @@ public class FileUtil {
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
     }
+
+    public static long getLength(File file) {
+        if (file == null) {
+            return 0L;
+        } else {
+            return file.isDirectory() ? getDirLength(file) : getFileLength(file);
+        }
+    }
+
+    private static long getFileLength(File file) {
+        return !isFile(file) ? -1L : file.length();
+    }
+
+    private static long getDirLength(File dir) {
+        if (!isDir(dir)) {
+            return -1L;
+        } else {
+            long len = 0L;
+            File[] files = dir.listFiles();
+            if (files != null && files.length > 0) {
+                File[] var4 = files;
+                int var5 = files.length;
+
+                for(int var6 = 0; var6 < var5; ++var6) {
+                    File file = var4[var6];
+                    if (file.isDirectory()) {
+                        len += getDirLength(file);
+                    } else {
+                        len += file.length();
+                    }
+                }
+            }
+
+            return len;
+        }
+    }
+
+    public static boolean isFile(File file) {
+        return file != null && file.exists() && file.isFile();
+    }
+
+    public static boolean isDir(File file) {
+        return file != null && file.exists() && file.isDirectory();
+    }
+
+    public static boolean delete(File file) {
+        if (file == null) {
+            return false;
+        } else {
+            return file.isDirectory() ? deleteDir(file) : deleteFile(file);
+        }
+    }
+
+    private static boolean deleteDir(File dir) {
+        if (dir == null) {
+            return false;
+        } else if (!dir.exists()) {
+            return true;
+        } else if (!dir.isDirectory()) {
+            return false;
+        } else {
+            File[] files = dir.listFiles();
+            if (files != null && files.length > 0) {
+                File[] var2 = files;
+                int var3 = files.length;
+
+                for(int var4 = 0; var4 < var3; ++var4) {
+                    File file = var2[var4];
+                    if (file.isFile()) {
+                        if (!file.delete()) {
+                            return false;
+                        }
+                    } else if (file.isDirectory() && !deleteDir(file)) {
+                        return false;
+                    }
+                }
+            }
+
+            return dir.delete();
+        }
+    }
+
+    private static boolean deleteFile(File file) {
+        return file != null && (!file.exists() || file.isFile() && file.delete());
+    }
+
+    public static boolean writeFileFromString(File file, String content, boolean append) {
+        if (file != null && content != null) {
+            if (!createOrExistsFile(file)) {
+                Log.e("FileIOUtils", "create file <" + file + "> failed.");
+                return false;
+            } else {
+                BufferedWriter bw = null;
+
+                boolean var5;
+                try {
+                    bw = new BufferedWriter(new FileWriter(file, append));
+                    bw.write(content);
+                    boolean var4 = true;
+                    return var4;
+                } catch (IOException var15) {
+                    var15.printStackTrace();
+                    var5 = false;
+                } finally {
+                    try {
+                        if (bw != null) {
+                            bw.close();
+                        }
+                    } catch (IOException var14) {
+                        var14.printStackTrace();
+                    }
+
+                }
+
+                return var5;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean createOrExistsFile(File file) {
+        if (file == null) {
+            return false;
+        } else if (file.exists()) {
+            return file.isFile();
+        } else if (!createOrExistsDir(file.getParentFile())) {
+            return false;
+        } else {
+            try {
+                return file.createNewFile();
+            } catch (IOException var2) {
+                var2.printStackTrace();
+                return false;
+            }
+        }
+    }
+
+    public static boolean createOrExistsDir(File file) {
+        boolean var10000;
+        label25: {
+            if (file != null) {
+                if (file.exists()) {
+                    if (file.isDirectory()) {
+                        break label25;
+                    }
+                } else if (file.mkdirs()) {
+                    break label25;
+                }
+            }
+
+            var10000 = false;
+            return var10000;
+        }
+
+        var10000 = true;
+        return var10000;
+    }
+
 }

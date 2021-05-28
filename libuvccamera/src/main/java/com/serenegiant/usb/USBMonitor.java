@@ -899,6 +899,7 @@ public final class USBMonitor {
 			if ((manager != null) && manager.hasPermission(device)) {
 				final UsbDeviceConnection connection = manager.openDevice(device);
 				final byte[] desc = connection.getRawDescriptors();
+				//	desc 可能是一个空的资源
 
 				if (TextUtils.isEmpty(info.usb_version)) {
 					info.usb_version = String.format("%x.%02x", ((int)desc[3] & 0xff), ((int)desc[2] & 0xff));

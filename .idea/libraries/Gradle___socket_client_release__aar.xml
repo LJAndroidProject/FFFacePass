@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Gradle: :socket-client-release:@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a17d4ec50ec8b29506dd3fafb2fab48b/jars/classes.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a17d4ec50ec8b29506dd3fafb2fab48b/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a17d4ec50ec8b29506dd3fafb2fab48b/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a17d4ec50ec8b29506dd3fafb2fab48b/jars/libs/log4j-over-slf4j-1.7.28.jar!/" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a17d4ec50ec8b29506dd3fafb2fab48b/jars/libs/netty-all-4.1.41.Final.jar!/" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a17d4ec50ec8b29506dd3fafb2fab48b/jars/libs/slf4j-api-1.7.28.jar!/" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/a17d4ec50ec8b29506dd3fafb2fab48b/jars/libs/slf4j-nop-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fb2a8bdd6a174a3bfbf5f8a004ce64d1/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fb2a8bdd6a174a3bfbf5f8a004ce64d1/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fb2a8bdd6a174a3bfbf5f8a004ce64d1/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fb2a8bdd6a174a3bfbf5f8a004ce64d1/jars/libs/log4j-over-slf4j-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fb2a8bdd6a174a3bfbf5f8a004ce64d1/jars/libs/netty-all-4.1.41.Final.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fb2a8bdd6a174a3bfbf5f8a004ce64d1/jars/libs/slf4j-api-1.7.28.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/fb2a8bdd6a174a3bfbf5f8a004ce64d1/jars/libs/slf4j-nop-1.7.28.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

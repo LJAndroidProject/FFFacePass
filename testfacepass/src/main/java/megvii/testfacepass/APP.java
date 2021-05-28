@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.serialportlibrary.service.impl.SerialPortService;
 import com.serialportlibrary.util.ByteStringUtil;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -19,11 +20,13 @@ import java.util.List;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
 import megvii.testfacepass.independent.util.SerialPortICUtil;
 import megvii.testfacepass.independent.util.SerialPortUtil;
 import megvii.testfacepass.independent.util.TCPConnectUtil;
+import megvii.testfacepass.utils.CrashHandler;
 
 
 public class APP extends Application {
@@ -48,13 +51,16 @@ public class APP extends Application {
 
     private Handler handler;
 
-    //  apk 类型 例如 智能款、智能简易款
-    public final static int ApkType = 1;
+    //  apk 类型 翎飞是 1 、美嘉是 2
+    public final static int ApkType = 2;
 
     public static boolean controlActivityIsRun;
 
     //  有人存在的时间戳
     public static long hasManTime = 0 ;
+
+    //bugly初始化使用的APPID
+    private String buglyAppId = "b98d724c6c";
 
     @Override
     public void onCreate() {
@@ -65,7 +71,8 @@ public class APP extends Application {
 
         /*EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
         EventBus.getDefault().register(this);*/
-
+        CrashReport.initCrashReport(getApplicationContext(),buglyAppId,true);
+        CrashHandler.getInstance().init(getApplicationContext());
         //  设置垃圾箱配置
         DustbinConfig dustbinConfig = DataBaseUtil.getInstance(this).getDaoSession().getDustbinConfigDao().queryBuilder().unique();
         setDustbinConfig(dustbinConfig);
@@ -103,6 +110,12 @@ public class APP extends Application {
                         public void run() {
                             DebugActivity.debug_log_tv.append("接收:" + ByteStringUtil.byteArrayToHexStr(response));
                             DebugActivity.debug_log_tv.append("\n");
+
+
+                            //  超过自动清空
+                            if(DebugActivity.debug_log_tv.length() > 1200){
+                                DebugActivity.debug_log_tv.setText(null);
+                            }
                         }
                     });
                 }
@@ -275,9 +288,74 @@ public class APP extends Application {
      * 修改垃圾箱
      * */
     public static void setDustbinState(Context context,DustbinStateBean dustbinStateBean){
+        Log.i("人工门测试","开始修改值");
         // 1. boolean hasMan = false;
         for(int i = 0 ; i < dustbinBeanList.size(); i++){
             if(dustbinBeanList.get(i).getDoorNumber() == dustbinStateBean.getDoorNumber()){
+
+
+
+
+                Log.i("人工门测试", dustbinStateBean.getDoorNumber() + ",之前:" + dustbinBeanList.get(i).getArtificialDoor() +
+                        ",之后:" + dustbinStateBean.getArtificialDoor());
+
+                //  如果之前人工门关闭为 true，而新的为 false 说明人工门被打开了
+                if(dustbinBeanList.get(i).getArtificialDoor() && !dustbinStateBean.getArtificialDoor()){
+                    Log.i("人工门测试",dustbinStateBean.getDoorNumber() + "号门人工门被开启");
+
+                    //  可以顺带一次去皮
+                    //  删除所有投递记录
+                    //DataBaseUtil.getInstance(context).getDaoSession().getDeliveryRecordDao().deleteAll();
+
+                    //  关闭本身的紫外线灯
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().
+                            closeTheDisinfection(dustbinStateBean.getDoorNumber()));
+                    //  是否为 奇数
+                    boolean isOddNumber = dustbinStateBean.getDoorNumber() % 2 != 0;
+
+                    try {
+                        Thread.sleep(50);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    //  奇数 + 1，偶数 -1
+                    int adjoinDoorNumber = isOddNumber ? 1 : -1;
+
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().
+                            closeTheDisinfection(dustbinStateBean.getDoorNumber() + adjoinDoorNumber));
+
+                }
+
+
+                //  如果之前人工门开启为 true，而新的为 false 说明人工门被关闭了
+                if(!dustbinBeanList.get(i).getArtificialDoor() && dustbinStateBean.getArtificialDoor()){
+                    Log.i("人工门测试",dustbinStateBean.getDoorNumber() + "号门人工门被关闭");
+
+                    //  可以顺带一次去皮
+                    //  删除所有投递记录
+                    //DataBaseUtil.getInstance(context).getDaoSession().getDeliveryRecordDao().deleteAll();
+
+                    //  开启本身的紫外线灯
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().
+                            openTheDisinfection(dustbinStateBean.getDoorNumber()));
+                    //  是否为 奇数
+                    boolean isOddNumber = dustbinStateBean.getDoorNumber() % 2 != 0;
+
+                    try {
+                        Thread.sleep(50);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    //  奇数 + 1，偶数 -1
+                    int adjoinDoorNumber = isOddNumber ? 1 : -1;
+
+                    SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().
+                            openTheDisinfection(dustbinStateBean.getDoorNumber() + adjoinDoorNumber));
+
+                }
+
+
+
 
                 //  之前没有设置 垃圾箱  id 导致为 null
 
@@ -286,26 +364,17 @@ public class APP extends Application {
                 dustbinStateBean.setDustbinBoxNumber(dustbinBeanList.get(i).getDustbinBoxNumber());
                 dustbinBeanList.set(i,dustbinStateBean);
 
-                Log.i("设置结算调试",dustbinStateBean.toString());
+                Log.i("设置结算调试",dustbinStateBean.toChineseString());
 
                 if(dustbinStateBean.getDustbinBoxType() != null && dustbinStateBean.getDustbinBoxType() != null){
                     //  如果是厨余垃圾 和 其它垃圾 ，人工门被开启或关闭 ，则删除所有记录
                     if(dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.KITCHEN.toString())
                             || dustbinStateBean.getDustbinBoxType().equals(DustbinENUM.OTHER.toString())){
 
-                        //  如果之前人工门关闭为 true，而新的为 false 说明人工门被打开了
-                        if(dustbinBeanList.get(i).getArtificialDoor() && !dustbinStateBean.getArtificialDoor()){
-
-                            //  可以顺带一次去皮
-
-
-                            //  删除所有投递记录
-                            DataBaseUtil.getInstance(context).getDaoSession().getDeliveryRecordDao().deleteAll();
-
-                        }
 
                     }
                 }
+
 
             }
 
@@ -354,5 +423,10 @@ public class APP extends Application {
         // 程序在内存清理的时候执行
         //TCPConnectUtil.getInstance().disconnect();
         super.onTrimMemory(level);
+    }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
     }
 }

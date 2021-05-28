@@ -4,6 +4,7 @@ buildscript {
     repositories {
         jcenter()
         google()
+        mavenCentral()
         maven { url 'https://jitpack.io' }
         maven { url 'https://dl.bintray.com/umsdk/release' }
     }
@@ -14,6 +15,9 @@ buildscript {
 
         // 引入百度统计插件库
         classpath 'com.baidu.mobstat:mtj-circle-plugin:latest.integration'
+
+        //引入腾讯Bugly上传异常信息
+        classpath 'com.tencent.bugly:symtabfileuploader:latest.release'
 
 
         // NOTE: Do not place your application dependencies here; they belong

@@ -41,4 +41,13 @@ public class DustbinUtil {
             return null;
         }
     }
+
+
+    public static int getLeftOrRight(int door){
+        boolean isOddNumber = door % 2 != 0;
+        //  奇数 + 1，偶数 -1
+        int adjoinDoorNumber = isOddNumber ? 1 : -1;
+
+        return door + adjoinDoorNumber;
+    }
 }

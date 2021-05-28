@@ -36,7 +36,6 @@ public class qrcode_scanner extends AppCompatActivity {
                 //  扫描成功触发震动
 
                 //  Toast.makeText(qrcode_scanner.this,result,Toast.LENGTH_SHORT).show();
-                Log.i("结果",result);
                 rest();
             }
 

@@ -81,4 +81,11 @@ public class ServerAddress {
     //  查询二维码
     public final static String QUERY_QR_CODE = IP + "api/Android/scanLogin";
 
+    //  人脸添加成功
+    public final static String POST_FACE_REGISTER_SUCCESS_LOG = IP + "api/android/postFaceRegisterSuccessLog";
+
+
+    //  清除服务器下此设备的人脸绑定
+    public final static String CLEAR_DEVICE_FACE_BING = IP + "api/android/clearFacePostSuccessLog";
+
 }

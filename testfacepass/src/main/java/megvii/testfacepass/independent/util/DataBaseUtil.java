@@ -156,7 +156,7 @@ public class DataBaseUtil {
     /**
      * 插入一条绑定用户id和facetoken的记录
      * */
-    public void insertUserIdAndFaceToken(long userId,String faceToken){
+    public synchronized void insertUserIdAndFaceToken(long userId,String faceToken){
 
         //  查询数据库中是否有登陆记录
         UserMessage userMessage = getDaoSession().getUserMessageDao().queryBuilder().where(UserMessageDao.Properties.UserId.eq(userId)).build().unique();
@@ -178,6 +178,50 @@ public class DataBaseUtil {
             userMessage.setFaceToken(faceToken);
             //  设置用户类型
             userMessage.setUserType(APP.userType);
+            //  上次使用时间
+            userMessage.setLastUsedTime(System.currentTimeMillis());
+            //  在数据库中的注册时间
+            userMessage.setRegisterTime(System.currentTimeMillis());
+            //  使用该次数
+            userMessage.setUsedNumber(1);
+            //  设置服务器传过来的用户id
+            userMessage.setUserId(userId);
+            //  插入到数据库
+
+            //  人脸匹配但不通过 修改 insert 为 insertOrReplace
+            getDaoSession().getUserMessageDao().insertOrReplace(userMessage);
+
+        }
+    }
+
+
+
+
+    /**
+     * 插入一条绑定用户id和facetoken的记录
+     * */
+    public synchronized void insertUserIdAndFaceTokenThread(long userId,long userType,String faceToken){
+
+        //  查询数据库中是否有登陆记录
+        UserMessage userMessage = getDaoSession().getUserMessageDao().queryBuilder().where(UserMessageDao.Properties.UserId.eq(userId)).build().unique();
+
+        if(userMessage != null){
+            //  说明存在该记录，则使用次数添加 + 1，这一步骤主要是为了以后清理使用次数较少的人脸
+
+            //  使用次数 + 1
+            userMessage.setUsedNumber(userMessage.getUsedNumber() + 1);
+            //  上次使用时间
+            userMessage.setLastUsedTime(System.currentTimeMillis());
+            //  插入 或者 替换 到数据库
+            getDaoSession().getUserMessageDao().insertOrReplace(userMessage);
+        }else{
+            // 在这台安卓机上用户还没有登陆过，则添加一条新的记录
+
+            userMessage = new UserMessage();
+            //  对应底库中的faceToken
+            userMessage.setFaceToken(faceToken);
+            //  设置用户类型
+            userMessage.setUserType(userType);
             //  上次使用时间
             userMessage.setLastUsedTime(System.currentTimeMillis());
             //  在数据库中的注册时间
