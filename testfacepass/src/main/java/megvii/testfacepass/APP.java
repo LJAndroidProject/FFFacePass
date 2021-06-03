@@ -20,6 +20,7 @@ import java.util.List;
 import megvii.testfacepass.independent.bean.DustbinConfig;
 import megvii.testfacepass.independent.bean.DustbinENUM;
 import megvii.testfacepass.independent.bean.DustbinStateBean;
+import megvii.testfacepass.independent.bean.PhoneCodeVerifyBean;
 import megvii.testfacepass.independent.manage.SerialPortRequestByteManage;
 import megvii.testfacepass.independent.manage.SerialPortResponseManage;
 import megvii.testfacepass.independent.util.DataBaseUtil;
@@ -52,7 +53,7 @@ public class APP extends Application {
     private Handler handler;
 
     //  apk 类型 翎飞是 1 、美嘉是 2
-    public final static int ApkType = 2;
+    public final static int ApkType = 1;
 
     public static boolean controlActivityIsRun;
 
@@ -61,6 +62,8 @@ public class APP extends Application {
 
     //bugly初始化使用的APPID
     private String buglyAppId = "b98d724c6c";
+
+    public static  PhoneCodeVerifyBean phoneCodeVerifyBean;
 
     @Override
     public void onCreate() {

@@ -911,11 +911,21 @@ public class CameraFragment extends BaseFragment implements CameraDialog.CameraD
         @Override
         public void onAttach(final UsbDevice device) {
 
+            String pid = String.format("%x", device.getProductId());
             if (DEBUG) {
-                String pid = String.format("%x", device.getProductId());
-                Log.v(TAG, "onAttach:  pid" + pid);
+                Log.v(TAG, "onAttach:  pid:" + pid);
             }
-            //  Toast.makeText(getActivity(), "相机连接", Toast.LENGTH_SHORT).show();
+            try {
+                if(Integer.parseInt(pid) % 1111 == 0){
+                    LogUtil.d(TAG, "检测到已烧录摄像头插入，进行初始化");
+                    mUSBMonitor.requestPermission(device);
+                    onDialogResult(false);
+                    threadSleep();
+                }
+            }catch (NumberFormatException ne){
+                ne.printStackTrace();
+            }
+
         }
 
         @Override

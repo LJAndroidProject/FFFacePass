@@ -43,17 +43,20 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.serenegiant.utils.BuildCheck;
 import com.serenegiant.utils.HandlerThreadHandler;
+import com.serenegiant.utils.LogUtils;
 
 public final class USBMonitor {
 
-	private static final boolean DEBUG = false;	// TODO set false on production
+	private static final boolean DEBUG = true;	// TODO set false on production
 	private static final String TAG = "USBMonitor";
 
 	private static final String ACTION_USB_PERMISSION_BASE = "com.serenegiant.USB_PERMISSION.";
@@ -421,9 +424,11 @@ public final class USBMonitor {
 			if (device != null) {
 				if (mUsbManager.hasPermission(device)) {
 					// 如果应用已经拥有权限，请调用onConnect
+					LogUtils.d("已有权限调用connect");
 					processConnect(device);
 				} else {
 					try {
+						LogUtils.d("未经许可请求requestPermission");
 						//未经许可请求
 						mUsbManager.requestPermission(device, mPermissionIntent);
 					} catch (final Exception e) {
@@ -569,6 +574,8 @@ public final class USBMonitor {
 				}
 				if (mOnDeviceConnectListener != null) {
 					mOnDeviceConnectListener.onConnect(device, ctrlBlock, createNew);
+				}else {
+					LogUtils.d("mOnDeviceConnectListener为Null");
 				}
 			}
 		});
@@ -883,6 +890,7 @@ public final class USBMonitor {
 	 * @param _info
 	 * @return
 	 */
+	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public static UsbDeviceInfo updateDeviceInfo(final UsbManager manager, final UsbDevice device, final UsbDeviceInfo _info) {
 		final UsbDeviceInfo info = _info != null ? _info : new UsbDeviceInfo();
 		info.clear();

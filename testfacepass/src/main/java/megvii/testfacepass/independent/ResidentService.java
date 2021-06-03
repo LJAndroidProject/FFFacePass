@@ -109,6 +109,7 @@ public class ResidentService extends Service {
 
                             //  如果是设备已离线则重连
                             if (stateCallBean.getData() != null && stateCallBean.getData().getEq_status() == 0) {
+                                LogUtil.d(TAG,"设备离线？？？？？");
                                 //  断开连接
                                 TCPConnectUtil.getInstance().disconnect();
                                 //  重新连接
@@ -138,25 +139,27 @@ public class ResidentService extends Service {
 
 
         //  获取垃圾箱状态  暂定30秒获取一次，之前1秒获取一次全部桶 浪费资源且占用串口通道传输数据
-        TimerTask getDustbinState = new TimerTask() {
-            @Override
-            public void run() {
-                if (APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0) {
-                    for (DustbinStateBean dustbinBeanList : APP.dustbinBeanList) {
-                        Log.i(TAG, "获取垃圾箱状态" + dustbinBeanList.getDoorNumber());
-                        SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().getDate(dustbinBeanList.getDoorNumber()));
-                        try {
-                            Thread.sleep(400);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+        if(APP.ApkType == 2){
+            TimerTask getDustbinState = new TimerTask() {
+                @Override
+                public void run() {
+                    if (APP.dustbinBeanList != null && APP.dustbinBeanList.size() > 0) {
+                        for (DustbinStateBean dustbinBeanList : APP.dustbinBeanList) {
+                            Log.i(TAG, "获取垃圾箱状态" + dustbinBeanList.getDoorNumber());
+                            SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().getDate(dustbinBeanList.getDoorNumber()));
+                            try {
+                                Thread.sleep(400);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
-            }
-        };
+            };
 
-        Timer timer2 = new Timer();
-        timer2.schedule(getDustbinState, 1, 30 * 1000);
+            Timer timer2 = new Timer();
+            timer2.schedule(getDustbinState, 1, 30 * 1000);
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)

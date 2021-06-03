@@ -5,6 +5,7 @@ import android.content.Intent;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -28,6 +29,9 @@ public class AndroidDeviceSDK {
 
     //  隐藏状态栏
     public static void hideStatus(Context context, boolean hideStatus) {
+//        if(true){
+//            hideStatus = false;
+//        }
         //  隐藏状态栏，也就是 app 打开后不能退出
         Intent intent = new Intent("android.q_zheng.action.statusbar");
         intent.putExtra("forbidden", hideStatus);
@@ -81,6 +85,49 @@ public class AndroidDeviceSDK {
         int[] poweron = {6, 45};
 //        int[] poweron = {16, 8};
         intent.putExtra("timeon", poweron);
+        intent.putExtra("type", 2); //类型 2 代表设置每天开关机时间
+        intent.putExtra("enable", enable); //使能开关机功能，设为 false,则为关闭,缺省为 true
+        context.sendBroadcast(intent);
+    }
+
+    /**
+     * 根据传入年月日控制开关机
+     * 指定时间开关机
+     */
+    public static void nextAutoReBoot(Context context,int year, int month,int day){
+        int onYear = year;
+        int onMonth = month;
+//        int onDay = day+1;
+        int onDay = day;
+        //每年最后一天第二天时间是 1月1
+        if(month == 12 && day==31){
+            onYear++;
+            onMonth = 1;
+            onDay = 1;
+        }
+        Intent intent = new Intent("android.q_zheng.action.POWERONOFF");
+        int[] poweroff = {year,month,day, 11,50};//小时取值 0-23,分钟取值 0-59
+        int[] poweron = {onYear,onMonth,onDay,  11,55}; //小时取值 0-23,分钟取值 0-59
+        LogUtil.writeBusinessLog("当前设置开机时间："+ Arrays.toString(poweron)+",  当前设置关机时间"+Arrays.toString(poweroff));
+        LogUtil.d("当前设置开机时间："+ Arrays.toString(poweron)+",  当前设置关机时间"+Arrays.toString(poweroff));
+        intent.putExtra("timeon", poweron);
+        intent.putExtra("timeoff", poweroff);
+        intent.putExtra("type", 1); //类型 1 代表设置一次
+        intent.putExtra("enable",true); //使能开关机功能为 true，false 为关闭,缺省为 true
+        context.sendBroadcast(intent);
+    }
+
+    /**
+     * 早上6.30自动重启
+     */
+    public static void auto643ReBootForAM(Context context, boolean enable) {
+        Intent intent = new Intent("android.q_zheng.action.POWERONOFF");
+        /*int[] poweroff = {0,1}; //    即在每天 0:1 关机,小时取值 0-23,分钟取值 0-59
+        int[] poweron = {0,3}; //  即在每天 0:3 开机,小时取值 0-23,分钟取值 0-59*/
+        int[] poweroff = {11, 44}; //    即在每天 9:30 关机,小时取值 0-23,分钟取值 0-59
+        int[] poweron = {11, 45}; //  即在每天 17:30 开机,小时取值 0-23,分钟取值 0-59
+        intent.putExtra("timeon", poweron);
+        intent.putExtra("timeoff", poweroff);
         intent.putExtra("type", 2); //类型 2 代表设置每天开关机时间
         intent.putExtra("enable", enable); //使能开关机功能，设为 false,则为关闭,缺省为 true
         context.sendBroadcast(intent);

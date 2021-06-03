@@ -556,11 +556,17 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
                 case Intent.ACTION_TIME_TICK:
-
                     //  每过一分钟 触发
                     Calendar now = Calendar.getInstance();
                     String timeString = now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.MINUTE);
-
+                    //获取年
+                    int year = now.get(Calendar.YEAR);
+                    //获取月份，0表示1月份
+                    int month = now.get(Calendar.MONTH) + 1;
+                    //获取当前天数
+                    int day = now.get(Calendar.DAY_OF_MONTH);
+                    //获取当前小时
+                    int hour = now.get(Calendar.HOUR_OF_DAY);
                     if(timeString.equals("1:10")){
                         //  1 分钟后重启
                         new Handler().postDelayed(new Runnable() {
@@ -569,23 +575,6 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                 AndroidDeviceSDK.reBoot(MainActivity.this);
                             }
                         },1000 * 60);
-                    }else if("9:15".equals(timeString)){
-                        new Handler().post(()->{
-                            AndroidDeviceSDK.shutDownBoot(MainActivity.this);
-                        });
-                    }else if("6:50".equals(timeString)){
-                        new Handler().post(()->{
-                            for(DustbinStateBean dustbinStateBean: APP.dustbinBeanList){
-                                //投放时间，电磁锁开锁
-                                //方法名为关闭，是让电磁锁断电开锁
-                                LogUtil.d(TAG,dustbinStateBean.getDoorNumber()+"门电子锁开锁");
-                                SerialPortUtil.getInstance().sendData(SerialPortRequestByteManage.getInstance().closeDogHouse(dustbinStateBean.getDoorNumber()));
-                            }
-                        });
-                    }else if("20:55".equals(timeString)){
-                        AndroidDeviceSDK.autoReBootForAM(MainActivity.this,true);
-                    }else if("21:15".equals(timeString)){
-                        AndroidDeviceSDK.shutDownBoot(MainActivity.this);
                     }
                     if(BinsWorkTimeUntil.getBinsWorkTime(binsWorkTimeBean)){
                         Log.i(TAG,"投放时间");
@@ -1150,7 +1139,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
 
                             //  扫码推送特征值太快则抛弃。
                             if(System.currentTimeMillis() - QRReturnTime < 1000){
-                                return;
+//                                return;
                             }
 
                             VXLoginCall vxLoginCall = gson.fromJson(data,VXLoginCall.class);
@@ -2440,6 +2429,7 @@ public class MainActivity extends Activity implements CameraManager.CameraListen
                                     }
                                 }else{
                                     alertDialog.dismiss();
+//                                    startActivity(new Intent(MainActivity.this,SettingActivity.class));
                                 }
                             }
                         });

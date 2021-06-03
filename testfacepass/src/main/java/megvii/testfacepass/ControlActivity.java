@@ -271,7 +271,9 @@ public class ControlActivity extends AppCompatActivity {
                 if (durTime < CLICK_INTERVAL) {
                     ++mSecretNumber;
                     if (mSecretNumber == 5) {
-
+                        if(APP.phoneCodeVerifyBean != null){
+                            phoneCodeVerifyBean = APP.phoneCodeVerifyBean;
+                        }
                         //  如果管理员登陆过 还没有退出，则可以直接复用，登陆信息 省的每次都要验证码
                         if (phoneCodeVerifyBean != null) {
                             showAdminManage(phoneCodeVerifyBean);
@@ -329,7 +331,9 @@ public class ControlActivity extends AppCompatActivity {
                                                                 NetWorkUtil.getInstance().doPost(ServerAddress.PHONE_CODE_VERIFY, ma, new NetWorkUtil.NetWorkListener() {
                                                                     @Override
                                                                     public void success(String response) {
-                                                                        phoneCodeVerifyBean = new Gson().fromJson(response, PhoneCodeVerifyBean.class);
+                                                                        APP.phoneCodeVerifyBean = new Gson().fromJson(response, PhoneCodeVerifyBean.class);
+
+                                                                        phoneCodeVerifyBean = APP.phoneCodeVerifyBean;
                                                                         if (phoneCodeVerifyBean.getCode() == 1) {
 
 

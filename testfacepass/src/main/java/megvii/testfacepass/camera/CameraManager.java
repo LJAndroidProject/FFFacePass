@@ -132,6 +132,7 @@ public class CameraManager implements CameraPreview.CameraPreviewListener {
                 protected Object doInBackground(Object... params) {
                     //  cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
                     cameraId = front ? Camera.CameraInfo.CAMERA_FACING_FRONT : Camera.CameraInfo.CAMERA_FACING_BACK;
+//                    cameraId = 1;
                     try {
                         camera = Camera.open(cameraId);
                     } catch (Exception e) {
@@ -258,6 +259,7 @@ public class CameraManager implements CameraPreview.CameraPreviewListener {
 
     public void setPreviewDisplay(CameraPreview preview) {
         this.cameraPreview = preview;
+//        this.cameraPreview.setScaleX(-1f);
         this.surfaceHolder = preview.getHolder();
         preview.setListener(this);
     }
